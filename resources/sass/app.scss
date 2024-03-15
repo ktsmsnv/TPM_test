@@ -7,9 +7,14 @@
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
 
-.form-signin {
-    width: 100%;
-    max-width: 330px;
-    padding: 15px;
-    margin: auto;
+.login__page {
+    background-image: url(/storage/app/public/apm_back.jpg);
+    backdrop-filter: brightness(0.5);
+    .card {
+        padding: 2rem;
+        background-color: #ffffffb0;
+    }
+    &-block {
+        height: 100vh;
+    }
 }
