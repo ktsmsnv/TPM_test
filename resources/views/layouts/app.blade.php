@@ -21,7 +21,7 @@
 <body>
     <div id="app">
         <header>
-            <div class="px-3 py-2 bg-dark text-white">
+            <div class="px-3 py-2 header-bg text-black shadow-sm">
                 <div class="container">
                     <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
                         <a href="{{ url('/') }}" class="navbar-brand d-flex align-items-center my-2 my-lg-0 me-lg-auto text-white text-decoration-none">
@@ -33,7 +33,7 @@
 
                         <ul class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 text-small">
                             <li>
-                                <a href="#" class="nav-link text-secondary">
+                                <a href="#" class="nav-link text-white">
                                     {{-- <svg class="bi d-block mx-auto mb-1" width="24" height="24"><use xlink:href="#home"></use></svg>--}}
                                     Реестр объектов
                                 </a>
@@ -55,7 +55,7 @@
                             </li>
                         </ul>
 
-                        <ul class="navbar-nav ms-auto d-flex flex-row gap-3">
+                        <ul class="navbar-nav ms-auto d-flex flex-row gap-3 text-white">
                             <!-- Authentication Links -->
                             @guest
                                 @if (Route::has('login'))

@@ -7,14 +7,43 @@
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
 
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap");
+
+*,
+*:after,
+*:before {
+    box-sizing: border-box;
+}
+
+:root {
+    --header-outer-height: 110px;
+    --header-inner-height: 70px;
+    --header-height-difference: calc(
+        var(--header-outer-height) - var(--header-inner-height)
+    );
+    --header-bg: #fff;
+}
+
+body {
+    font-family: "DM Sans", sans-serif;
+    background-color: #f2f5f7;
+}
+
 .login__page {
     background-image: url(/storage/app/public/apm_back.jpg);
     backdrop-filter: brightness(0.5);
     .card {
         padding: 2rem;
-        background-color: #ffffffb0;
+        background-color: rgba(255, 255, 255, 0.61);
     }
     &-block {
         height: 100vh;
+    }
+}
+
+.header-bg {
+    background-color: #002543;
+    img {
+        max-height: 50px;
     }
 }

@@ -19,7 +19,7 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 <body class="login__page">
-    <div id="app">
+<div id="app">
     <div class="login__page-block d-flex align-items-center justify-content-center">
         <div class="col-md-3">
             <div class="card">
