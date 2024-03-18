@@ -15,5 +15,6 @@ Route::middleware(['guest'])->group(function () {
 // Все маршруты доступны только аутентифицированным пользователям
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/reestr-work-orders', [App\Http\Controllers\HomeController::class, 'reestrWorkOrdersView'])->name('reestr-workOrders');
 });
 

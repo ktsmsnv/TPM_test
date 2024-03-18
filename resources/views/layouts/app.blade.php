@@ -74,7 +74,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="nav-link text-white">
+                            <a href="/reestr-work-orders" class="nav-link text-white">
                                 <i class="bi bi-app-indicator me-1"></i>
                                 Реестр заказов
                                 <span class="hover-bar"></span>

@@ -1,24 +1,20 @@
-{{--страница реестр объектов (главная) --}}
+{{--страница реестр заказ-нарядов --}}
 @extends('layouts.app')
 
 @section('content')
     <div class="container">
         <div class="reestrObject">
-            <div class="reestrObject__btns d-flex justify-content-between mb-5">
-                <button type="button" class="btn btn-secondary">Обновить реестр</button>
+            <div class="reestrObject__btns d-flex mb-5">
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-success">Показать активные объекты</button>
-                    <button type="button" class="btn btn-primary">Создать карточку объекта</button>
-                    <button type="button" class="btn btn-primary btn-primary--2">Скопировать карточку объекта</button>
-                    <button type="button" class="btn btn-light">Сформировать график TPM</button>
-                    <button type="button" class="btn btn-light">Сформировать календарь TPM</button>
-                    <button type="button" class="btn btn-light">Сформировать заказ-наряд TPM</button>
+                    <button type="button" class="btn btn-secondary me-5">Обновить реестр</button>
+                    <button type="button" class="btn btn-primary">Выбрать период</button>
+                    <button type="button" class="btn btn-success">Показать активные заказ-наряды</button>
                 </div>
             </div>
             <select class="form-control d-none" id="locale">
                 <option value="ru-RU">ru-RU</option>
             </select>
-            <h3 class="text-center mb-4"><strong>Реестр объектов</strong></h3>
+            <h3 class="text-center mb-4"><strong>Реестр заказ-нарядов ТРМ</strong></h3>
             <div class="card">
                 <div class="card-body">
                     <div class="reestrObject__table text-center">
@@ -27,7 +23,7 @@
                                 <i class="fa fa-trash"></i> Удалить
                             </button>
                         </div>
-                        <table id="reestrObject"
+                        <table id="reestrWorkOrder"
                                data-toolbar="#toolbar"
                                data-search="true"
                                data-show-refresh="true"
@@ -49,43 +45,44 @@
                             <thead>
                             <tr>
                                 <th></th>
-                                <th colspan="6">Объекты инфраструктуры</th>
-                                <th colspan="8">Обслуживание TPM</th>
+                                <th colspan="8">Заказ-наряды TPM</th>
+                                <th></th>
+                                <th></th>
+                                <th colspan="3">Ответственные</th>
                             </tr>
                             <tr>
+                                <td></td>
                                 <th>Вид инфраструктуры</th>
                                 <th>Наименование объекта</th>
-                                <th>Дата ввода в эксплуатацию</th>
-                                <th>Дата вывода из эксплуатации</th>
-                                <th>Дата окончания аттестаци/гарантии</th>
                                 <th>Инв./заводской номер</th>
                                 <th>Место установки</th>
-                                <th>Плановая дата обслуживания</th>
-                                <th>Фактическая дата предыдущего обслуживания</th>
-                                <th>Вид ближайшего обслуживания</th>
+                                <th>Вид обслуживания</th>
+                                <th>Плановая дата</th>
+                                <th>Фактическая дата</th>
+                                <th>Статус</th>
+                                <th>Дата сорздания</th>
+                                <th>Дата последнего сохранения</th>
                                 <th>Исполнитель</th>
                                 <th>Ответственный</th>
-                                <th>Заказ-наряд</th>
-                                <th>Календарь TPM</th>
+                                <th>Куратор</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr data-id="1">
                                 <td></td>
-                                <td>вид инф</td>
-                                <td>наим объект</td>
-                                <td>дата ввода</td>
-                                <td>дата вывода</td>
-                                <td>дата оконч</td>
-                                <td>инв зав номер</td>
-                                <td>место установ</td>
-                                <td>плановая дата</td>
-                                <td>факт дата</td>
-                                <td>вид ближ обслуж</td>
-                                <td>испол</td>
-                                <td>ответств</td>
-                                <td>заказ-наряд</td>
-                                <td>календарь трм</td>
+                                <th>Вид инфраструктуры</th>
+                                <th>Наименование объекта</th>
+                                <th>Инв./заводской номер</th>
+                                <th>Место установки</th>
+                                <th>Вид обслуживания</th>
+                                <th>Плановая дата</th>
+                                <th>Фактическая дата</th>
+                                <th>Статус</th>
+                                <th>Дата сорздания</th>
+                                <th>Дата последнего сохранения</th>
+                                <th>Исполнитель</th>
+                                <th>Ответственный</th>
+                                <th>Куратор</th>
                             </tr>
                             </tbody>
                         </table>
@@ -97,7 +94,7 @@
 
     <script>
         $(document).ready(function () {
-            let $table = $('#reestrObject');
+            let $table = $('#reestrWorkOrder');
             var $remove = $('#remove');
             var selections = [];
 
@@ -133,8 +130,10 @@
                             align: 'center',
                             valign: 'middle'
                         },
-                        { field: 'type', title: 'Вид инфраструктуры', align: 'center' },
-                        { field: 'name', title: 'Наименование объекта', align: 'center' },
+                        { field: 'type', title: 'Заказ-наряды ТРМ', align: 'center' },
+                        { field: 'name1', title: '', align: 'center' },
+                        { field: 'name2', title: '', align: 'center' },
+                        { field: 'name', title: 'Ответственные', align: 'center' },
                     ]
                 });
 
@@ -161,4 +160,3 @@
 
     </script>
 @endsection
-
