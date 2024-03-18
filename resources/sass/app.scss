@@ -103,3 +103,80 @@ main {
     box-shadow: var(--bs-box-shadow-lg);
 }
 
+//----------------- CARD OBJECT -----------------------
+.member_card_style {
+    position: relative;
+    box-shadow: 0px 2px 15px
+    rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    border-radius: 5px;
+    background: #fff;
+    transition: 0.5s;
+    margin: 20px 0;
+    &:hover {
+        transform: translateY(-10px);
+    }
+}
+.member-info {
+    padding-left: 30px;
+    display: inline-block;
+    h4 {
+        font-weight: 700;
+        margin-bottom: 5px;
+        font-size: 20px;
+        color: #2c48be;
+        text-transform: uppercase;
+    }
+    span {
+        display: block;
+        font-size: 15px;
+        padding-bottom: 10px;
+        position: relative;
+        font-weight: 500;
+        &::after {
+            content: "";
+            position: absolute;
+            display: block;
+            width: 50px;
+            height: 1px;
+            background: #bfe0fd;
+            bottom: 0;
+            left: 0;
+        }
+    }
+    .d-grid {
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            grid-column-gap: 3rem;
+            grid-row-gap: 1rem;
+    }
+}
+.custom_tab_style1 {
+    &.nav-tabs {
+        border-bottom: 2px solid
+        #2c48be;
+        .nav-link {
+            margin-bottom: -2px;
+            padding: 10px 25px;
+            border-width: 2px;
+        }
+    }
+}
+.custom_tab_style1 .nav-item.show .nav-link,
+.custom_tab_style1 .nav-link.active {
+    color: #495057;
+    background-color: #f8f9fa;
+    border-width: 2px;
+    border-color: #2c48be
+    #2c48be
+    #f8f9fa;
+}
+.custom_tab_style1 .nav-link:focus,
+.custom_tab_style1 .nav-link:hover {
+    border-width: 2px;
+    border-color: #2c48be
+    #2c48be
+    #f8f9fa;
+}
+
+
