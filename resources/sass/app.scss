@@ -26,7 +26,6 @@
 
 body {
     font-family: "DM Sans", sans-serif;
-    background-color: #f2f5f7;
 }
 .container {
     position: relative;
@@ -39,6 +38,7 @@ main {
     padding: 70px 0 20px;
 }
 
+// ----------------- LOGIN ----------------
 .login__page {
     background-image: url(/storage/app/public/apm_back.jpg);
     backdrop-filter: brightness(0.5);
@@ -54,11 +54,41 @@ main {
     }
 }
 
+// ----------------- HEADER ---------------
 .header-bg {
     background-color: #002543;
     img {
-        max-height: 50px;
+        max-height: 40px;
     }
+    .nav-link {
+        position: relative;
+        display: inline-block;
+        font-size: 1rem;
+    }
+
+    .hover-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: #fff;
+        transition: width 0.5s ease;
+    }
+
+    .nav-link:hover .hover-bar {
+        width: 100%;
+    }
+
+    .dropdown-item:hover, .dropdown-item:focus {
+        background-color: #0025433b;
+    }
+}
+
+//----------------- BUTTONS ---------------
+.btn {
+    font-size: 16px;
+    box-shadow: -7px 7px 30px 3px rgba(34, 60, 80, 0.2);
 }
 .btn-light {
     border: 1px solid #1a1d20;
@@ -66,5 +96,10 @@ main {
 .btn-primary--2 {
     background-color: rgba(19, 73, 150, 0.52);
     color: #fff;
+}
+
+//----------------- REESTR OBJECT TABLE ---------------
+.card-body {
+    box-shadow: var(--bs-box-shadow-lg);
 }
 
