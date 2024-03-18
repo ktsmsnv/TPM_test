@@ -28,7 +28,16 @@ body {
     font-family: "DM Sans", sans-serif;
     background-color: #f2f5f7;
 }
-
+.container {
+    position: relative;
+    width: 95% !important;
+    max-width: none !important;
+    margin: 0 auto;
+    padding: 0;
+}
+main {
+    padding: 70px 0 20px;
+}
 .login__page {
     background-image: url(/storage/app/public/apm_back.jpg);
     backdrop-filter: brightness(0.5);
@@ -46,4 +55,11 @@ body {
     img {
         max-height: 50px;
     }
+}
+.btn-light {
+    border: 1px solid #1a1d20;
+}
+.btn-primary--2 {
+    background-color: rgba(19, 73, 150, 0.52);
+    color: #fff;
 }
