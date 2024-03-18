@@ -51,14 +51,12 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="#" class="nav-link text-white">
-                                    Реестр графиков
-                                </a>
+                                <a href="{{ route('pageReestrGraph') }}" class="nav-link text-white
+                                    @if (Request::is('pageReestrGraph')) active @endif"> Реестр графиков</a>
                             </li>
                             <li>
-                                <a href="#" class="nav-link text-white">
-                                    Реестр календарей
-                                </a>
+                                <a href="{{ route('pageReestrCalendar') }}" class="nav-link text-white
+                                   @if (Request::is('pageReestGraph')) active @endif">Реестр календарей</a>
                             </li>
                             <li>
                                 <a href="#" class="nav-link text-white">
