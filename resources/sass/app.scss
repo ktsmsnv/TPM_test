@@ -48,6 +48,9 @@ main {
     &-block {
         height: 100vh;
     }
+    img {
+        max-height: 70px;
+    }
 }
 
 .header-bg {
