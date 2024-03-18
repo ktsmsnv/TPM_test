@@ -14,7 +14,12 @@ Route::middleware(['guest'])->group(function () {
 
 // Все маршруты доступны только аутентифицированным пользователям
 Route::middleware(['auth'])->group(function () {
+
+    // РЕЕСТРЫ
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/reestr-work-orders', [App\Http\Controllers\HomeController::class, 'reestrWorkOrdersView'])->name('reestr-workOrders');
+
+    // КАРТОЧКИ
+    Route::get('/card-object', [App\Http\Controllers\ObjectController::class, 'index'])->name('cardObject');
 });
 
