@@ -126,6 +126,19 @@
     </header>
 
     <main>
+        <ul class="breadcrumbs container">
+            @foreach ($breadcrumbs as $crumb)
+                <li>
+                    @if ($loop->last)
+                        <span style="color: grey;">{{ $crumb->title }}</span>
+                    @else
+                        <a href="{{ $crumb->url }}">{{ $crumb->title }}</a>
+                    @endif
+                </li>
+            @endforeach
+        </ul>
+
+
         @yield('content')
     </main>
 </div>

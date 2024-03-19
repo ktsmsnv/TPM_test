@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 
 //контроллер для отображения данных на страницы
 class workOrderController extends Controller
@@ -10,6 +11,7 @@ class workOrderController extends Controller
 
     public function index()
     {
-        return view(' card-workOrder');
+        $breadcrumbs = Breadcrumbs::generate('card-work-order');
+        return view(' card-workOrder', compact('breadcrumbs'));
     }
 }
