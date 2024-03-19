@@ -35,7 +35,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    <button class="btn btn-primary">Создать обслуживание</button>
+                                    <button class="btn btn-primary">Завершить заказ</button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
@@ -111,7 +111,6 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Виды работ</h4>
-                                    <button class="btn btn-primary">Добавить вид работ</button>
                                 </div>
                                 <div class="typesOfWork">
                                     <!-- Используем класс row для создания строки -->

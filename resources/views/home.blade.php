@@ -95,11 +95,32 @@
         </div>
     </div>
 
+    <!-- Модальное окно подтверждения удаления -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteKPLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Подтверждение удаления</h5>
+                    <button type="button" class="btn-close" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Вы уверены, что хотите удалить выбранные элементы?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteButton">Удалить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         $(document).ready(function () {
             let $table = $('#reestrObject');
             var $remove = $('#remove');
             var selections = [];
+            let $confirmDelete = $('#confirmDeleteModal'); // Ссылка на модальное окно
+            let $confirmDeleteButton = $('#confirmDeleteButton'); // Кнопка "Удалить" в модальном окне
 
             function getIdSelections() {
                 return $.map($table.bootstrapTable('getSelections'), function (row) {
@@ -150,6 +171,17 @@
                         values: ids
                     });
                     $remove.prop('disabled', true);
+                    showConfirmDeleteModal();
+                });
+
+                // Функция для отображения модального окна удаления
+                function showConfirmDeleteModal() {
+                    $confirmDelete.modal('show');
+                }
+                // Обработчик события нажатия на кнопку "Удалить" в модальном окне
+                $confirmDeleteButton.click(function () {
+                    // добавить логику для удаления элементов
+                    $confirmDelete.modal('hide');
                 });
             }
 
