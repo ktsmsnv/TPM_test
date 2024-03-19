@@ -7,10 +7,26 @@
             <div class="reestrObject__btns d-flex mb-5">
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-secondary me-5">Обновить реестр</button>
-                    <button type="button" class="btn btn-primary">Выбрать период</button>
+                    <button type="button" class="btn btn-primary" id="togglePeriodSelection">Выбрать период</button>
                     <button type="button" class="btn btn-success">Показать активные заказ-наряды</button>
                 </div>
             </div>
+            <div class="collapse" id="periodSelection">
+                <div class="card card-body position-absolute" style="top: 50px;left: 200px;z-index: 99;">
+                    <!-- диапазон дат -->
+                    <div class="form-group mb-3">
+                        <label for="startDate">Начальная дата:</label>
+                        <input type="date" class="form-control" id="startDate">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="endDate">Конечная дата:</label>
+                        <input type="date" class="form-control" id="endDate">
+                    </div>
+                    <button type="button" class="btn btn-primary" id="applyButton">Применить</button>
+                </div>
+            </div>
+            <div id="selectedPeriod" class="mt-3"></div>
+
             <select class="form-control d-none" id="locale">
                 <option value="ru-RU">ru-RU</option>
             </select>
@@ -93,7 +109,8 @@
     </div>
 
     <!-- Модальное окно подтверждения удаления -->
-    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteKPLabel" aria-hidden="true">
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteKPLabel"
+         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -151,10 +168,10 @@
                             align: 'center',
                             valign: 'middle'
                         },
-                        { field: 'type', title: 'Заказ-наряды ТРМ', align: 'center' },
-                        { field: 'name1', title: '', align: 'center' },
-                        { field: 'name2', title: '', align: 'center' },
-                        { field: 'name', title: 'Ответственные', align: 'center' },
+                        {field: 'type', title: 'Заказ-наряды ТРМ', align: 'center'},
+                        {field: 'name1', title: '', align: 'center'},
+                        {field: 'name2', title: '', align: 'center'},
+                        {field: 'name', title: 'Ответственные', align: 'center'},
                     ]
                 });
 
@@ -177,6 +194,7 @@
                 function showConfirmDeleteModal() {
                     $confirmDelete.modal('show');
                 }
+
                 // Обработчик события нажатия на кнопку "Удалить" в модальном окне
                 $confirmDeleteButton.click(function () {
                     // добавить логику для удаления элементов
@@ -190,5 +208,49 @@
             });
         });
 
+    </script>
+
+    {{-- выбрать период--}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const periodSelection = document.getElementById('periodSelection');
+            const togglePeriodSelection = document.getElementById('togglePeriodSelection');
+            const applyButton = document.getElementById('applyButton');
+            const selectedPeriod = document.getElementById('selectedPeriod');
+
+            // Скрыть блок выбора периода при нажатии вне его области
+            document.addEventListener('click', function (event) {
+                if (!periodSelection.contains(event.target) && event.target !== togglePeriodSelection) {
+                    periodSelection.classList.remove('show');
+                }
+            });
+
+            // Переключение видимости блока выбора периода при нажатии на кнопку
+            togglePeriodSelection.addEventListener('click', function () {
+                if (periodSelection.classList.contains('show')) {
+                    periodSelection.classList.remove('show');
+                } else {
+                    periodSelection.classList.add('show');
+                }
+            });
+
+            // Обработка нажатия на кнопку "Применить"
+            applyButton.addEventListener('click', function () {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+
+                // Отобразить выбранный период под блоком с кнопками
+                selectedPeriod.innerHTML = `
+                <div class="alert alert-info" role="alert">
+                    Выбранный период: с ${endDate.split('-').reverse().join('-')}  по ${startDate.split('-').reverse().join('-')}
+                    <button type="button" class="btn btn-danger ms-3" id="resetPeriodButton">Сбросить период</button>
+                </div>`;
+
+                // Добавляем обработчик клика на кнопку "Сбросить период"
+                document.getElementById('resetPeriodButton').addEventListener('click', function() {
+                    selectedPeriod.innerHTML = '';
+                });
+            });
+        });
     </script>
 @endsection
