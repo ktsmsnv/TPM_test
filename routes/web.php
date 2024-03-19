@@ -20,7 +20,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reestr-work-orders', [App\Http\Controllers\HomeController::class, 'reestrWorkOrdersView'])->name('reestr-workOrders');
 
     // КАРТОЧКИ
-    Route::get('/card-object', [App\Http\Controllers\ObjectController::class, 'index'])->name('cardObject');
-    Route::get('/card-work-order', [App\Http\Controllers\workOrderController::class, 'index'])->name('workOrder');
+    Route::get('/home/card-object', [App\Http\Controllers\ObjectController::class, 'index'])->name('cardObject');
+    Route::get('/reestr-work-orders/card-work-order', [App\Http\Controllers\workOrderController::class, 'index'])->name('workOrder');
 });
 
