@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 
-use App\Models\ContractStorage;
 use App\Models\pageReestrGraph;
 
 use Illuminate\Http\Request;
@@ -11,25 +10,42 @@ use Illuminate\Support\Facades\DB;
 
 class pageReestrGraphController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
     public function index()
     {
         $pageReestrGraph = pageReestrGraph::all();
 
         return view('reestrGraph', compact('pageReestrGraph'));
+    }
+
+    public function getContractStorage($id)
+    {
+        $pageReestrGraph = pageReestrGraph::find($id);
+        return response()->json($pageReestrGraph);
+    }
+
+    public function getReestrGraphDetails($id)
+    {
+        $pageReestrGraph = pageReestrGraph::findOrFail($id);
+
+        // Подготавливаем данные для ответа
+        $data = [
+            'typeInfrastruct' => $pageReestrGraph->typeInfrastruct,
+            'nameGraph' => $pageReestrGraph->nameGraph,
+            'yearAction' => $pageReestrGraph->yearAction,
+            'dateCreation' => $pageReestrGraph->dateCreation,
+            'dateLastSave' => $pageReestrGraph->dateLastSave,
+            'dateArchiv' => $pageReestrGraph->dateArchiv,
+            'actor' => $pageReestrGraph->actor,
+            'responsible' => $pageReestrGraph->responsible,
+            'curator' => $pageReestrGraph->curator,
+        ];
+
+        // Возвращаем данные в формате JSON
+        return response()->json($data);
     }
 }

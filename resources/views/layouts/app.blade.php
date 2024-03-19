@@ -60,7 +60,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="nav-link text-white">
+                            <a href="/pageReestrGraph" class="nav-link text-white">
                                 <i class="bi bi-bar-chart me-1"></i>
                                 Реестр графиков
                                 <span class="hover-bar"></span>
