@@ -5,9 +5,9 @@
     <div class="container">
         <div class="reestrObject">
             <div class="reestrObject__btns d-flex justify-content-between mb-5">
-                <button type="button" class="btn btn-secondary">Обновить реестр</button>
+                <button type="button" class="btn btn-secondary" data-toggle="tooltip" title="показать последние данные">Обновить реестр</button>
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-success">Показать активные объекты</button>
+                    <button type="button" class="btn btn-success" data-toggle="tooltip" title="без даты вывода объекта из эксплуатации">Показать активные объекты</button>
                     <button type="button" class="btn btn-primary">Создать карточку объекта</button>
                     <button type="button" class="btn btn-primary btn-primary--2">Скопировать карточку объекта</button>
                     <button type="button" class="btn btn-light">Сформировать график TPM</button>

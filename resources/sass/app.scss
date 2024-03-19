@@ -66,6 +66,11 @@ main {
         font-size: 1rem;
     }
 
+    /* Добавляем стили для активной вкладки */
+    .nav-link.active .hover-bar {
+        width: 100%;
+    }
+
     .hover-bar {
         position: absolute;
         bottom: 0;

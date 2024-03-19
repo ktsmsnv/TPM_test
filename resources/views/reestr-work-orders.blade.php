@@ -6,9 +6,9 @@
         <div class="reestrObject">
             <div class="reestrObject__btns d-flex mb-5">
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-secondary me-5">Обновить реестр</button>
-                    <button type="button" class="btn btn-primary" id="togglePeriodSelection">Выбрать период</button>
-                    <button type="button" class="btn btn-success">Показать активные заказ-наряды</button>
+                    <button type="button" class="btn btn-secondary me-5" data-toggle="tooltip" title="показать последние данные">Обновить реестр</button>
+                    <button type="button" class="btn btn-primary" id="togglePeriodSelection" data-toggle="tooltip" title="показать записи за период">Выбрать период</button>
+                    <button type="button" class="btn btn-success" data-toggle="tooltip" title="статус 'в работе'">Показать активные заказ-наряды</button>
                 </div>
             </div>
             <div class="collapse" id="periodSelection">

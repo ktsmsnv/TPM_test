@@ -140,5 +140,19 @@
         });
     });
 </script>
+<script>
+    // Получаем текущий путь страницы
+    const currentPath = window.location.pathname;
+
+    // Получаем все ссылки в навигации
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    // Проходим по каждой ссылке и добавляем класс active, если её href совпадает с текущим путём
+    navLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
+</script>
 </body>
 </html>
