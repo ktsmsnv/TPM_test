@@ -21,5 +21,6 @@ Route::middleware(['auth'])->group(function () {
 
     // КАРТОЧКИ
     Route::get('/card-object', [App\Http\Controllers\ObjectController::class, 'index'])->name('cardObject');
+    Route::get('/card-work-order', [App\Http\Controllers\workOrderController::class, 'index'])->name('workOrder');
 });
 
