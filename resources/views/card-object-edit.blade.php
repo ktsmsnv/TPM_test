@@ -12,7 +12,7 @@
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-success">Сохранить изменения</button>
-                    <button type="button" class="btn btn-secondary me-5">Отменить изменения</button>
+                    <a href="/home/card-object" type="button" class="btn btn-secondary me-5">Отменить изменения</a>
 
                     <a href="" type="button" class="btn btn-primary">Скопировать карточку объекта</a>
                     <button type="button" class="btn btn-primary me-5" data-bs-toggle="modal" data-bs-target="#imageDownloadModal">Загрузить изображение</button>

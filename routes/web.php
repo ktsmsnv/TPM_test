@@ -24,6 +24,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/home/card-object-create', [App\Http\Controllers\ObjectController::class, 'create'])->name('cardObject-create');
     Route::get('/home/card-object/edit', [App\Http\Controllers\ObjectController::class, 'edit'])->name('cardObject-edit');
 
-    Route::get('/card-work-order', [App\Http\Controllers\workOrderController::class, 'index'])->name('workOrder');
+    Route::get('/reestr-work-orders/card-work-order', [App\Http\Controllers\workOrderController::class, 'index'])->name('workOrder');
 });
 
