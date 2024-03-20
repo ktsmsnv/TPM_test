@@ -8,7 +8,6 @@ Breadcrumbs::for('home', function ($trail) {
 
 // Хлебные крошки для страницы Реестр заказов
 Breadcrumbs::for('reestr-work-orders', function ($trail) {
-    $trail->parent('home');
     $trail->push('Реестр заказ-нарядов ТРМ', route('reestr-workOrders'));
 });
 
@@ -16,6 +15,16 @@ Breadcrumbs::for('reestr-work-orders', function ($trail) {
 Breadcrumbs::for('card-object', function ($trail) {
     $trail->parent('home');
     $trail->push('Карточка объекта', route('cardObject'));
+});
+// Хлебные крошки для страницы СОЗДАНИЕ Карточка объекта
+Breadcrumbs::for('card-object-create', function ($trail) {
+    $trail->parent('home');
+    $trail->push('Создание карточки объекта', route('cardObject-create'));
+});
+// Хлебные крошки для страницы РЕДАКТИРОВАНИЕ Карточка объекта
+Breadcrumbs::for('/card-object/edit', function ($trail) {
+    $trail->parent('card-object');
+    $trail->push('Редактирование карточки объекта', route('cardObject-edit'));
 });
 
 // Хлебные крошки для страницы Карточка заказа

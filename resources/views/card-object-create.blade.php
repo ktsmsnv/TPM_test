@@ -1,4 +1,4 @@
-{{--страница карточка объекта --}}
+{{--страница СОЗДАНИЕ карточки объекта --}}
 @extends('layouts.app')
 
 @section('content')
@@ -6,17 +6,14 @@
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
-                <h1 class="mb-4"><strong>Карточка объекта</strong></h1>
+                <h1 class="mb-4"><strong>Создание карточки объекта</strong></h1>
             </div>
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
-                    {{-- <button type="button" class="btn btn-success">Сохранить</button>--}}
+                    <button type="button" class="btn btn-success">Сохранить</button>
                     <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
 
-                    <a href="" type="button" class="btn btn-primary">Скопировать карточку объекта</a>
-                    {{-- <button type="button" class="btn btn-primary me-5" data-bs-toggle="modal" data-bs-target="#imageDownloadModal">Загрузить изображение</button>--}}
-
-                    <a href="/home/card-object/edit" type="button" class="btn btn-outline-danger">Редактировать</a>
+                    <button type="button" class="btn btn-primary me-5" data-bs-toggle="modal" data-bs-target="#imageDownloadModal">Загрузить изображение</button>
                 </div>
             </div>
 
@@ -43,45 +40,51 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    <div class="tooltip-wrapper" data-toggle="tooltip" title="для создания нажмите кнопку РЕДАКТИРОВАТЬ">
-                                        <button class="btn btn-primary" disabled>Создать обслуживание</button>
-                                    </div>
+                                    <button class="btn btn-primary">Создать обслуживание</button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид инфраструктуры</label>
-                                            <input name="" class="form-control w-100" readonly>
+                                            <input name="" placeholder="Введите вид инфраструктуры"
+                                                   class="form-control w-100">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Наименование объекта</label>
-                                            <input name="" class="form-control w-100" readonly>
+                                            <input name="" placeholder="Введите наименование объекта"
+                                                   class="form-control w-100">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Инв./заводской №</label>
-                                            <input class="form-control w-100" name="" readonly>
+                                            <input class="form-control w-100" name=""
+                                                   placeholder="Введите инв./заводской №">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Место установки</label>
-                                            <input class="form-control  w-100" name="" readonly>
+                                            <input class="form-control  w-100" name=""
+                                                   placeholder="Введите место установки">
                                         </div>
                                     </div>
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата прихода</label>
-                                            <input class="form-control w-100" name="" readonly>
+                                            <input class="form-control w-100" name=""
+                                                   placeholder="Введите дату прихода">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата ввода в эксплуатацию</label>
-                                            <input class="form-control w-100" name="" readonly>
+                                            <input class="form-control w-100" name=""
+                                                   placeholder="Введите дату ввода в эксплуатацию">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата окончания аттестации/гарантии</label>
-                                            <input class="form-control w-100" name="" readonly>
+                                            <input class="form-control w-100" name=""
+                                                   placeholder="Введите дату окончания аттестации/гарантии">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата вывода из эксплуатации</label>
-                                            <input class="form-control  w-100" name="" readonly>
+                                            <input class="form-control  w-100" name=""
+                                                   placeholder="Введите дату вывода из эксплуатации">
                                         </div>
                                     </div>
                                 </div>
@@ -92,19 +95,10 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Документация</h4>
-                                    <div class="tooltip-wrapper" data-toggle="tooltip" title="для вложения нажмите кнопку РЕДАКТИРОВАТЬ">
-                                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#docDownloadModal" disabled>Вложить документ</button>
-                                    </div>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#docDownloadModal">Вложить документ</button>
                                 </div>
                                 <div class="objectDocs">
-                                    <ul>
-                                        <li class="d-flex align-items-center gap-3 mb-4">
-                                            <div class="tooltip-wrapper" data-toggle="tooltip" title="для удаления нажмите кнопку РЕДАКТИРОВАТЬ">
-                                                <button type="button" class="btn btn-danger btn-sm" disabled ><i class="bi bi-trash3"></i></button>
-                                            </div>
-                                            <a href="" data-toggle="tooltip" title="нажмите чтобы скачать">Акт входного контроля Сварочный аппарат полуавтомат.pdf</a>
-                                        </li>
-                                    </ul>
+                                    <a href="">Акт входного контроля Сварочный аппарат полуавтомат.pdf</a>
                                 </div>
                             </div>
                         </div>
@@ -113,9 +107,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Изображение объекта</h4>
-                                    <div class="tooltip-wrapper" data-toggle="tooltip" title="для загрузки нажмите кнопку РЕДАКТИРОВАТЬ">
-                                        <button class="btn btn-primary disabled" data-bs-toggle="modal" data-bs-target="#imageDownloadModal">Загрузить</button>
-                                    </div>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#imageDownloadModal">Загрузить</button>
                                 </div>
                                 <div class="objectImage">
                                     <img src="http://placehold.it/350x450"/>
@@ -144,42 +136,49 @@
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид обслуживания</label>
-                                            <input name="" class="form-control w-100" readonly>
+                                            <input name="" placeholder="Введите вид обслуживания"
+                                                   class="form-control w-100">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Сокращенное название</label>
-                                            <input name="" class="form-control w-100" readonly>
+                                            <input name="" placeholder="Введите сокращенное название"
+                                                   class="form-control w-100">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Исполнитель</label>
-                                            <input class="form-control w-100" name="" readonly>
+                                            <input class="form-control w-100" name=""
+                                                   placeholder="Введите исполнителя">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Ответственный</label>
-                                            <input class="form-control  w-100" name="" readonly>
+                                            <input class="form-control  w-100" name=""
+                                                   placeholder="Введите ответственного">
                                         </div>
                                     </div>
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Периодичность</label>
-                                            <input class="form-control w-100" name="" readonly>
+                                            <input class="form-control w-100" name=""
+                                                   placeholder="Введите периодичность">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата предыдущего обслуживания</label>
-                                            <input class="form-control w-100" name="" readonly>
+                                            <input class="form-control w-100" name=""
+                                                   placeholder="Введите дату предыдущего обслуживания">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Плановая дата обслуживания</label>
-                                            <input class="form-control w-100" name="" readonly>
+                                            <input class="form-control w-100" name=""
+                                                   placeholder="Введите плановую дату обслуживания">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Цвет в календаре</label>
-                                            <div class="color-options">
+                                            <div class="color-options" data-toggle="tooltip" title="нажмите на выбранный цвет">
                                                 <div class="color-option red" data-color="#ff0000"></div>
                                                 <div class="color-option green" data-color="#00ff00"></div>
                                                 <div class="color-option blue" data-color="#0000ff"></div>
                                             </div>
-                                            <input type="hidden" id="selectedColor" name="selectedColor" readonly>
+                                            <input type="hidden" id="selectedColor" name="selectedColor">
                                         </div>
                                     </div>
                                 </div>
@@ -190,37 +189,39 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Виды работ</h4>
-                                    <div class="tooltip-wrapper" data-toggle="tooltip" title="для добавления нажмите кнопку РЕДАКТИРОВАТЬ">
-                                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#typesModal" disabled>Добавить вид работ</button>
-                                    </div>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#typesModal">Добавить вид работ</button>
                                 </div>
                                 <div class="typesOfWork">
                                     <!-- Используем класс row для создания строки -->
                                     <div class="grid-container">
                                         <!-- Используем класс col-md-6 для создания двух столбцов на широких экранах -->
-                                        <div class="grid-item" >
+                                        <div class="grid-item">
                                             <div class="form-check d-flex align-items-center gap-2">
-                                                <label class="form-check-label form-control" data-toggle="tooltip" title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ">
+                                                <input class="form-check-input" type="checkbox" value=" " id=" " data-toggle="tooltip" title="нажмите чтобы выбрать">
+                                                <label class="form-check-label form-control" for=" ">
                                                     работа 1
                                                 </label>
                                             </div>
                                         </div>
                                         <div class="grid-item">
-                                            <div class="form-check d-flex align-items-center gap-2" data-toggle="tooltip" title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ">
+                                            <div class="form-check d-flex align-items-center gap-2">
+                                                <input class="form-check-input" type="checkbox" value=" " id=" " data-toggle="tooltip" title="нажмите чтобы выбрать">
                                                 <label class="form-check-label form-control" for=" ">
                                                     работа 2
                                                 </label>
                                             </div>
                                         </div>
                                         <div class="grid-item">
-                                            <div class="form-check d-flex align-items-center gap-2" data-toggle="tooltip" title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ">
+                                            <div class="form-check d-flex align-items-center gap-2">
+                                                <input class="form-check-input" type="checkbox" value=" " id=" " data-toggle="tooltip" title="нажмите чтобы выбрать">
                                                 <label class="form-check-label form-control" for=" ">
                                                     работа 3
                                                 </label>
                                             </div>
                                         </div>
                                         <div class="grid-item">
-                                            <div class="form-check d-flex align-items-center gap-2" data-toggle="tooltip" title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ">
+                                            <div class="form-check d-flex align-items-center gap-2">
+                                                <input class="form-check-input" type="checkbox" value=" " id=" " data-toggle="tooltip" title="нажмите чтобы выбрать">
                                                 <label class="form-check-label form-control" for=" ">
                                                     работа 4
                                                 </label>
@@ -238,7 +239,7 @@
                                 </div>
                                 <div class="material_text w-100">
                                     <!-- Добавляем textarea с атрибутом placeholder -->
-                                    <textarea class="form-control" readonly data-toggle="tooltip" title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ"></textarea>
+                                    <textarea class="form-control" placeholder="Введите расходные материалы и ЗИП"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -247,9 +248,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Изображение объекта</h4>
-                                    <div class="tooltip-wrapper" data-toggle="tooltip" title="для загрузки нажмите кнопку РЕДАКТИРОВАТЬ">
-                                        <button class="btn btn-primary disabled" data-bs-toggle="modal" data-bs-target="#imageDownloadModal">Загрузить</button>
-                                    </div>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#imageDownloadModal">Загрузить</button>
                                 </div>
                                 <div class="objectImage">
                                     <img src="http://placehold.it/350x450"/>

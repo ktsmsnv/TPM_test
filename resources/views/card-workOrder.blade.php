@@ -10,7 +10,7 @@
             </div>
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-success">Сохранить</button>
+                    {{-- <button type="button" class="btn btn-success">Сохранить</button>--}}
                     <button type="button" class="btn btn-secondary me-5">Закрыть</button>
 
                     <button type="button" class="btn btn-success">Выгрузить PDF</button>

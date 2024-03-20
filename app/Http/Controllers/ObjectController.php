@@ -14,4 +14,16 @@ class ObjectController extends Controller
         $breadcrumbs = Breadcrumbs::generate('card-object');
         return view('card-object', compact('breadcrumbs'));
     }
+
+    // СОЗДАНИЕ карточки объекта
+    public function create() {
+        $breadcrumbs = Breadcrumbs::generate('card-object-create');
+        return view('card-object-create', compact('breadcrumbs'));
+    }
+
+    // РЕДАКТИРОВАНИЕ карточки объекта
+    public function edit() {
+        $breadcrumbs = Breadcrumbs::generate('/card-object/edit');
+        return view('card-object-edit', compact('breadcrumbs'));
+    }
 }

@@ -7,12 +7,12 @@
             <div class="reestrObject__btns d-flex justify-content-between mb-5">
                 <button type="button" class="btn btn-secondary" data-toggle="tooltip" title="показать последние данные">Обновить реестр</button>
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-success" data-toggle="tooltip" title="без даты вывода объекта из эксплуатации">Показать активные объекты</button>
-                    <button type="button" class="btn btn-primary">Создать карточку объекта</button>
-                    <button type="button" class="btn btn-primary btn-primary--2">Скопировать карточку объекта</button>
-                    <button type="button" class="btn btn-light">Сформировать график TPM</button>
-                    <button type="button" class="btn btn-light">Сформировать календарь TPM</button>
-                    <button type="button" class="btn btn-light">Сформировать заказ-наряд TPM</button>
+                    <a type="button" class="btn btn-success" data-toggle="tooltip" title="без даты вывода объекта из эксплуатации">Показать активные объекты</a>
+                    <a href="/home/card-object-create" target="_blank" type="button" class="btn btn-primary">Создать карточку объекта</a>
+                    <a type="button" class="btn btn-primary btn-primary--2">Скопировать карточку объекта</a>
+                    <a type="button" class="btn btn-light">Сформировать график TPM</a>
+                    <a type="button" class="btn btn-light">Сформировать календарь TPM</a>
+                    <a type="button" class="btn btn-light">Сформировать заказ-наряд TPM</a>
                 </div>
             </div>
             <select class="form-control d-none" id="locale">
@@ -72,20 +72,23 @@
                             <tbody>
                             <tr data-id="1">
                                 <td></td>
-                                <td>вид инф</td>
-                                <td>наим объект</td>
-                                <td>дата ввода</td>
-                                <td>дата вывода</td>
-                                <td>дата оконч</td>
-                                <td>инв зав номер</td>
-                                <td>место установ</td>
-                                <td>плановая дата</td>
-                                <td>факт дата</td>
-                                <td>вид ближ обслуж</td>
-                                <td>испол</td>
-                                <td>ответств</td>
-                                <td>заказ-наряд</td>
-                                <td>календарь трм</td>
+                                <td>из карточки объекта</td>
+                                <td class="tool-tip" title="открыть карточку объекта">
+                                    <a href="/home/card-object" >
+                                        Сварочное оборудование JASIC MIG 3500 TECH N222</a>
+                                </td>
+                                <td>из карточки объекта</td>
+                                <td>из карточки объекта</td>
+                                <td>из карточки объекта</td>
+                                <td>из карточки объекта</td>
+                                <td>из карточки объекта</td>
+                                <td  class="tool-tip" title="ближайшее обслуживание">выбор ближайшего обслуживания из вкладок карточки объекта</td>
+                                <td>из карточки объекта</td>
+                                <td>из карточки объекта</td>
+                                <td>из карточки объекта</td>
+                                <td>из карточки объекта</td>
+                                <td><a href="/card-work-order"  class="tool-tip" title="открыть карточку заказ-наярда">№ заказа</a></td>
+                                <td><a href=""  class="tool-tip" title="открыть карточку календаря">№ календаря</a></td>
                             </tr>
                             </tbody>
                         </table>
