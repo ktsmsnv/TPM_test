@@ -14,7 +14,9 @@
                     <button type="button" class="btn btn-secondary me-5">Закрыть</button>
 
                     <button type="button" class="btn btn-success">Выгрузить PDF</button>
-                    <button type="button" class="btn btn-primary">Открыть карточку объекта</button>
+                    <button type="button" class="btn btn-primary me-5">Открыть карточку объекта</button>
+
+                    <button type="button" class="btn btn-outline-danger">Редактировать</button>
                 </div>
             </div>
 
@@ -35,7 +37,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    <button class="btn btn-primary">Завершить заказ</button>
+                                    <button class="btn btn-primary" >Завершить заказ</button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">

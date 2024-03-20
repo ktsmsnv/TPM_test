@@ -14,12 +14,14 @@
                     <button type="button" class="btn btn-secondary me-5">Закрыть</button>
 
                     <button type="button" class="btn btn-primary">Скопировать карточку объекта</button>
-                    <button type="button" class="btn btn-primary">Загрузить изображение</button>
+                    <button type="button" class="btn btn-primary me-5" data-bs-toggle="modal" data-bs-target="#imageDownloadModal">Загрузить изображение</button>
+
+                    <button type="button" class="btn btn-outline-danger">Редактировать</button>
                 </div>
             </div>
 
             {{-- КАРТОЧКА С ВКЛАДКАМИ --}}
-            <ul class="nav nav-tabs custom_tab_style1" id="carObjectTab" role="tablist">
+            <ul class="nav nav-tabs custom_tab_style1" id="cardObjectTab" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="main-tab" data-bs-toggle="tab" data-bs-target="#main"
                             type="button" role="tab" aria-controls="main" aria-selected="true">ОСНОВНАЯ
@@ -31,7 +33,7 @@
                     </button>
                 </li>
             </ul>
-            <div class="tab-content" id="carObjectTabContent">
+            <div class="tab-content" id="cardObjectTabContent">
                 {{-- ВКЛАДКА "ОСНОВНАЯ" --}}
                 <div class="tab-pane fade show active" id="main" role="tabpanel" aria-labelledby="main-tab">
                     <div id="main__blocks" class="d-grid">
@@ -95,7 +97,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Документация</h4>
-                                    <button class="btn btn-primary">Вложить документ</button>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#docDownloadModal">Вложить документ</button>
                                 </div>
                                 <div class="objectDocs">
                                     <a href="">Акт входного контроля Сварочный аппарат полуавтомат.pdf</a>
@@ -107,7 +109,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Изображение объекта</h4>
-                                    <button class="btn btn-primary">Загрузить</button>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#imageDownloadModal">Загрузить</button>
                                 </div>
                                 <div class="objectImage">
                                     <img src="http://placehold.it/350x450"/>
@@ -189,7 +191,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Виды работ</h4>
-                                    <button class="btn btn-primary">Добавить вид работ</button>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#typesModal">Добавить вид работ</button>
                                 </div>
                                 <div class="typesOfWork">
                                     <!-- Используем класс row для создания строки -->
@@ -248,7 +250,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Изображение объекта</h4>
-                                    <button class="btn btn-primary">Загрузить</button>
+                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#imageDownloadModal">Загрузить</button>
                                 </div>
                                 <div class="objectImage">
                                     <img src="http://placehold.it/350x450"/>
@@ -258,12 +260,73 @@
                     </div>
                 </div>
             </div>
+        </div>
 
+        <!-- Загрузка изображения модальное окно -->
+        <div class="modal fade" id="imageDownloadModal" tabindex="-1" aria-labelledby="imageDownloadModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="imageDownloadModalLabel"><strong>Загрузка изображения объекта</strong></h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <span>Загрузите изображение:</span>
+                        <input class="form-control w-100 mt-2" type="file"  accept="image/*, .jpg, .jpeg, .png" title="Выберите изображение в формате .jpg, .jpeg, .png">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="button" class="btn btn-primary">Загрузить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Загрузка документа модальное окно -->
+        <div class="modal fade" id="docDownloadModal" tabindex="-1" aria-labelledby="docDownloadModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="docDownloadModalLabel"><strong>Загрузка документов объекта</strong></h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <span>Загрузите документ:</span>
+                        <input class="form-control w-100 mt-2 mb-3" type="file" multiple="multiple" title="Выберите файлы">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="button" class="btn btn-primary">Загрузить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Добавить виды работ модальное окно -->
+        <div class="modal fade" id="typesModal" tabindex="-1" aria-labelledby="typesModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="typesModalLabel"><strong>Добавление вида работ</strong></h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="d-flex align-items-center gap-1">
+                            <label class="w-50">Вид работы</label>
+                            <input name="" placeholder="Введите название вида работы" class="form-control w-100">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                        <button type="button" class="btn btn-primary">Добавить</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <script>
             $(document).ready(function () {
-                $("#carObjectTab").show;
+                $("#cardObjectTab").show;
 
                 // Получаем все блоки цветов
                 const colorOptions = document.querySelectorAll('.color-option');
@@ -279,6 +342,26 @@
                         document.getElementById('selectedColor').value = selectedColor;
                     });
                 });
+
+                // модалка документы
+                let documentModal = $("#docDownloadModal .modal-body");
+                $('input[type=file]').on('change', function() {
+                    documentModal.append('<div class="docList"><span><strong>Список вложенных файлов:</strong></span> <ul class="mt-1">'); // Открываем список
+                    for (let i = 0; i < this.files.length; i++) {
+                        let doc = this.files[i].name;
+                        documentModal.find('ul').append('<div class="d-flex gap-2 justify-content-between align-items-center mb-3">'
+                            +'<li>' + doc + '</li>' +
+                            '<button type="button" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Удалить вложенный файл из списка">' +
+                            '<i class="bi bi-trash3"></i></button></div>'); // Добавляем файл в список
+                    }
+                    documentModal.append('</ul></div>'); // Закрываем список
+                });
+                $('#docDownloadModal').on('hidden.bs.modal', function () {
+                    $(this).find('input[type=file]').val(''); // Сброс содержимого input
+                    let documentModalFiles = $(this).find(".docList");
+                    documentModalFiles.empty(); // Очистка содержимого модального окна
+                });
+
             });
         </script>
 @endsection
