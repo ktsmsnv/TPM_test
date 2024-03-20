@@ -114,6 +114,7 @@
         </div>
     </div>
 
+    {{-- настройка таблицы и модалка удаления --}}
     <script>
         $(document).ready(function () {
             let $table = $('#reestrObject');

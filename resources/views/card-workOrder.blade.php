@@ -28,6 +28,7 @@
                     </button>
                 </li>
             </ul>
+
             <div class="tab-content" id="carObjectTabContent">
                 {{-- ВКЛАДКА "ОСНОВНАЯ" --}}
                 <div class="tab-pane fade show active" id="main" role="tabpanel" aria-labelledby="main-tab">
@@ -186,21 +187,6 @@
         <script>
             $(document).ready(function () {
                 $("#carObjectTab").show;
-
-                // Получаем все блоки цветов
-                const colorOptions = document.querySelectorAll('.color-option');
-                // Добавляем обработчик события для каждого блока цвета
-                colorOptions.forEach(option => {
-                    option.addEventListener('click', () => {
-                        // Убираем рамку у всех блоков цветов
-                        colorOptions.forEach(opt => opt.classList.remove('selected'));
-                        // Добавляем рамку только выбранному блоку цвета
-                        option.classList.add('selected');
-                        // Получаем цвет выбранного блока и устанавливаем его в скрытом поле ввода
-                        const selectedColor = option.getAttribute('data-color');
-                        document.getElementById('selectedColor').value = selectedColor;
-                    });
-                });
             });
         </script>
 @endsection

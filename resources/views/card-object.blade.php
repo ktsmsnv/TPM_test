@@ -33,6 +33,7 @@
                     </button>
                 </li>
             </ul>
+
             <div class="tab-content" id="cardObjectTabContent">
                 {{-- ВКЛАДКА "ОСНОВНАЯ" --}}
                 <div class="tab-pane fade show active" id="main" role="tabpanel" aria-labelledby="main-tab">
@@ -324,8 +325,9 @@
             </div>
         </div>
 
+        {{-- выбор цвета  в календаре--}}
         <script>
-            $(document).ready(function () {
+            document.addEventListener('DOMContentLoaded', function () {
                 $("#cardObjectTab").show;
 
                 // Получаем все блоки цветов
@@ -343,6 +345,31 @@
                     });
                 });
 
+                // модалка документы
+                let documentModal = $("#docDownloadModal .modal-body");
+                $('input[type=file]').on('change', function() {
+                    documentModal.append('<div class="docList"><span><strong>Список вложенных файлов:</strong></span> <ul class="mt-1">'); // Открываем список
+                    for (let i = 0; i < this.files.length; i++) {
+                        let doc = this.files[i].name;
+                        documentModal.find('ul').append('<div class="d-flex gap-2 justify-content-between align-items-center mb-3">'
+                            +'<li>' + doc + '</li>' +
+                            '<button type="button" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Удалить вложенный файл из списка">' +
+                            '<i class="bi bi-trash3"></i></button></div>'); // Добавляем файл в список
+                    }
+                    documentModal.append('</ul></div>'); // Закрываем список
+                });
+                $('#docDownloadModal').on('hidden.bs.modal', function () {
+                    $(this).find('input[type=file]').val(''); // Сброс содержимого input
+                    let documentModalFiles = $(this).find(".docList");
+                    documentModalFiles.empty(); // Очистка содержимого модального окна
+                });
+
+            });
+        </script>
+
+        {{-- вывод вложенных документов --}}
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
                 // модалка документы
                 let documentModal = $("#docDownloadModal .modal-body");
                 $('input[type=file]').on('change', function() {

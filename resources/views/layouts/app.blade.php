@@ -138,10 +138,11 @@
             @endforeach
         </ul>
 
-
         @yield('content')
     </main>
 </div>
+
+{{-- всплывающие подсказки --}}
 <script>
     // после загрузки страницы
     document.addEventListener('DOMContentLoaded', function () {
@@ -153,6 +154,7 @@
         });
     });
 </script>
+{{-- активный header  --}}
 <script>
     // Получаем текущий путь страницы
     const currentPath = window.location.pathname;
@@ -167,5 +169,6 @@
         }
     });
 </script>
+
 </body>
 </html>
