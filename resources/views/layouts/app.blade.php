@@ -67,7 +67,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="nav-link text-white">
+                            <a href="/pageReestrCalendar" class="nav-link text-white">
                                 <i class="bi bi-calendar-event me-1"></i>
                                 Реестр календарей
                                 <span class="hover-bar"></span>

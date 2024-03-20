@@ -23,11 +23,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pageReestrGraph', 'App\Http\Controllers\pageReestrGraphController@index')->name('pageReestrGraph');
     Route::get('/get-reestrGraph-details/{id}', 'App\Http\Controllers\pageReestrGraphController@getReestrGraphDetails')->name('get-reestrGraph-details');
 
+        //Реестр календарей
+    Route::get('/pageReestrCalendar', 'App\Http\Controllers\pageReestrCalendarController@index')->name('pageReestrCalendar');
+
+
     // КАРТОЧКИ
         //Карточка Объекта
     Route::get('/card-object', [App\Http\Controllers\ObjectController::class, 'index'])->name('cardObject');
 
         //Карточка Графика
     Route::get('/card-graph', [App\Http\Controllers\GraphController::class, 'index'])->name('cardGraph');
+
+        //Карточка Календаря
+    Route::get('/card-calendar', [App\Http\Controllers\CalendarController::class, 'index'])->name('cardCalendar');
 });
 
