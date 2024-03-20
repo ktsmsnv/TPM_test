@@ -13,13 +13,13 @@
                     <button type="button" class="btn btn-success">Сохранить</button>
                     <button type="button" class="btn btn-secondary me-5">Закрыть</button>
 
-                    <button type="button" class="btn btn-primary">Скопировать карточку объекта</button>
-                    <button type="button" class="btn btn-primary">Загрузить изображение</button>
+                    <button type="button" class="btn btn-success">Выгрузить PDF</button>
+                    <button type="button" class="btn btn-success">Открыть карточку объекта</button>
                 </div>
             </div>
 
             {{-- КАРТОЧКА С ВКЛАДКАМИ --}}
-            <ul class="nav nav-tabs custom_tab_style1" id="cardObjectTab" role="tablist">
+            <ul class="nav nav-tabs custom_tab_style1" id="cardCalendarTab" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="main-tab" data-bs-toggle="tab" data-bs-target="#main"
                             type="button" role="tab" aria-controls="main" aria-selected="true">ОСНОВНАЯ
@@ -27,11 +27,11 @@
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="service_1-tab" data-bs-toggle="tab" data-bs-target="#service_1"
-                            type="button" role="tab" aria-controls="service_1" aria-selected="false">ОБСЛУЖИВАНИЕ 1
+                            type="button" role="tab" aria-controls="service_1" aria-selected="false">КАЛЕНДАРЬ
                     </button>
                 </li>
             </ul>
-            <div class="tab-content" id="cardObjectTabContent">
+            <div class="tab-content" id="cardCalendarTabContent">
                 {{-- ВКЛАДКА "ОСНОВНАЯ" --}}
                 <div class="tab-pane fade show active" id="main" role="tabpanel" aria-labelledby="main-tab">
                     <div id="main__blocks" class="d-grid">
@@ -40,7 +40,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    <button class="btn btn-primary">Создать обслуживание</button>
+                                    <button class="btn btn-primary">Заархивировать</button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
@@ -64,41 +64,136 @@
                                             <input class="form-control  w-100" name=""
                                                    placeholder="Введите место установки">
                                         </div>
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Куратор</label>
+                                            <input class="form-control  w-100" name=""
+                                                   placeholder="Введите куратора">
+                                        </div>
                                     </div>
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
-                                            <label class="w-100">Дата прихода</label>
+                                            <label class="w-100">Год действия</label>
                                             <input class="form-control w-100" name=""
-                                                   placeholder="Введите дату прихода">
+                                                   placeholder="Введите год действия">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
-                                            <label class="w-100">Дата ввода в эксплуатацию</label>
+                                            <label class="w-100">Дата создания</label>
                                             <input class="form-control w-100" name=""
-                                                   placeholder="Введите дату ввода в эксплуатацию">
+                                                   placeholder="Введите дату создания">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
-                                            <label class="w-100">Дата окончания аттестации/гарантии</label>
+                                            <label class="w-100">Дата последнего сохранения</label>
                                             <input class="form-control w-100" name=""
-                                                   placeholder="Введите дату окончания аттестации/гарантии">
+                                                   placeholder="Введите дату последнего сохранения">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
-                                            <label class="w-100">Дата вывода из эксплуатации</label>
+                                            <label class="w-100">Дата архивации</label>
                                             <input class="form-control  w-100" name=""
-                                                   placeholder="Введите дату вывода из эксплуатации">
+                                                   placeholder="Введите дату архивации">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        {{-- ДОКУМЕНТАЦИЯ --}}
+                        {{-- ОБСЛУЖИВАНИЕ ТРМ --}}
                         <div class="member_card_style documentation">
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
-                                    <h4>Документация</h4>
-                                    <button class="btn btn-primary">Вложить документ</button>
+                                    <h4>Обсулживание ТРМ</h4>
                                 </div>
-                                <div class="objectDocs">
-                                    <a href="">Акт входного контроля Сварочный аппарат полуавтомат.pdf</a>
+                                <div class="member-info--inputs d-flex gap-5">
+                                    {{--ВИД ОБСЛУЖИВАНИЯ 1-N--}}
+                                    <div class="d-flex flex-column gap-3 w-50">
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Вид обслуживания 1</label>
+                                            <input name="" placeholder="Введите вид обслуживания 1"
+                                                   class="form-control w-100">
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Вид обслуживания 2</label>
+                                            <input class="form-control w-100" name=""
+                                                   placeholder="Введите вид обслуживания 2">
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Вид обслуживания 3</label>
+                                            <input class="form-control w-100" name=""
+                                                   placeholder="Введите вид обслуживания 3">
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Вид обслуживания N</label>
+                                            <input class="form-control  w-100" name=""
+                                                   placeholder="Введите вид обслуживания N">
+                                        </div>
+                                    </div>
+                                    {{--ПЕРИОДИЧНОСТЬ--}}
+                                    <div class="d-flex flex-column gap-3 w-50">
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Периодичность</label>
+                                            <input class="form-control w-100" name=""
+                                                   placeholder="Введите периодичность">
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Периодичность</label>
+                                            <input class="form-control w-100" name=""
+                                                   placeholder="Введите периодичность">
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Периодичность</label>
+                                            <input class="form-control w-100" name=""
+                                                   placeholder="Введите периодичность">
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Периодичность</label>
+                                            <input class="form-control  w-100" name=""
+                                                   placeholder="Введите периодичность">
+                                        </div>
+                                    </div>
+                                    {{--ИСПОЛНИТЕЛЬ--}}
+                                    <div class="d-flex flex-column gap-3 w-50">
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Исполнитель</label>
+                                            <input class="form-control w-100" name=""
+                                                   placeholder="Введите исполнителя">
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Исполнитель</label>
+                                            <input class="form-control w-100" name=""
+                                                   placeholder="Введите исполнителя">
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Исполнитель</label>
+                                            <input class="form-control w-100" name=""
+                                                   placeholder="Введите исполнителя">
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Исполнитель</label>
+                                            <input class="form-control  w-100" name=""
+                                                   placeholder="Введите исполнителя">
+                                        </div>
+                                    </div>
+                                    {{--ОТВЕТСТВЕННЫЙ--}}
+                                    <div class="d-flex flex-column gap-3 w-50">
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Ответственный</label>
+                                            <input class="form-control w-100" name=""
+                                                   placeholder="Введите ответственного">
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Ответственный</label>
+                                            <input class="form-control w-100" name=""
+                                                   placeholder="Введите ответственного">
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Ответственный</label>
+                                            <input class="form-control w-100" name=""
+                                                   placeholder="Введите ответственного">
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Ответственный</label>
+                                            <input class="form-control  w-100" name=""
+                                                   placeholder="Введите ответственного">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -107,7 +202,6 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Изображение объекта</h4>
-                                    <button class="btn btn-primary">Загрузить</button>
                                 </div>
                                 <div class="objectImage">
                                     <img src="http://placehold.it/350x450"/>
@@ -116,130 +210,17 @@
                         </div>
                     </div>
                 </div>
-                {{-- ВКЛАДКА "ОБСЛУЖИВАНИЕ" --}}
+                {{-- ВКЛАДКА "КАЛЕНДАРЬ" --}}
                 <div class="tab-pane fade" id="service_1" role="tabpanel" aria-labelledby="service_1-tab">
                     <div id="service__blocks" class="d-grid">
-                        {{-- ОБСЛУЖИВАНИЕ ТРМ --}}
+                        {{-- КАЛЕНДАРЬ ТРМ --}}
                         <div class="member_card_style services">
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
-                                    <h4>Обслуживание ТРМ</h4>
-                                    <button class="btn btn-primary">Обновить даты</button>
-                                    <div>
-                                        <input type="checkbox" class="form-check-input me-1" id="disableInTable">
-                                        <label class="form-check-label disableInTable" for="disableInTable">Не выводить
-                                            на основной
-                                            экран, в график TPM и не отправлять уведомления</label>
-                                    </div>
+                                    <h4>Календарь ТРМ</h4>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
-                                    <div class="d-flex flex-column gap-3 w-50">
-                                        <div class="d-flex justify-content-between align-items-center gap-3">
-                                            <label class="w-100">Вид обслуживания</label>
-                                            <input name="" placeholder="Введите вид обслуживания"
-                                                   class="form-control w-100">
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center gap-3">
-                                            <label class="w-100">Сокращенное название</label>
-                                            <input name="" placeholder="Введите сокращенное название"
-                                                   class="form-control w-100">
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center gap-3">
-                                            <label class="w-100">Исполнитель</label>
-                                            <input class="form-control w-100" name=""
-                                                   placeholder="Введите исполнителя">
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center gap-3">
-                                            <label class="w-100">Ответственный</label>
-                                            <input class="form-control  w-100" name=""
-                                                   placeholder="Введите ответственного">
-                                        </div>
-                                    </div>
-                                    <div class="d-flex flex-column gap-3 w-50">
-                                        <div class="d-flex justify-content-between align-items-center gap-3">
-                                            <label class="w-100">Периодичность</label>
-                                            <input class="form-control w-100" name=""
-                                                   placeholder="Введите периодичность">
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center gap-3">
-                                            <label class="w-100">Дата предыдущего обслуживания</label>
-                                            <input class="form-control w-100" name=""
-                                                   placeholder="Введите дату предыдущего обслуживания">
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center gap-3">
-                                            <label class="w-100">Плановая дата обслуживания</label>
-                                            <input class="form-control w-100" name=""
-                                                   placeholder="Введите плановую дату обслуживания">
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center gap-3">
-                                            <label class="w-100">Цвет в календаре</label>
-                                            <div class="color-options">
-                                                <div class="color-option red" data-color="#ff0000"></div>
-                                                <div class="color-option green" data-color="#00ff00"></div>
-                                                <div class="color-option blue" data-color="#0000ff"></div>
-                                            </div>
-                                            <input type="hidden" id="selectedColor" name="selectedColor">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {{-- ВИДЫ РАБОТ --}}
-                        <div class="member_card_style types">
-                            <div class="member-info">
-                                <div class="d-flex justify-content-between mb-4">
-                                    <h4>Виды работ</h4>
-                                    <button class="btn btn-primary">Добавить вид работ</button>
-                                </div>
-                                <div class="typesOfWork">
-                                    <!-- Используем класс row для создания строки -->
-                                    <div class="grid-container">
-                                        <!-- Используем класс col-md-6 для создания двух столбцов на широких экранах -->
-                                        <div class="grid-item">
-                                            <div class="form-check d-flex align-items-center gap-2">
-                                                <input class="form-check-input" type="checkbox" value=" " id=" ">
-                                                <label class="form-check-label form-control" for=" ">
-                                                    работа 1
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="grid-item">
-                                            <div class="form-check d-flex align-items-center gap-2">
-                                                <input class="form-check-input" type="checkbox" value=" " id=" ">
-                                                <label class="form-check-label form-control" for=" ">
-                                                    работа 2
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="grid-item">
-                                            <div class="form-check d-flex align-items-center gap-2">
-                                                <input class="form-check-input" type="checkbox" value=" " id=" ">
-                                                <label class="form-check-label form-control" for=" ">
-                                                    работа 3
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="grid-item">
-                                            <div class="form-check d-flex align-items-center gap-2">
-                                                <input class="form-check-input" type="checkbox" value=" " id=" ">
-                                                <label class="form-check-label form-control" for=" ">
-                                                    работа 4
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {{-- РАСХОДНЫЕ МАТЕРИАЛЫ --}}
-                        <div class="member_card_style materials">
-                            <div class="member-info">
-                                <div class="d-flex justify-content-between mb-4">
-                                    <h4>Расходные материалы и ЗИП</h4>
-                                </div>
-                                <div class="material_text w-100">
-                                    <!-- Добавляем textarea с атрибутом placeholder -->
-                                    <textarea class="form-control" placeholder="Введите расходные материалы и ЗИП"></textarea>
+                                    {{-- КАЛЕНДАРЬ --}}
                                 </div>
                             </div>
                         </div>
@@ -248,7 +229,6 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Изображение объекта</h4>
-                                    <button class="btn btn-primary">Загрузить</button>
                                 </div>
                                 <div class="objectImage">
                                     <img src="http://placehold.it/350x450"/>
@@ -263,7 +243,7 @@
 
         <script>
             $(document).ready(function () {
-                $("#cardObjectTab").show;
+                $("#cardCalendarTab").show;
 
                 // Получаем все блоки цветов
                 const colorOptions = document.querySelectorAll('.color-option');

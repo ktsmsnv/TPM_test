@@ -13,36 +13,13 @@ use MongoDB\Laravel\Eloquent\Model;
 
 class pageReestrCalendar extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    protected $table = 'reestCalendar';
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+//Таблица reestrCalendar: 1. Вид инфраструктуры, 2. Наименование объекта, 3. Инв./заводской номер, 4. Место установки,
+// 5. Виды обслуживания, 6. Год действия календаря, 7. Дата создания, 8. Дата последнего сохранения, 9. Дата архивации,
+// 10. Куратор.
+    protected $fillable = ['typeInfrastructCalend', 'nameObjectCalend', 'invFactNum', 'instPlace',
+        'typeServ', 'calendarYear', 'dateCreationCalend', 'dateLastSaveCalend', 'dateArchivCalend', 'curatorCalend'];
 }
