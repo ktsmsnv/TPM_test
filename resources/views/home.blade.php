@@ -5,9 +5,9 @@
     <div class="container">
         <div class="reestrObject">
             <div class="reestrObject__btns d-flex justify-content-between mb-5">
-                <button type="button" class="btn btn-secondary">Обновить реестр</button>
+                <button type="button" class="btn btn-secondary" data-toggle="tooltip" title="показать последние данные">Обновить реестр</button>
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-success">Показать активные объекты</button>
+                    <button type="button" class="btn btn-success" data-toggle="tooltip" title="без даты вывода объекта из эксплуатации">Показать активные объекты</button>
                     <button type="button" class="btn btn-primary">Создать карточку объекта</button>
                     <button type="button" class="btn btn-primary btn-primary--2">Скопировать карточку объекта</button>
                     <button type="button" class="btn btn-light">Сформировать график TPM</button>
@@ -95,11 +95,33 @@
         </div>
     </div>
 
+    <!-- Модальное окно подтверждения удаления -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteKPLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Подтверждение удаления</h5>
+                    <button type="button" class="btn-close" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Вы уверены, что хотите удалить выбранные элементы?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteButton">Удалить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- настройка таблицы и модалка удаления --}}
     <script>
         $(document).ready(function () {
             let $table = $('#reestrObject');
             var $remove = $('#remove');
             var selections = [];
+            let $confirmDelete = $('#confirmDeleteModal'); // Ссылка на модальное окно
+            let $confirmDeleteButton = $('#confirmDeleteButton'); // Кнопка "Удалить" в модальном окне
 
             function getIdSelections() {
                 return $.map($table.bootstrapTable('getSelections'), function (row) {
@@ -150,6 +172,17 @@
                         values: ids
                     });
                     $remove.prop('disabled', true);
+                    showConfirmDeleteModal();
+                });
+
+                // Функция для отображения модального окна удаления
+                function showConfirmDeleteModal() {
+                    $confirmDelete.modal('show');
+                }
+                // Обработчик события нажатия на кнопку "Удалить" в модальном окне
+                $confirmDeleteButton.click(function () {
+                    // добавить логику для удаления элементов
+                    $confirmDelete.modal('hide');
                 });
             }
 

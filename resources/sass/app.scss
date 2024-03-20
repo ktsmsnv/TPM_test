@@ -35,8 +35,34 @@ body {
     padding: 0;
 }
 main {
-    padding: 70px 0 20px;
+    padding: 50px 0 20px;
 }
+/* Стили для хлебных крошек */
+.breadcrumbs {
+    list-style: none;
+    padding-bottom: 30px;
+    font-size: 17px;
+    font-family: sans-serif;
+
+    li {
+        display: inline;
+    }
+
+    li:not(:last-child):after {
+        content: ' > ';
+        margin: 0 5px;
+    }
+
+    a {
+        text-decoration: none;
+        color: #333; /* Цвет ссылок */
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+}
+
 
 // ----------------- LOGIN ----------------
 .login__page {
@@ -64,6 +90,11 @@ main {
         position: relative;
         display: inline-block;
         font-size: 1rem;
+    }
+
+    /* Добавляем стили для активной вкладки */
+    .nav-link.active .hover-bar {
+        width: 100%;
     }
 
     .hover-bar {

@@ -28,13 +28,13 @@ Route::middleware(['auth'])->group(function () {
 
 
     // КАРТОЧКИ
-        //Карточка Объекта
-    Route::get('/card-object', [App\Http\Controllers\ObjectController::class, 'index'])->name('cardObject');
+    Route::get('/home/card-object', [App\Http\Controllers\ObjectController::class, 'index'])->name('cardObject');
+    Route::get('/reestr-work-orders/card-work-order', [App\Http\Controllers\workOrderController::class, 'index'])->name('workOrder');
 
-        //Карточка Графика
+    //Карточка Графика
     Route::get('/card-graph', [App\Http\Controllers\GraphController::class, 'index'])->name('cardGraph');
 
-        //Карточка Календаря
+    //Карточка Календаря
     Route::get('/card-calendar', [App\Http\Controllers\CalendarController::class, 'index'])->name('cardCalendar');
 });
 

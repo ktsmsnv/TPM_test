@@ -126,9 +126,23 @@
     </header>
 
     <main>
+        <ul class="breadcrumbs container">
+            @foreach ($breadcrumbs as $crumb)
+                <li>
+                    @if ($loop->last)
+                        <span style="color: grey;">{{ $crumb->title }}</span>
+                    @else
+                        <a href="{{ $crumb->url }}">{{ $crumb->title }}</a>
+                    @endif
+                </li>
+            @endforeach
+        </ul>
+
         @yield('content')
     </main>
 </div>
+
+{{-- всплывающие подсказки --}}
 <script>
     // после загрузки страницы
     document.addEventListener('DOMContentLoaded', function () {
@@ -140,5 +154,21 @@
         });
     });
 </script>
+{{-- активный header  --}}
+<script>
+    // Получаем текущий путь страницы
+    const currentPath = window.location.pathname;
+
+    // Получаем все ссылки в навигации
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    // Проходим по каждой ссылке и добавляем класс active, если её href совпадает с текущим путём
+    navLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
+</script>
+
 </body>
 </html>

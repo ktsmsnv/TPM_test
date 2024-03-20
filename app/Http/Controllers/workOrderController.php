@@ -6,12 +6,12 @@ use Illuminate\Http\Request;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 
 //контроллер для отображения данных на страницы
-class ObjectController extends Controller
+class workOrderController extends Controller
 {
 
     public function index()
     {
-        $breadcrumbs = Breadcrumbs::generate('card-object');
-        return view('card-object', compact('breadcrumbs'));
+        $breadcrumbs = Breadcrumbs::generate('card-work-order');
+        return view(' card-workOrder', compact('breadcrumbs'));
     }
 }

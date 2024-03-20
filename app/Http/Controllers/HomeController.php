@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 
-//контроллер для отображения данных на страницы
 class HomeController extends Controller
 {
     public function __construct()
@@ -12,13 +12,21 @@ class HomeController extends Controller
         $this->middleware('auth');
     }
 
-
     public function index()
     {
-        return view('home');
+        // Генерация хлебных крошек
+        $breadcrumbs = Breadcrumbs::generate('home');
+
+        // Возвращение представления с передачей хлебных крошек
+        return view('home', compact('breadcrumbs'));
     }
+
     public function reestrWorkOrdersView()
     {
-        return view('reestr-work-orders');
+        // Генерация хлебных крошек
+        $breadcrumbs = Breadcrumbs::generate('reestr-work-orders');
+
+        // Возвращение представления с передачей хлебных крошек
+        return view('reestr-work-orders', compact('breadcrumbs'));
     }
 }
