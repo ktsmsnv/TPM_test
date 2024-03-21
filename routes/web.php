@@ -18,6 +18,7 @@ Route::middleware(['auth'])->group(function () {
     // РЕЕСТРЫ
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/reestr-work-orders', [App\Http\Controllers\HomeController::class, 'reestrWorkOrdersView'])->name('reestr-workOrders');
+
     //Реестр графиков
     Route::get('/pageReestrGraph', 'App\Http\Controllers\pageReestrGraphController@index')->name('pageReestrGraph');
     Route::get('/pageReestrGraph', [App\Http\Controllers\pageReestrGraphController::class, 'reestrGraphView'])->name('reestr-Graph');
@@ -27,12 +28,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pageReestrCalendar', 'App\Http\Controllers\pageReestrCalendarController@index')->name('pageReestrCalendar');
     Route::get('/pageReestrCalendar', [App\Http\Controllers\pageReestrCalendarController::class, 'reestrCalendarView'])->name('reestr-Calendar');
 
+
+
     // КАРТОЧКА ОБЪЕКТА
     Route::get('/home/card-object', [App\Http\Controllers\ObjectController::class, 'index'])->name('cardObject');
     Route::get('/home/card-object-create', [App\Http\Controllers\ObjectController::class, 'create'])->name('cardObject-create');
     Route::get('/home/card-object/edit', [App\Http\Controllers\ObjectController::class, 'edit'])->name('cardObject-edit');
 
     Route::get('/reestr-work-orders/card-work-order', [App\Http\Controllers\workOrderController::class, 'index'])->name('workOrder');
+
+
 
     //Карточка Графика
     Route::get('/pageReestrGraph/card-graph', [App\Http\Controllers\GraphController::class, 'index'])->name('cardGraph');
