@@ -15,19 +15,13 @@ class pageReestrCalendarController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
-    {
-        $pageReestrCalendar = pageReestrCalendar::all();
-
-        return view('reestrCalendar', compact('pageReestrCalendar'));
-    }
-
     public function reestrCalendarView()
     {
         // Генерация хлебных крошек
         $breadcrumbs = Breadcrumbs::generate('pageReestrCalendar');
+        $pageReestrCalendar = pageReestrCalendar::all();
 
         // Возвращение представления с передачей хлебных крошек
-        return view('reestrCalendar', compact('breadcrumbs'));
+        return view('reestrCalendar', compact('breadcrumbs', 'pageReestrCalendar'));
     }
 }

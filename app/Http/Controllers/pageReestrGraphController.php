@@ -15,20 +15,14 @@ class pageReestrGraphController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
-    {
-        $pageReestrGraph = pageReestrGraph::all();
-
-        return view('reestrGraph', compact('pageReestrGraph'));
-    }
-
     public function reestrGraphView()
     {
         // Генерация хлебных крошек
         $breadcrumbs = Breadcrumbs::generate('pageReestrGraph');
+        $pageReestrGraph = pageReestrGraph::all();
 
         // Возвращение представления с передачей хлебных крошек
-        return view('reestrGraph', compact('breadcrumbs'));
+        return view('reestrGraph', compact('breadcrumbs', 'pageReestrGraph'));
     }
 
     public function getContractStorage($id)
