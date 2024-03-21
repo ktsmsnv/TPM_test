@@ -153,6 +153,30 @@
             });
         });
     });
+
+    $(function() {
+        ToolTipStyling = function() {
+            $('.tool-tip,[data-toggle="tooltip"]').tooltip({
+                container: 'body',
+                animation: true,
+                delay: {
+                    show: 100,
+                    hide: 100
+                }
+            });
+        };
+        ToolTipStyling();
+        $('table').on('post-body.bs.table', function() {
+            ToolTipStyling();
+        });
+        tooltipTitleSetter = function(that) {
+            return $(that).val() === "" ? ' ' : $(that).val();
+        };
+    });
+    $('textarea.tool-tip').hover(function() {
+        $(this).attr("title", tooltipTitleSetter(this))
+            .tooltip('fixTitle');
+    });
 </script>
 {{-- активный header  --}}
 <script>

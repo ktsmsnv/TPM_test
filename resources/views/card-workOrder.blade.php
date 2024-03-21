@@ -10,13 +10,13 @@
             </div>
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-success">Сохранить</button>
+                    {{-- <button type="button" class="btn btn-success">Сохранить</button>--}}
                     <button type="button" class="btn btn-secondary me-5">Закрыть</button>
 
                     <button type="button" class="btn btn-success">Выгрузить PDF</button>
-                    <button type="button" class="btn btn-primary me-5">Открыть карточку объекта</button>
+                    <a href="/home/card-object" target="_blank" type="button" class="btn btn-primary me-5">Открыть карточку объекта</a>
 
-                    <button type="button" class="btn btn-outline-danger">Редактировать</button>
+                    {{-- <button type="button" class="btn btn-outline-danger">Редактировать</button>--}}
                 </div>
             </div>
 
@@ -44,66 +44,54 @@
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид инфраструктуры</label>
-                                            <input name="" placeholder="Введите вид инфраструктуры"
-                                                   class="form-control w-100">
+                                            <input name="" class="form-control w-100" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Наименование объекта</label>
-                                            <input name="" placeholder="Введите наименование объекта"
-                                                   class="form-control w-100">
+                                            <input name="" class="form-control w-100" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Инв./заводской №</label>
-                                            <input class="form-control w-100" name=""
-                                                   placeholder="Введите инв./заводской №">
+                                            <input class="form-control w-100" name="" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Место установки</label>
-                                            <input class="form-control  w-100" name=""
-                                                   placeholder="Введите место установки">
+                                            <input class="form-control  w-100" name="" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид обслуживания</label>
-                                            <input class="form-control  w-100" name=""
-                                                   placeholder="Введите вид обслуживания">
+                                            <input class="form-control  w-100" name="" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Плановая дата обслуживания</label>
-                                            <input class="form-control w-100" name=""
-                                                   placeholder="Введите плановую дата обслуживания">
+                                            <input class="form-control w-100" name="" readonly>
                                         </div>
                                     </div>
 
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата создания</label>
-                                            <input class="form-control w-100" name=""
-                                                   placeholder="Введите дату создания">
+                                            <input class="form-control w-100" name="" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата последнего сохранения</label>
-                                            <input class="form-control w-100" name=""
-                                                   placeholder="Введите дату последнего сохранения">
+                                            <input class="form-control w-100" name="" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Фактическая дата</label>
-                                            <input class="form-control  w-100" name=""
-                                                   placeholder="Введите фактическую дату">
+                                            <input class="form-control  w-100" name="" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Исполнитель</label>
-                                            <input class="form-control  w-100" name=""
-                                                   placeholder="Введите исполнителя">
+                                            <input class="form-control  w-100" name="" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Ответственный</label>
-                                            <input class="form-control  w-100" name=""
-                                                   placeholder="Введите ответственного">
+                                            <input class="form-control  w-100" name="" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Статус</label>
-                                            <input class="form-control  w-100" name=""
-                                                   placeholder="Введите статус">
+                                            <input class="form-control  w-100" name="" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -121,7 +109,6 @@
                                         <!-- Используем класс col-md-6 для создания двух столбцов на широких экранах -->
                                         <div class="grid-item">
                                             <div class="form-check d-flex align-items-center gap-2">
-                                                <input class="form-check-input" type="checkbox" value=" " id=" ">
                                                 <label class="form-check-label form-control" for=" ">
                                                     работа 1
                                                 </label>
@@ -129,7 +116,6 @@
                                         </div>
                                         <div class="grid-item">
                                             <div class="form-check d-flex align-items-center gap-2">
-                                                <input class="form-check-input" type="checkbox" value=" " id=" ">
                                                 <label class="form-check-label form-control" for=" ">
                                                     работа 2
                                                 </label>
@@ -137,7 +123,6 @@
                                         </div>
                                         <div class="grid-item">
                                             <div class="form-check d-flex align-items-center gap-2">
-                                                <input class="form-check-input" type="checkbox" value=" " id=" ">
                                                 <label class="form-check-label form-control" for=" ">
                                                     работа 3
                                                 </label>
@@ -145,7 +130,6 @@
                                         </div>
                                         <div class="grid-item">
                                             <div class="form-check d-flex align-items-center gap-2">
-                                                <input class="form-check-input" type="checkbox" value=" " id=" ">
                                                 <label class="form-check-label form-control" for=" ">
                                                     работа 4
                                                 </label>
@@ -163,7 +147,7 @@
                                 </div>
                                 <div class="material_text w-100">
                                     <!-- Добавляем textarea с атрибутом placeholder -->
-                                    <textarea class="form-control" placeholder="Введите расходные материалы и ЗИП"></textarea>
+                                    <textarea class="form-control" readonly></textarea>
                                 </div>
                             </div>
                         </div>
