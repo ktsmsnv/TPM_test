@@ -66,7 +66,10 @@
                             <tr data-id="1">
                                 <td></td>
                                 <td>из карточки календаря</td>
-                                <td>Сварочное оборудование JASIC MIG 3500 TECH N222</td>
+                                <td class="tool-tip" title="открыть карточку календаря">
+                                    <a href="/pageReestrCalendar/card-calendar" >
+                                    Сварочное оборудование JASIC MIG 3500 TECH N222</a>
+                                </td>
                                 <td>из карточки объекта</td>
                                 <td>из карточки календаря</td>
                                 <td>из карточки календаря</td>
