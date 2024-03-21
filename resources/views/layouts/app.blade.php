@@ -60,14 +60,14 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="nav-link text-white">
+                            <a href="/pageReestrGraph" class="nav-link text-white">
                                 <i class="bi bi-bar-chart me-1"></i>
                                 Реестр графиков
                                 <span class="hover-bar"></span>
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="nav-link text-white">
+                            <a href="/pageReestrCalendar" class="nav-link text-white">
                                 <i class="bi bi-calendar-event me-1"></i>
                                 Реестр календарей
                                 <span class="hover-bar"></span>

@@ -49,8 +49,8 @@
                             <thead>
                             <tr>
                                 <th></th>
-                                <th colspan="6">Объекты инфраструктуры</th>
-                                <th colspan="8">Обслуживание TPM</th>
+                                <th colspan="6"></th>
+                                <th colspan="8"></th>
                             </tr>
                             <tr>
                                 <th>Вид инфраструктуры</th>
@@ -158,8 +158,8 @@
                             align: 'center',
                             valign: 'middle'
                         },
-                        { field: 'type', title: 'Вид инфраструктуры', align: 'center' },
-                        { field: 'name', title: 'Наименование объекта', align: 'center' },
+                        { field: 'obj', title: 'Объекты инфраструктуры', align: 'center' },
+                        { field: 'serv', title: 'Обслуживание TPM', align: 'center' },
                     ]
                 });
 
