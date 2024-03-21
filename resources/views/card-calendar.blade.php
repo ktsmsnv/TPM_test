@@ -6,7 +6,7 @@
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
-                <h2 class="mb-4"><strong>Карточка объекта</strong></h2>
+                <h2 class="mb-4"><strong>Карточка календаря</strong></h2>
             </div>
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
