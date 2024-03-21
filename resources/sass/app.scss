@@ -116,6 +116,66 @@ main {
     }
 }
 
+// ----------------- PROFILE ----------------
+.profile {
+    .card{
+        border:none;
+        position:relative;
+        overflow:hidden;
+        border-radius:8px;
+        cursor:pointer;
+        &:before{
+            content:"";
+            position:absolute;
+            left:0;
+            top:0;
+            width:4px;
+            height:100%;
+            background-color: #bed7e7;
+            transform:scaleY(1);
+            transition:all 0.5s;
+            transform-origin: bottom
+        }
+        &:after{
+            content:"";
+            position:absolute;
+            left:0;
+            top:0;
+            width:4px;
+            height:100%;
+            background-color: #242baa;
+            transform:scaleY(0);
+            transition:all 0.5s;
+            transform-origin: bottom
+        }
+        &:hover::after{
+            transform:scaleY(1);
+        }
+    }
+    .fonts{
+        font-size:16px;
+    }
+    .buttons {
+        button:nth-child(1) {
+            border: 1px solid #242baa !important;
+            color: #242baa;
+            height: 40px;
+            &:hover {
+                border: 1px solid #242baa !important;
+                color: #fff;
+                height: 40px;
+                background-color: #242baa;
+            }
+        }
+        button:nth-child(2){
+            border:1px solid #242baa !important;
+            background-color:#242baa;
+            color:#fff;
+            height:40px;
+        }
+    }
+}
+
 //----------------- BUTTONS ---------------
 .btn {
     font-size: 16px;

@@ -21,6 +21,15 @@ class HomeController extends Controller
         return view('home', compact('breadcrumbs'));
     }
 
+    public function profile()
+    {
+        // Генерация хлебных крошек
+        $breadcrumbs = Breadcrumbs::generate('profile');
+
+        // Возвращение представления с передачей хлебных крошек
+        return view('profile', compact('breadcrumbs'));
+    }
+
     public function reestrWorkOrdersView()
     {
         // Генерация хлебных крошек

@@ -10,10 +10,15 @@ Route::middleware(['guest'])->group(function () {
     Route::get('/', function () {
         return view('auth.login');
     });
+    Route::get('/register', function () {
+        return view('auth.register');
+    })->name('register');
 });
 
 // Все маршруты доступны только аутентифицированным пользователям
 Route::middleware(['auth'])->group(function () {
+    //ЛИЧНЫЙ КАБИНЕТ
+    Route::get('/home/profile', [App\Http\Controllers\HomeController::class, 'profile'])->name('profile');
 
     // РЕЕСТРЫ
     //Реестр объектов
