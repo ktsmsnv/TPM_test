@@ -196,7 +196,7 @@
             });
 
 
-
+            //
             // var $table = $('#reestrCalendarTable');
             // initTable($table);
             // // инициализация таблицы и ее настроек
