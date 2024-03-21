@@ -191,51 +191,11 @@
         </div>
     </div>
 
-    {{-- выбор цвета  в календаре--}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            $("#cardObjectTab").show;
-
-            // Получаем все блоки цветов
-            const colorOptions = document.querySelectorAll('.color-option');
-            // Добавляем обработчик события для каждого блока цвета
-            colorOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    // Убираем рамку у всех блоков цветов
-                    colorOptions.forEach(opt => opt.classList.remove('selected'));
-                    // Добавляем рамку только выбранному блоку цвета
-                    option.classList.add('selected');
-                    // Получаем цвет выбранного блока и устанавливаем его в скрытом поле ввода
-                    const selectedColor = option.getAttribute('data-color');
-                    document.getElementById('selectedColor').value = selectedColor;
-                });
-            });
-
-            // модалка документы
-            let documentModal = $("#docDownloadModal .modal-body");
-            $('input[type=file]').on('change', function () {
-                documentModal.append('<div class="docList"><span><strong>Список вложенных файлов:</strong></span> <ul class="mt-1">'); // Открываем список
-                for (let i = 0; i < this.files.length; i++) {
-                    let doc = this.files[i].name;
-                    documentModal.find('ul').append('<div class="d-flex gap-2 justify-content-between align-items-center mb-3">'
-                        + '<li>' + doc + '</li>' +
-                        '<button type="button" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Удалить вложенный файл из списка">' +
-                        '<i class="bi bi-trash3"></i></button></div>'); // Добавляем файл в список
-                }
-                documentModal.append('</ul></div>'); // Закрываем список
-            });
-            $('#docDownloadModal').on('hidden.bs.modal', function () {
-                $(this).find('input[type=file]').val(''); // Сброс содержимого input
-                let documentModalFiles = $(this).find(".docList");
-                documentModalFiles.empty(); // Очистка содержимого модального окна
-            });
-
-        });
-    </script>
 
     {{-- вывод вложенных документов --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            $("#cardObjectTab").show;
             // модалка документы
             let documentModal = $("#docDownloadModal .modal-body");
             $('input[type=file]').on('change', function () {
@@ -260,12 +220,12 @@
 
     {{-- динамическое создание вкладок обслуживание --}}
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             let serviceTabsCount = 1; // начальный счетчик вкладок для обслуживания
 
             // Обработчик нажатия на кнопку "Создать обслуживание"
             $('button.btn.btn-primary').on('click',
-                function() {
+                function () {
                     // Генерируем id для новой вкладки и ее содержимого
                     let tabId = 'service_' + serviceTabsCount + '-tab';
                     let paneId = 'service_' + serviceTabsCount;
@@ -426,9 +386,56 @@
                     $('#cardObjectTab').append(tab);
                     $('#cardObjectTabContent').append(tabContent);
 
+                    // Обновляем обработчик событий для выбора цвета
+                    updateColorPicker();
+
                     // Увеличиваем счетчик вкладок для обслуживания
                     serviceTabsCount++;
                 });
+
+            // Функция для обновления обработчика событий для выбора цвета
+            function updateColorPicker() {
+                // Получаем все блоки цветов
+                const colorOptions = $('.color-option');
+                // Добавляем обработчик события для каждого блока цвета
+                colorOptions.on('click', function () {
+                    // Убираем рамку у всех блоков цветов
+                    colorOptions.removeClass('selected');
+                    // Добавляем рамку только выбранному блоку цвета
+                    $(this).addClass('selected');
+                    // Получаем цвет выбранного блока и устанавливаем его в скрытом поле ввода
+                    const selectedColor = $(this).data('color');
+                    $('#selectedColor').val(selectedColor);
+                });
+            }
+
+            // Вызываем функцию для обновления обработчика событий для выбора цвета
+            updateColorPicker();
+        });
+    </script>
+
+    {{-- документы --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // модалка документы
+            let documentModal = $("#docDownloadModal .modal-body");
+            $('input[type=file]').on('change', function () {
+                documentModal.append('<div class="docList"><span><strong>Список вложенных файлов:</strong></span> <ul class="mt-1">'); // Открываем список
+                for (let i = 0; i < this.files.length; i++) {
+                    let doc = this.files[i].name;
+                    documentModal.find('ul').append('<div class="d-flex gap-2 justify-content-between align-items-center mb-3">'
+                        + '<li>' + doc + '</li>' +
+                        '<button type="button" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Удалить вложенный файл из списка">' +
+                        '<i class="bi bi-trash3"></i></button></div>'); // Добавляем файл в список
+                }
+                documentModal.append('</ul></div>'); // Закрываем список
+            });
+            $('#docDownloadModal').on('hidden.bs.modal', function () {
+                $(this).find('input[type=file]').val(''); // Сброс содержимого input
+                let documentModalFiles = $(this).find(".docList");
+                documentModalFiles.empty(); // Очистка содержимого модального окна
+            });
+
         });
     </script>
 @endsection

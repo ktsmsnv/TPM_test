@@ -19,6 +19,8 @@ Route::middleware(['guest'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     //ЛИЧНЫЙ КАБИНЕТ
     Route::get('/home/profile', [App\Http\Controllers\HomeController::class, 'profile'])->name('profile');
+    Route::put('/home/profile/update', [App\Http\Controllers\HomeController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/home/profile/change-password', [App\Http\Controllers\HomeController::class, 'changePassword'])->name('profile.change-password');
 
     // РЕЕСТРЫ
     //Реестр объектов

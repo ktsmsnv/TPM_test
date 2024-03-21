@@ -124,6 +124,9 @@ main {
         overflow:hidden;
         border-radius:8px;
         cursor:pointer;
+        svg {
+            max-height: 100px;
+        }
         &:before{
             content:"";
             position:absolute;
