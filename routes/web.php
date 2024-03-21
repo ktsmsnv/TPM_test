@@ -21,20 +21,21 @@ Route::middleware(['auth'])->group(function () {
 
         //Реестр графиков
     Route::get('/pageReestrGraph', 'App\Http\Controllers\pageReestrGraphController@index')->name('pageReestrGraph');
-    Route::get('/get-reestrGraph-details/{id}', 'App\Http\Controllers\pageReestrGraphController@getReestrGraphDetails')->name('get-reestrGraph-details');
+    Route::get('/pageReestrGraph', [App\Http\Controllers\pageReestrGraphController::class, 'reestrGraphView'])->name('reestr-Graph');
+//    Route::get('/get-reestrGraph-details/{id}', 'App\Http\Controllers\pageReestrGraphController@getReestrGraphDetails')->name('get-reestrGraph-details');
 
         //Реестр календарей
     Route::get('/pageReestrCalendar', 'App\Http\Controllers\pageReestrCalendarController@index')->name('pageReestrCalendar');
-
+    Route::get('/pageReestrCalendar', [App\Http\Controllers\pageReestrCalendarController::class, 'reestrCalendarView'])->name('reestr-Calendar');
 
     // КАРТОЧКИ
     Route::get('/home/card-object', [App\Http\Controllers\ObjectController::class, 'index'])->name('cardObject');
     Route::get('/reestr-work-orders/card-work-order', [App\Http\Controllers\workOrderController::class, 'index'])->name('workOrder');
 
     //Карточка Графика
-    Route::get('/card-graph', [App\Http\Controllers\GraphController::class, 'index'])->name('cardGraph');
+    Route::get('/pageReestrGraph/card-graph', [App\Http\Controllers\GraphController::class, 'index'])->name('cardGraph');
 
     //Карточка Календаря
-    Route::get('/card-calendar', [App\Http\Controllers\CalendarController::class, 'index'])->name('cardCalendar');
+    Route::get('/pageReestrCalendar/card-calendar', [App\Http\Controllers\CalendarController::class, 'index'])->name('cardCalendar');
 });
 

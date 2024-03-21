@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\pageReestrGraph;
 
+use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -20,6 +20,15 @@ class pageReestrGraphController extends Controller
         $pageReestrGraph = pageReestrGraph::all();
 
         return view('reestrGraph', compact('pageReestrGraph'));
+    }
+
+    public function reestrGraphView()
+    {
+        // Генерация хлебных крошек
+        $breadcrumbs = Breadcrumbs::generate('pageReestrGraph');
+
+        // Возвращение представления с передачей хлебных крошек
+        return view('reestrGraph', compact('breadcrumbs'));
     }
 
     public function getContractStorage($id)
