@@ -6,6 +6,12 @@ Breadcrumbs::for('home', function ($trail) {
     $trail->push('Реестр объектов', route('home'));
 });
 
+// Хлебные крошки для Профиля
+Breadcrumbs::for('profile', function ($trail) {
+    $trail->parent('home');
+    $trail->push('Личный кабинет', route('profile'));
+});
+
 // Хлебные крошки для страницы Реестр заказов
 Breadcrumbs::for('reestr-work-orders', function ($trail) {
     $trail->push('Реестр заказ-нарядов ТРМ', route('reestr-workOrders'));

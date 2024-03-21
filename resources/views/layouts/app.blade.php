@@ -36,6 +36,7 @@
 </head>
 <body>
 <div id="app">
+    @if(Route::currentRouteName() !== 'register')
     <header>
         <div class="px-3 py-3 header-bg text-black shadow-sm">
             <div class="container">
@@ -97,14 +98,14 @@
                                 </li>
                             @endif
                         @else
-                            <li class="nav-item dropdown" data-toggle="tooltip" title="Профиль">
+                            <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }}
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href=" ">
+                                    <a class="dropdown-item" href="/home/profile" target="_blank">
                                         Личный кабинет
                                     </a>
                                     <a class="dropdown-item" href="{{ route('logout') }}"
@@ -124,18 +125,20 @@
             </div>
         </div>
     </header>
-
+    @endif
     <main>
         <ul class="breadcrumbs container">
-            @foreach ($breadcrumbs as $crumb)
-                <li>
-                    @if ($loop->last)
-                        <span style="color: grey;">{{ $crumb->title }}</span>
-                    @else
-                        <a href="{{ $crumb->url }}">{{ $crumb->title }}</a>
-                    @endif
-                </li>
-            @endforeach
+            @if(Route::currentRouteName() !== 'register')
+                @foreach ($breadcrumbs as $crumb)
+                    <li>
+                        @if ($loop->last)
+                            <span style="color: grey;">{{ $crumb->title }}</span>
+                        @else
+                            <a href="{{ $crumb->url }}">{{ $crumb->title }}</a>
+                        @endif
+                    </li>
+                @endforeach
+            @endif
         </ul>
 
         @yield('content')

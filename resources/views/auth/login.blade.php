@@ -22,10 +22,10 @@
 <div id="app">
     <div class="login__page-block d-flex align-items-center justify-content-center">
         <div class="col-md-3">
-            <div class="card">
+            <div class="card mb-5">
                 <div class="login__page-logo pb-3"><img src="{{ asset('/storage/login.png') }}"></div>
                 <h3 class="login__page-header text-center pt-5 pb-2">{{ __('Вход в TRM') }}</h3>
-                <div class="card-body">
+                <div>
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
                         <div class="row mb-3">
@@ -91,6 +91,7 @@
                     </form>
                 </div>
             </div>
+            <a href="{{ route('register') }}">зарегистрироваться</a>
         </div>
     </div>
 </div>
