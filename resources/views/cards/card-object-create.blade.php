@@ -10,7 +10,7 @@
             </div>
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-success">Сохранить</button>
+                    <button type="button" class="btn btn-success saveCard">Сохранить</button>
                     <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
 
                     <button type="button" class="btn btn-primary me-5" data-bs-toggle="modal"
@@ -37,50 +37,50 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    <button class="btn btn-primary">Создать обслуживание</button>
+                                    <button class="btn btn-primary createService">Создать обслуживание</button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид инфраструктуры</label>
-                                            <input name="" placeholder="Введите вид инфраструктуры"
+                                            <input name="infrastructure" placeholder="Введите вид инфраструктуры"
                                                    class="form-control w-100">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Наименование объекта</label>
-                                            <input name="" placeholder="Введите наименование объекта"
+                                            <input name="name" placeholder="Введите наименование объекта"
                                                    class="form-control w-100">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Инв./заводской №</label>
-                                            <input class="form-control w-100" name=""
+                                            <input class="form-control w-100" name="number"
                                                    placeholder="Введите инв./заводской №">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Место установки</label>
-                                            <input class="form-control  w-100" name=""
+                                            <input class="form-control  w-100" name="location"
                                                    placeholder="Введите место установки">
                                         </div>
                                     </div>
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата прихода</label>
-                                            <input class="form-control w-100" name=""
+                                            <input type="date" class="form-control w-100" name="date_arrival"
                                                    placeholder="Введите дату прихода">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата ввода в эксплуатацию</label>
-                                            <input class="form-control w-100" name=""
+                                            <input type="date" class="form-control w-100" name="date_usage"
                                                    placeholder="Введите дату ввода в эксплуатацию">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата окончания аттестации/гарантии</label>
-                                            <input class="form-control w-100" name=""
+                                            <input type="date" class="form-control w-100" name="date_cert_end"
                                                    placeholder="Введите дату окончания аттестации/гарантии">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата вывода из эксплуатации</label>
-                                            <input class="form-control  w-100" name=""
+                                            <input type="date" class="form-control  w-100" name="date_usage_end"
                                                    placeholder="Введите дату вывода из эксплуатации">
                                         </div>
                                     </div>
@@ -136,7 +136,7 @@
                 </div>
                 <div class="modal-body">
                     <span>Загрузите изображение:</span>
-                    <input class="form-control w-100 mt-2" type="file" accept="image/*, .jpg, .jpeg, .png"
+                    <input name="image" class="form-control w-100 mt-2" type="file" accept="image/*, .jpg, .jpeg, .png"
                            title="Выберите изображение в формате .jpg, .jpeg, .png">
                 </div>
                 <div class="modal-footer">
@@ -159,7 +159,7 @@
                 </div>
                 <div class="modal-body">
                     <span>Загрузите документ:</span>
-                    <input class="form-control w-100 mt-2 mb-3" type="file" multiple="multiple" title="Выберите файлы">
+                    <input name="file" class="form-control w-100 mt-2 mb-3" type="file" multiple="multiple" title="Выберите файлы">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
@@ -179,7 +179,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="d-flex align-items-center gap-1">
-                        <label class="w-50">Вид работы</label>
+                        <label class="w-50">Вид работы</label>нажатии
                         <input name="" placeholder="Введите название вида работы" class="form-control w-100">
                     </div>
                 </div>
@@ -192,40 +192,13 @@
     </div>
 
 
-    {{-- вывод вложенных документов --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            $("#cardObjectTab").show;
-            // модалка документы
-            let documentModal = $("#docDownloadModal .modal-body");
-            $('input[type=file]').on('change', function () {
-                documentModal.append('<div class="docList"><span><strong>Список вложенных файлов:</strong></span> <ul class="mt-1">'); // Открываем список
-                for (let i = 0; i < this.files.length; i++) {
-                    let doc = this.files[i].name;
-                    documentModal.find('ul').append('<div class="d-flex gap-2 justify-content-between align-items-center mb-3">'
-                        + '<li>' + doc + '</li>' +
-                        '<button type="button" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Удалить вложенный файл из списка">' +
-                        '<i class="bi bi-trash3"></i></button></div>'); // Добавляем файл в список
-                }
-                documentModal.append('</ul></div>'); // Закрываем список
-            });
-            $('#docDownloadModal').on('hidden.bs.modal', function () {
-                $(this).find('input[type=file]').val(''); // Сброс содержимого input
-                let documentModalFiles = $(this).find(".docList");
-                documentModalFiles.empty(); // Очистка содержимого модального окна
-            });
-
-        });
-    </script>
-
     {{-- динамическое создание вкладок обслуживание --}}
     <script>
         $(document).ready(function () {
             let serviceTabsCount = 1; // начальный счетчик вкладок для обслуживания
 
             // Обработчик нажатия на кнопку "Создать обслуживание"
-            $('button.btn.btn-primary').on('click',
-                function () {
+            $('.createService').on('click', function () {
                     // Генерируем id для новой вкладки и ее содержимого
                     let tabId = 'service_' + serviceTabsCount + '-tab';
                     let paneId = 'service_' + serviceTabsCount;
@@ -430,12 +403,63 @@
                 }
                 documentModal.append('</ul></div>'); // Закрываем список
             });
-            $('#docDownloadModal').on('hidden.bs.modal', function () {
-                $(this).find('input[type=file]').val(''); // Сброс содержимого input
-                let documentModalFiles = $(this).find(".docList");
-                documentModalFiles.empty(); // Очистка содержимого модального окна
-            });
+            // $('#docDownloadModal').on('hidden.bs.modal', function () {
+            //     $(this).find('input[type=file]').val(''); // Сброс содержимого input
+            //     let documentModalFiles = $(this).find(".docList");
+            //     documentModalFiles.empty(); // Очистка содержимого модального окна
+            // });
+        });
+    </script>
 
+    {{-- обработчик сохранения данных --}}
+    <script>
+        $(document).ready(function() {
+            $(".saveCard").click(function() {
+                // Создаем объект FormData для отправки данных на сервер, включая файлы
+                let formData = new FormData();
+
+                // Собираем данные с основной формы
+                formData.append('infrastructure', $("input[name=infrastructure]").val());
+                formData.append('name', $("input[name=name]").val());
+                formData.append('number', $("input[name=number]").val());
+                formData.append('location', $("input[name=location]").val());
+                formData.append('date_arrival', $("input[name=date_arrival]").val());
+                formData.append('date_usage', $("input[name=date_usage]").val());
+                formData.append('date_cert_end', $("input[name=date_cert_end]").val());
+                formData.append('date_usage_end', $("input[name=date_usage_end]").val());
+
+                // Собираем данные о загруженных изображениях
+                let imageFiles = $("input[name=image]")[0].files;
+                for (let i = 0; i < imageFiles.length; i++) {
+                    formData.append('images[]', imageFiles[i]);
+                }
+
+                // Собираем данные о загруженных файлах
+                let docFiles = $("input[name=file]")[0].files;
+                for (let j = 0; j < docFiles.length; j++) {
+                    formData.append('files[]', docFiles[j]);
+                }
+
+                // Отправляем данные на сервер
+                $.ajax({
+                    type: "POST",
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: "/save-card-data", // Замените на ваш маршрут для обработки сохранения данных
+                    data: formData,
+                    processData: false, // Не обрабатывать данные
+                    contentType: false, // Не устанавливать тип содержимого
+                    success: function(response) {
+                        // Обработка успешного ответа от сервера (например, отображение сообщения об успешном сохранении)
+                        alert("Данные успешно сохранены!");
+                    },
+                    error: function(error) {
+                        // Обработка ошибки при сохранении данных
+                        alert("Ошибка при сохранении данных!");
+                    }
+                });
+            });
         });
     </script>
 @endsection

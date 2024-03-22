@@ -12,6 +12,6 @@ class CalendarController extends Controller
     public function index()
     {
         $breadcrumbs = Breadcrumbs::generate('card-calendar');
-        return view('card-calendar', compact('breadcrumbs'));
+        return view('cards/card-calendar', compact('breadcrumbs'));
     }
 }

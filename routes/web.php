@@ -39,8 +39,9 @@ Route::middleware(['auth'])->group(function () {
 
 
     // КАРТОЧКА ОБЪЕКТА
-    Route::get('/home/card-object', [App\Http\Controllers\ObjectController::class, 'index'])->name('cardObject');
+    Route::get('/home/card-object/{id}', [App\Http\Controllers\ObjectController::class, 'index'])->name('cardObject');
     Route::get('/home/card-object-create', [App\Http\Controllers\ObjectController::class, 'create'])->name('cardObject-create');
+    Route::post('/save-card-data', [App\Http\Controllers\ObjectController::class, 'saveData'])->name('cardObject-create-save');
     Route::get('/home/card-object/edit', [App\Http\Controllers\ObjectController::class, 'edit'])->name('cardObject-edit');
 
     // КАРТОЧКА ЗАКАЗ-НАРЯДА

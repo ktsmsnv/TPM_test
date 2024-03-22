@@ -12,6 +12,6 @@ class workOrderController extends Controller
     public function index()
     {
         $breadcrumbs = Breadcrumbs::generate('card-work-order');
-        return view(' card-workOrder', compact('breadcrumbs'));
+        return view(' cards/card-workOrder', compact('breadcrumbs'));
     }
 }

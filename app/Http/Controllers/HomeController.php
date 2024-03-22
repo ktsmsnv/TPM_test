@@ -7,6 +7,7 @@ use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use App\Models\User;
+use App\Models\CardObjectMain;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -22,11 +23,12 @@ class HomeController extends Controller
 
     public function index()
     {
+        $objects = CardObjectMain::all();
         // Генерация хлебных крошек
         $breadcrumbs = Breadcrumbs::generate('home');
 
         // Возвращение представления с передачей хлебных крошек
-        return view('home', compact('breadcrumbs'));
+        return view('home', compact('breadcrumbs', 'objects'));
     }
 
 
@@ -82,6 +84,6 @@ class HomeController extends Controller
         $breadcrumbs = Breadcrumbs::generate('reestr-work-orders');
 
         // Возвращение представления с передачей хлебных крошек
-        return view('reestr-work-orders', compact('breadcrumbs'));
+        return view('reestrs/reestr-work-orders', compact('breadcrumbs'));
     }
 }

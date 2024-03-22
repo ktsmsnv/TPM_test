@@ -118,7 +118,14 @@
                                     </div>
                                 </div>
                                 <div class="objectImage">
-                                    <img src="http://placehold.it/350x450"/>
+                                    {{-- <img src="http://placehold.it/350x450"/>--}}
+                                    @if (!is_null($data_CardObjectMain) && !is_null($data_CardObjectMain->images))
+                                        @foreach ($data_CardObjectMain->images as $image)
+                                            <img src="data:image/png;base64,{{ base64_encode($image->getBytes()) }}" alt="Image">
+                                        @endforeach
+                                    @else
+                                        <p>Нет доступных изображений</p>
+                                    @endif
                                 </div>
                             </div>
                         </div>
