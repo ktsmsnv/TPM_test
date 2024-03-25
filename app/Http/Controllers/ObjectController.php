@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use App\Models\CardObjectMain;
 use App\Models\CardObjectMainDoc;
+use App\Models\CardObjectServices;
+use App\Models\CardObjectServicesTypes;
 use MongoDB\BSON\Binary;
 
 class ObjectController extends Controller
@@ -88,10 +90,8 @@ class ObjectController extends Controller
         $card->date_usage = $request->date_usage;
         $card->date_cert_end = $request->date_cert_end;
         $card->date_usage_end = $request->date_usage_end;
-
         // Сохранение основных данных карточки
         $card->save();
-
         // Обработка сохранения изображений
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
@@ -105,7 +105,6 @@ class ObjectController extends Controller
                 $path = $image->storeAs('public/images', $image->getClientOriginalName());
             }
         }
-
         // Обработка сохранения файлов документов
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
@@ -120,6 +119,47 @@ class ObjectController extends Controller
                 $doc->save();
                 // Сохраняем файл в папку на сервере
                 $path = $file->storeAs('public/files', $file->getClientOriginalName());
+            }
+        }
+
+
+        // Обработка сохранения данных об обслуживаниях
+        if ($request->has('services')) {
+            $services = $request->services;
+            foreach ($services as $service) {
+                $serviceData = $service; // Получаем данные об обслуживании
+                $selectedColor = $serviceData['selectedColor']; // Получаем выбранный цвет для календаря
+                $materials = $serviceData['materials']; // Получаем данные о расходных материалах
+
+                // Создаем новую запись для обслуживания в модели Service
+                $newService = new CardObjectServices();
+                $newService->service_type = $serviceData['service_type'];
+                $newService->short_name = $serviceData['short_name'];
+                $newService->performer = $serviceData['performer'];
+                $newService->responsible = $serviceData['responsible'];
+                $newService->frequency = $serviceData['frequency'];
+                $newService->prev_maintenance_date = $serviceData['prev_maintenance_date'];
+                $newService->planned_maintenance_date = $serviceData['planned_maintenance_date'];
+                $newService->calendar_color = $selectedColor; // Сохраняем выбранный цвет для календаря
+                $newService->consumable_materials = $materials; // Сохраняем данные о расходных материалах
+
+                // Связываем обслуживание с карточкой объекта
+                $newService->card_object_main_id = $card->id;
+                $newService->save();
+            }
+        }
+
+        // Обработка сохранения видов работ
+        if ($request->has('types_of_work')) {
+            $typesOfWork = $request->types_of_work;
+            foreach ($typesOfWork as $typeOfWork) {
+                // Создаем новую запись для вида работы в модели CardObjectServicesTypes
+                $newTypeOfWork = new CardObjectServicesTypes();
+                $newTypeOfWork->card_id = $card->id;
+                $newTypeOfWork->type_work = $typeOfWork['type_work'];
+                $newTypeOfWork->name_work = $typeOfWork['name_work'];
+                // Сохраняем данные о видах работ
+                $newTypeOfWork->save();
             }
         }
 

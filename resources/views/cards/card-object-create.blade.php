@@ -99,7 +99,6 @@
                                 </div>
                             </div>
                         </div>
-
                         {{-- ИЗОБРАЖЕНИЕ --}}
                         <div class="member_card_style image">
                             <div class="member-info">
@@ -116,59 +115,11 @@
 
                 </div>
                 {{-- ВКЛАДКА "ОБСЛУЖИВАНИЕ" --}}
-
             </div>
 
         </div>
     </div>
 
-    <!-- Загрузка изображения модальное окно -->
-    <div class="modal fade" id="imageDownloadModal" tabindex="-1" aria-labelledby="imageDownloadModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="imageDownloadModalLabel"><strong>Загрузка изображения
-                            объекта</strong></h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="images">Загрузить изображения:</label>
-                        <input type="file" class="form-control" id="images" name="images[]" multiple accept="image/*">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                    <button type="button" class="btn btn-primary">Загрузить</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Загрузка документа модальное окно -->
-    <div class="modal fade" id="docDownloadModal" tabindex="-1" aria-labelledby="docDownloadModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="docDownloadModalLabel"><strong>Загрузка документов объекта</strong>
-                    </h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="files">Загрузить файлы документов:</label>
-                        <input type="file" class="form-control" id="files" name="files[]" multiple accept=".pdf, .doc, .docx">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                    <button type="button" class="btn btn-primary">Загрузить</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Добавить виды работ модальное окно -->
     <div class="modal fade" id="typesModal" tabindex="-1" aria-labelledby="typesModalLabel" aria-hidden="true">
@@ -180,35 +131,70 @@
                 </div>
                 <div class="modal-body">
                     <div class="d-flex align-items-center gap-1">
-                        <label class="w-50">Вид работы</label>нажатии
-                        <input name="" placeholder="Введите название вида работы" class="form-control w-100">
+                        <label class="w-50">Вид работы</label>
+                        <input name="" placeholder="Введите название вида работы" class="form-control w-100" id="typeOfWorkInput">
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                    <button type="button" class="btn btn-primary">Добавить</button>
+                    <button type="button" class="btn btn-primary" id="addTypeOfWork">Добавить</button>
                 </div>
             </div>
         </div>
     </div>
 
 
-    {{-- динамическое создание вкладок обслуживание --}}
-    <script>
-        $(document).ready(function () {
-            let serviceTabsCount = 1; // начальный счетчик вкладок для обслуживания
 
+    {{-- документы --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Обработчик загрузки документов
+            $('#docUpload').change(function() {
+                let fileList = this.files;
+                let documentList = $('#documentList');
+                documentList.empty(); // Очищаем список документов перед добавлением новых
+
+                for (let i = 0; i < fileList.length; i++) {
+                    let file = fileList[i];
+                    let fileName = file.name;
+                    let listItem = $('<a>').attr('href', '#').text(fileName);
+                    documentList.append(listItem);
+                    documentList.append($('<br>'));
+                }
+            });
+
+            // Обработчик загрузки изображений
+            $('#imageUpload').change(function() {
+                let fileList = this.files;
+                let uploadedImage = $('#uploadedImage');
+                if (fileList.length > 0) {
+                    let reader = new FileReader();
+                    reader.onload = function(e) {
+                        uploadedImage.attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(fileList[0]);
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+
+            // ------------ динамическое создание вкладок обслуживание  ------------
+
+            let serviceTabsCount = 1; // начальный счетчик вкладок для обслуживания
             // Обработчик нажатия на кнопку "Создать обслуживание"
             $('.createService').on('click', function () {
-                    // Генерируем id для новой вкладки и ее содержимого
-                    let tabId = 'service_' + serviceTabsCount + '-tab';
-                    let paneId = 'service_' + serviceTabsCount;
+                // Генерируем id для новой вкладки и ее содержимого
+                let tabId = 'service_' + serviceTabsCount + '-tab';
+                let paneId = 'service_' + serviceTabsCount;
 
-                    // Создаем новую вкладку и ее содержимое
-                    let tab = $('<li class="nav-item" role="presentation"> \
+                // Создаем новую вкладку и ее содержимое
+                let tab = $('<li class="nav-item" role="presentation"> \
                     <button class="nav-link" id="' + tabId + '" data-bs-toggle="tab" data-bs-target="#' + paneId + '" type="button" role="tab" aria-controls="' + paneId + '" aria-selected="false">ОБСЛУЖИВАНИЕ ' + serviceTabsCount + '</button> \
                 </li>');
-                    let tabContent = $('<div class="tab-pane fade" id="' + paneId + '" role="tabpanel" aria-labelledby="' + tabId + '"> \
+                let tabContent = $('<div class="tab-pane fade" id="' + paneId + '" role="tabpanel" aria-labelledby="' + tabId + '"> \
                                 <div id="service__blocks" class="d-grid"> \
                                     {{-- ОБСЛУЖИВАНИЕ ТРМ --}} \
                                     <div class="member_card_style services"> \
@@ -254,12 +240,12 @@
                                                     </div> \
                                                     <div class="d-flex justify-content-between align-items-center gap-3"> \
                                                         <label class="w-100" for="prev_maintenance_date_' + serviceTabsCount + '">Дата предыдущего обслуживания</label> \
-                                                        <input id="prev_maintenance_date_' + serviceTabsCount + '" name="prev_maintenance_date" class="form-control w-100" \
+                                                        <input type="date" id="prev_maintenance_date_' + serviceTabsCount + '" name="prev_maintenance_date" class="form-control w-100" \
                                                             placeholder="Введите дату предыдущего обслуживания"> \
                                                     </div> \
                                                     <div class="d-flex justify-content-between align-items-center gap-3"> \
                                                         <label class="w-100" for="planned_maintenance_date_' + serviceTabsCount + '">Плановая дата обслуживания</label> \
-                                                        <input id="planned_maintenance_date_' + serviceTabsCount + '" name="planned_maintenance_date" class="form-control w-100" \
+                                                        <input type="date" id="planned_maintenance_date_' + serviceTabsCount + '" name="planned_maintenance_date" class="form-control w-100" \
                                                             placeholder="Введите плановую дату обслуживания"> \
                                                     </div> \
                                                     <div class="d-flex justify-content-between align-items-center gap-3"> \
@@ -290,34 +276,6 @@
                                                 <!-- Используем класс col-md-6 для создания двух столбцов на широких экранах -->\
                                                 <div class="grid-item">\
                                                     <div class="form-check d-flex align-items-center gap-2">\
-                                                        <input class="form-check-input" type="checkbox" value=" " id=" " data-toggle="tooltip" title="нажмите чтобы выбрать">\
-                                                            <label class="form-check-label form-control" for=" ">\
-                                                                работа 1\
-                                                            </label>\
-                                                    </div>\
-                                                </div>\
-                                                <div class="grid-item">\
-                                                    <div class="form-check d-flex align-items-center gap-2">\
-                                                        <input class="form-check-input" type="checkbox" value=" " id=" " data-toggle="tooltip" title="нажмите чтобы выбрать">\
-                                                            <label class="form-check-label form-control" for=" ">\
-                                                                работа 2\
-                                                            </label>\
-                                                    </div>\
-                                                </div>\
-                                                <div class="grid-item">\
-                                                    <div class="form-check d-flex align-items-center gap-2">\
-                                                        <input class="form-check-input" type="checkbox" value=" " id=" " data-toggle="tooltip" title="нажмите чтобы выбрать">\
-                                                            <label class="form-check-label form-control" for=" ">\
-                                                                работа 3\
-                                                            </label>\
-                                                    </div>\
-                                                </div>\
-                                                <div class="grid-item">\
-                                                    <div class="form-check d-flex align-items-center gap-2">\
-                                                        <input class="form-check-input" type="checkbox" value=" " id=" " data-toggle="tooltip" title="нажмите чтобы выбрать">\
-                                                            <label class="form-check-label form-control" for=" ">\
-                                                                работа 4\
-                                                            </label>\
                                                     </div>\
                                                 </div>\
                                             </div>\
@@ -356,17 +314,16 @@
                                 </div> \
                             </div>');
 
-                    // Добавляем новую вкладку и ее содержимое к соответствующим элементам
-                    $('#cardObjectTab').append(tab);
-                    $('#cardObjectTabContent').append(tabContent);
+                // Добавляем новую вкладку и ее содержимое к соответствующим элементам
+                $('#cardObjectTab').append(tab);
+                $('#cardObjectTabContent').append(tabContent);
 
-                    // Обновляем обработчик событий для выбора цвета
-                    updateColorPicker();
+                // Обновляем обработчик событий для выбора цвета
+                updateColorPicker();
 
-                    // Увеличиваем счетчик вкладок для обслуживания
-                    serviceTabsCount++;
-                });
-
+                // Увеличиваем счетчик вкладок для обслуживания
+                serviceTabsCount++;
+            });
             // Функция для обновления обработчика событий для выбора цвета
             function updateColorPicker() {
                 // Получаем все блоки цветов
@@ -382,48 +339,28 @@
                     $('#selectedColor').val(selectedColor);
                 });
             }
-
             // Вызываем функцию для обновления обработчика событий для выбора цвета
             updateColorPicker();
-        });
-    </script>
 
-    {{-- документы --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Обработчик загрузки документов
-            $('#docUpload').change(function() {
-                let fileList = this.files;
-                let documentList = $('#documentList');
-                documentList.empty(); // Очищаем список документов перед добавлением новых
 
-                for (let i = 0; i < fileList.length; i++) {
-                    let file = fileList[i];
-                    let fileName = file.name;
-                    let listItem = $('<a>').attr('href', '#').text(fileName);
-                    documentList.append(listItem);
-                    documentList.append($('<br>'));
+            // Обработка клика по кнопке "Добавить вид работы"
+            $("#addTypeOfWork").click(function() {
+                // Получаем значение вида работы из поля ввода
+                let typeOfWork = $("#typeOfWorkInput").val();
+                if (typeOfWork.trim() !== '') {
+                    // Создаем новый элемент списка для нового вида работы
+                    let listItem = '<div class="form-check d-flex align-items-center gap-2">' +
+                        '<label class="form-check-label">' + typeOfWork + '</label>' +
+                        '</div>';
+                    // Добавляем новый элемент списка после последнего элемента в блоке "Виды работ"
+                    $(".typesOfWork .grid-item .form-check:last").after(listItem);
+                    // Очищаем поле ввода после добавления
+                    $("#typeOfWorkInput").val('');
                 }
             });
 
-            // Обработчик загрузки изображений
-            $('#imageUpload').change(function() {
-                let fileList = this.files;
-                let uploadedImage = $('#uploadedImage');
-                if (fileList.length > 0) {
-                    let reader = new FileReader();
-                    reader.onload = function(e) {
-                        uploadedImage.attr('src', e.target.result);
-                    }
-                    reader.readAsDataURL(fileList[0]);
-                }
-            });
-        });
-    </script>
+             //------------  обработчик сохранения данных  ------------
 
-    {{-- обработчик сохранения данных --}}
-    <script>
-        $(document).ready(function() {
             $(".saveCard").click(function() {
                 // Создаем объект FormData для отправки данных на сервер, включая файлы
                 let formData = new FormData();
@@ -437,7 +374,6 @@
                 formData.append('date_usage', $("input[name=date_usage]").val());
                 formData.append('date_cert_end', $("input[name=date_cert_end]").val());
                 formData.append('date_usage_end', $("input[name=date_usage_end]").val());
-
                 // Собираем данные о загруженных изображениях
                 let imageFiles = $("#imageUpload")[0].files;
                 for (let i = 0; i < imageFiles.length; i++) {
@@ -448,6 +384,36 @@
                 for (let j = 0; j < docFiles.length; j++) {
                     formData.append('files[]', docFiles[j]);
                 }
+
+                // Собираем данные с каждой вкладки обслуживания
+                for (let i = 1; i < serviceTabsCount; i++) {
+                    let serviceData = {
+                        service_type: $("#service_type_" + i).val(),
+                        short_name: $("#short_name_" + i).val(),
+                        performer: $("#performer_" + i).val(),
+                        responsible: $("#responsible_" + i).val(),
+                        frequency: $("#frequency_" + i).val(),
+                        prev_maintenance_date: $("#prev_maintenance_date_" + i).val(),
+                        planned_maintenance_date: $("#planned_maintenance_date_" + i).val(),
+                        selectedColor: $("#selectedColor").val(),
+                    };
+                    // Добавляем собранные данные в formData
+                    for (let key in serviceData) {
+                        formData.append("services[" + i + "][" + key + "]", serviceData[key]);
+                    }
+
+                    // Собираем данные о расходных материалах и ЗИП
+                    let materials = $("#service_" + i + " .material_text textarea").val();
+                    formData.append("services[" + i + "][materials]", materials);
+                }
+
+                // Добавляем виды работ к данным
+                const typesOfWork = [];
+                $(".typesOfWork .form-check-label").each(function() {
+                    typesOfWork.push($(this).text());
+                });
+                formData.append('types_of_work', typesOfWork);
+
 
                 // Отправляем данные на сервер
                 $.ajax({
