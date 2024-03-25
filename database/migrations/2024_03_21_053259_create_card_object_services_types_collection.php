@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::connection('mongodb')->create('card_object_service_types', function (Blueprint $collection) {
             $collection->index('card_id');
             $collection->string('type_work');
-            $collection->string('name_work');
             // Добавьте остальные столбцы, если они есть в вашей структуре
             $collection->objectId('card_id'); // Тип objectId для связи с таблицей card_object_main
         });

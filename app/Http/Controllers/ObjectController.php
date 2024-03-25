@@ -151,17 +151,18 @@ class ObjectController extends Controller
 
         // Обработка сохранения видов работ
         if ($request->has('types_of_work')) {
-            $typesOfWork = $request->types_of_work;
-            foreach ($typesOfWork as $typeOfWork) {
+            $typesOfWorkString = $request->types_of_work;
+            $typesOfWorkArray = explode(',', $typesOfWorkString); // Разбиваем строку на массив по запятой
+            foreach ($typesOfWorkArray as $typeOfWork) {
                 // Создаем новую запись для вида работы в модели CardObjectServicesTypes
                 $newTypeOfWork = new CardObjectServicesTypes();
                 $newTypeOfWork->card_id = $card->id;
-                $newTypeOfWork->type_work = $typeOfWork['type_work'];
-                $newTypeOfWork->name_work = $typeOfWork['name_work'];
+                $newTypeOfWork->type_work = $typeOfWork; // Тип работы извлекается из массива, полученного из строки
                 // Сохраняем данные о видах работ
                 $newTypeOfWork->save();
             }
         }
+
 
         // Возвращаем ответ об успешном сохранении данных
         return response()->json(['message' => 'Данные успешно сохранены'], 200);
