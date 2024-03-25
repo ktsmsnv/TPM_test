@@ -13,9 +13,8 @@
                     <button type="button" class="btn btn-success saveCard">Сохранить</button>
                     <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
 
-                    <button type="button" class="btn btn-primary me-5" data-bs-toggle="modal"
-                            data-bs-target="#imageDownloadModal">Загрузить изображение
-                    </button>
+                    <label for="imageUpload" class="btn btn-primary">Загрузить изображение</label>
+                    <input type="file" id="imageUpload" class="d-none" multiple accept="image/*">
                 </div>
             </div>
 
@@ -92,30 +91,29 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Документация</h4>
-                                    <button class="btn btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#docDownloadModal">Вложить документ
-                                    </button>
+                                    <label for="docUpload" class="btn btn-primary">Вложить документ</label>
+                                    <input type="file" id="docUpload" class="d-none" multiple accept=".pdf, .doc, .docx">
                                 </div>
-                                <div class="objectDocs">
-                                    <a href="">Акт входного контроля Сварочный аппарат полуавтомат.pdf</a>
+                                <div class="objectDocs" id="documentList">
+                                    <!-- Здесь будут отображаться загруженные документы -->
                                 </div>
                             </div>
                         </div>
+
                         {{-- ИЗОБРАЖЕНИЕ --}}
                         <div class="member_card_style image">
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Изображение объекта</h4>
-                                    <button class="btn btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#imageDownloadModal">Загрузить
-                                    </button>
+                                    <label for="imageUpload" class="btn btn-primary">Загрузить</label>
+                                    <input type="file" id="imageUpload" class="d-none" multiple accept="image/*">
                                 </div>
                                 <div class="objectImage">
-                                    <img src="http://placehold.it/350x450"/>
+                                    <img src="http://placehold.it/350x450" id="uploadedImage" alt="Uploaded Image">
                                 </div>
                             </div>
                         </div>
-                    </div>
+
                 </div>
                 {{-- ВКЛАДКА "ОБСЛУЖИВАНИЕ" --}}
 
@@ -135,9 +133,10 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <span>Загрузите изображение:</span>
-                    <input name="image" class="form-control w-100 mt-2" type="file" accept="image/*, .jpg, .jpeg, .png"
-                           title="Выберите изображение в формате .jpg, .jpeg, .png">
+                    <div class="form-group">
+                        <label for="images">Загрузить изображения:</label>
+                        <input type="file" class="form-control" id="images" name="images[]" multiple accept="image/*">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
@@ -158,8 +157,10 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <span>Загрузите документ:</span>
-                    <input name="file" class="form-control w-100 mt-2 mb-3" type="file" multiple="multiple" title="Выберите файлы">
+                    <div class="form-group">
+                        <label for="files">Загрузить файлы документов:</label>
+                        <input type="file" class="form-control" id="files" name="files[]" multiple accept=".pdf, .doc, .docx">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
@@ -390,24 +391,33 @@
     {{-- документы --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // модалка документы
-            let documentModal = $("#docDownloadModal .modal-body");
-            $('input[type=file]').on('change', function () {
-                documentModal.append('<div class="docList"><span><strong>Список вложенных файлов:</strong></span> <ul class="mt-1">'); // Открываем список
-                for (let i = 0; i < this.files.length; i++) {
-                    let doc = this.files[i].name;
-                    documentModal.find('ul').append('<div class="d-flex gap-2 justify-content-between align-items-center mb-3">'
-                        + '<li>' + doc + '</li>' +
-                        '<button type="button" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Удалить вложенный файл из списка">' +
-                        '<i class="bi bi-trash3"></i></button></div>'); // Добавляем файл в список
+            // Обработчик загрузки документов
+            $('#docUpload').change(function() {
+                let fileList = this.files;
+                let documentList = $('#documentList');
+                documentList.empty(); // Очищаем список документов перед добавлением новых
+
+                for (let i = 0; i < fileList.length; i++) {
+                    let file = fileList[i];
+                    let fileName = file.name;
+                    let listItem = $('<a>').attr('href', '#').text(fileName);
+                    documentList.append(listItem);
+                    documentList.append($('<br>'));
                 }
-                documentModal.append('</ul></div>'); // Закрываем список
             });
-            // $('#docDownloadModal').on('hidden.bs.modal', function () {
-            //     $(this).find('input[type=file]').val(''); // Сброс содержимого input
-            //     let documentModalFiles = $(this).find(".docList");
-            //     documentModalFiles.empty(); // Очистка содержимого модального окна
-            // });
+
+            // Обработчик загрузки изображений
+            $('#imageUpload').change(function() {
+                let fileList = this.files;
+                let uploadedImage = $('#uploadedImage');
+                if (fileList.length > 0) {
+                    let reader = new FileReader();
+                    reader.onload = function(e) {
+                        uploadedImage.attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(fileList[0]);
+                }
+            });
         });
     </script>
 
@@ -429,13 +439,12 @@
                 formData.append('date_usage_end', $("input[name=date_usage_end]").val());
 
                 // Собираем данные о загруженных изображениях
-                let imageFiles = $("input[name=image]")[0].files;
+                let imageFiles = $("#imageUpload")[0].files;
                 for (let i = 0; i < imageFiles.length; i++) {
                     formData.append('images[]', imageFiles[i]);
                 }
-
                 // Собираем данные о загруженных файлах
-                let docFiles = $("input[name=file]")[0].files;
+                let docFiles = $("#docUpload")[0].files;
                 for (let j = 0; j < docFiles.length; j++) {
                     formData.append('files[]', docFiles[j]);
                 }

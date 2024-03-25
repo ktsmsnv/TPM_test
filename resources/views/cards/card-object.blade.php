@@ -98,16 +98,18 @@
                                 </div>
                                 <div class="objectDocs">
                                     <ul>
-                                        <li class="d-flex align-items-center gap-3 mb-4">
-                                            <div class="tooltip-wrapper" data-toggle="tooltip" title="для удаления нажмите кнопку РЕДАКТИРОВАТЬ">
-                                                <button type="button" class="btn btn-danger btn-sm" disabled ><i class="bi bi-trash3"></i></button>
-                                            </div>
-                                            <a href="" data-toggle="tooltip" title="нажмите чтобы скачать">Акт входного контроля Сварочный аппарат полуавтомат.pdf</a>
-                                        </li>
+                                        @if ($data_CardObjectMainDocs !== null)
+                                        @foreach ($data_CardObjectMainDocs as $file)
+                                            <li><a href="{{ route('downloadDocument', $file->id) }}">{{ $file->file_name }}</a></li>
+                                        @endforeach
+                                        @else
+                                            <p>Нет доступных документов</p>
+                                        @endif
                                     </ul>
                                 </div>
                             </div>
                         </div>
+
                         {{-- ИЗОБРАЖЕНИЕ --}}
                         <div class="member_card_style image">
                             <div class="member-info">
@@ -118,17 +120,13 @@
                                     </div>
                                 </div>
                                 <div class="objectImage">
-                                    {{-- <img src="http://placehold.it/350x450"/>--}}
-                                    @if (!is_null($data_CardObjectMain) && !is_null($data_CardObjectMain->images))
-                                        @foreach ($data_CardObjectMain->images as $image)
-                                            <img src="data:image/png;base64,{{ base64_encode($image->getBytes()) }}" alt="Image">
-                                        @endforeach
+                                    @if ($data_CardObjectMain)
+                                        <img src="{{ route('getImage', ['id' => $data_CardObjectMain->id]) }}" alt="Image">
                                     @else
                                         <p>Нет доступных изображений</p>
                                     @endif
                                 </div>
                             </div>
-                        </div>
                     </div>
                 </div>
                 {{-- ВКЛАДКА "ОБСЛУЖИВАНИЕ" --}}

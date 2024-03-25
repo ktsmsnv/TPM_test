@@ -75,7 +75,7 @@
                                 <td></td>
                                 <td>из карточки объекта</td>
                                 <td class="tool-tip" title="открыть карточку объекта">
-                                    <a href="{{ route('cardObject', ['id' => $object->id]) }}">
+                                    <a href="{{ route('cardObject', ['id' => $object->id]) }}" target="_blank">
                                         {{ $object->name }}
                                     </a>
                                 </td>
