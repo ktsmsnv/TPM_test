@@ -1,4 +1,4 @@
-{{--страница карточка объекта --}}
+{{--страница карточка календаря --}}
 @extends('layouts.app')
 
 @section('content')
@@ -99,7 +99,7 @@
                         <div class="member_card_style documentation">
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
-                                    <h4>Обсулживание ТРМ</h4>
+                                    <h4>Обслуживание ТРМ</h4>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     {{--ВИД ОБСЛУЖИВАНИЯ 1-N--}}
@@ -216,11 +216,10 @@
                         {{-- КАЛЕНДАРЬ ТРМ --}}
                         <div class="member_card_style services">
                             <div class="member-info">
-                                <div class="d-flex justify-content-between mb-4">
-                                    <h4>Календарь ТРМ</h4>
-                                </div>
-                                <div class="member-info--inputs d-flex gap-5">
+                                <h4>Календарь ТРМ</h4>
+                                <div class="member-info--inputs">
                                     {{-- КАЛЕНДАРЬ --}}
+                                    <div id='calendar'></div>
                                 </div>
                             </div>
                         </div>
@@ -238,10 +237,10 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
         <script>
+
             $(document).ready(function () {
                 $("#cardCalendarTab").show;
 
@@ -258,6 +257,25 @@
                         const selectedColor = option.getAttribute('data-color');
                         document.getElementById('selectedColor').value = selectedColor;
                     });
+                });
+
+                // После загрузки страницы
+                $('#service_1-tab').on('shown.bs.tab', function (e) {
+                    // Если вкладка с календарем стала активной
+                    if (e.target.id === 'service_1-tab') {
+                        // Инициализируем календарь
+                        var calendarEl = document.getElementById('calendar');
+                        var calendar = new FullCalendar.Calendar(calendarEl, {
+                            timeZone: 'UTC',
+                            initialView: 'multiMonthYear',
+                            locale: 'ru',
+                            editable: true
+                        });
+                        // Рендерим календарь
+                        calendar.render();
+                        // Пересчитываем размеры календаря после рендеринга
+                        calendar.updateSize();
+                    }
                 });
             });
         </script>
