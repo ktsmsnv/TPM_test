@@ -22,7 +22,7 @@ class pageReestrGraphController extends Controller
         $pageReestrGraph = pageReestrGraph::all();
 
         // Возвращение представления с передачей хлебных крошек
-        return view('reestrGraph', compact('breadcrumbs', 'pageReestrGraph'));
+        return view('reestrs/reestrGraph', compact('breadcrumbs', 'pageReestrGraph'));
     }
 
     public function getContractStorage($id)

@@ -22,6 +22,6 @@ class pageReestrCalendarController extends Controller
         $pageReestrCalendar = pageReestrCalendar::all();
 
         // Возвращение представления с передачей хлебных крошек
-        return view('reestrCalendar', compact('breadcrumbs', 'pageReestrCalendar'));
+        return view('reestrs/reestrCalendar', compact('breadcrumbs', 'pageReestrCalendar'));
     }
 }

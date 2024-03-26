@@ -55,6 +55,12 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
         ],
+        'mongodb' => [
+            'driver'   => 'mongodb',
+            'dsn'      => env('DB_URI', 'mongodb://localhost:27017'),
+            'database' => env('DB_DATABASE', 'TRM'),
+        ],
+
 
     ],
 

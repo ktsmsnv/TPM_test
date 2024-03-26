@@ -10,12 +10,11 @@
             </div>
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-success">Сохранить</button>
+                    <button type="button" class="btn btn-success saveCard">Сохранить</button>
                     <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
 
-                    <button type="button" class="btn btn-primary me-5" data-bs-toggle="modal"
-                            data-bs-target="#imageDownloadModal">Загрузить изображение
-                    </button>
+                    <label for="imageUpload" class="btn btn-primary">Загрузить изображение</label>
+                    <input type="file" id="imageUpload" class="d-none" multiple accept="image/*">
                 </div>
             </div>
 
@@ -37,50 +36,50 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    <button class="btn btn-primary">Создать обслуживание</button>
+                                    <button class="btn btn-primary createService">Создать обслуживание</button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид инфраструктуры</label>
-                                            <input name="" placeholder="Введите вид инфраструктуры"
+                                            <input name="infrastructure" placeholder="Введите вид инфраструктуры"
                                                    class="form-control w-100">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Наименование объекта</label>
-                                            <input name="" placeholder="Введите наименование объекта"
+                                            <input name="name" placeholder="Введите наименование объекта"
                                                    class="form-control w-100">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Инв./заводской №</label>
-                                            <input class="form-control w-100" name=""
+                                            <input class="form-control w-100" name="number"
                                                    placeholder="Введите инв./заводской №">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Место установки</label>
-                                            <input class="form-control  w-100" name=""
+                                            <input class="form-control  w-100" name="location"
                                                    placeholder="Введите место установки">
                                         </div>
                                     </div>
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата прихода</label>
-                                            <input class="form-control w-100" name=""
+                                            <input type="date" class="form-control w-100" name="date_arrival"
                                                    placeholder="Введите дату прихода">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата ввода в эксплуатацию</label>
-                                            <input class="form-control w-100" name=""
+                                            <input type="date" class="form-control w-100" name="date_usage"
                                                    placeholder="Введите дату ввода в эксплуатацию">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата окончания аттестации/гарантии</label>
-                                            <input class="form-control w-100" name=""
+                                            <input type="date" class="form-control w-100" name="date_cert_end"
                                                    placeholder="Введите дату окончания аттестации/гарантии">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата вывода из эксплуатации</label>
-                                            <input class="form-control  w-100" name=""
+                                            <input type="date" class="form-control  w-100" name="date_usage_end"
                                                    placeholder="Введите дату вывода из эксплуатации">
                                         </div>
                                     </div>
@@ -92,12 +91,11 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Документация</h4>
-                                    <button class="btn btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#docDownloadModal">Вложить документ
-                                    </button>
+                                    <label for="docUpload" class="btn btn-primary">Вложить документ</label>
+                                    <input type="file" id="docUpload" class="d-none" multiple accept=".pdf, .doc, .docx">
                                 </div>
-                                <div class="objectDocs">
-                                    <a href="">Акт входного контроля Сварочный аппарат полуавтомат.pdf</a>
+                                <div class="objectDocs" id="documentList">
+                                    <!-- Здесь будут отображаться загруженные документы -->
                                 </div>
                             </div>
                         </div>
@@ -106,68 +104,22 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Изображение объекта</h4>
-                                    <button class="btn btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#imageDownloadModal">Загрузить
-                                    </button>
+                                    <label for="imageUpload" class="btn btn-primary">Загрузить</label>
+                                    <input type="file" id="imageUpload" class="d-none" multiple accept="image/*">
                                 </div>
                                 <div class="objectImage">
-                                    <img src="http://placehold.it/350x450"/>
+                                    <img src="http://placehold.it/350x450" id="uploadedImage" alt="Uploaded Image">
                                 </div>
                             </div>
                         </div>
-                    </div>
+
                 </div>
                 {{-- ВКЛАДКА "ОБСЛУЖИВАНИЕ" --}}
-
             </div>
 
         </div>
     </div>
 
-    <!-- Загрузка изображения модальное окно -->
-    <div class="modal fade" id="imageDownloadModal" tabindex="-1" aria-labelledby="imageDownloadModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="imageDownloadModalLabel"><strong>Загрузка изображения
-                            объекта</strong></h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <span>Загрузите изображение:</span>
-                    <input class="form-control w-100 mt-2" type="file" accept="image/*, .jpg, .jpeg, .png"
-                           title="Выберите изображение в формате .jpg, .jpeg, .png">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                    <button type="button" class="btn btn-primary">Загрузить</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Загрузка документа модальное окно -->
-    <div class="modal fade" id="docDownloadModal" tabindex="-1" aria-labelledby="docDownloadModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="docDownloadModalLabel"><strong>Загрузка документов объекта</strong>
-                    </h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <span>Загрузите документ:</span>
-                    <input class="form-control w-100 mt-2 mb-3" type="file" multiple="multiple" title="Выберите файлы">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                    <button type="button" class="btn btn-primary">Загрузить</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Добавить виды работ модальное окно -->
     <div class="modal fade" id="typesModal" tabindex="-1" aria-labelledby="typesModalLabel" aria-hidden="true">
@@ -180,61 +132,69 @@
                 <div class="modal-body">
                     <div class="d-flex align-items-center gap-1">
                         <label class="w-50">Вид работы</label>
-                        <input name="" placeholder="Введите название вида работы" class="form-control w-100">
+                        <input name="" placeholder="Введите название вида работы" class="form-control w-100" id="typeOfWorkInput">
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                    <button type="button" class="btn btn-primary">Добавить</button>
+                    <button type="button" class="btn btn-primary" id="addTypeOfWork">Добавить</button>
                 </div>
             </div>
         </div>
     </div>
 
 
-    {{-- вывод вложенных документов --}}
+
+    {{-- документы --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            $("#cardObjectTab").show;
-            // модалка документы
-            let documentModal = $("#docDownloadModal .modal-body");
-            $('input[type=file]').on('change', function () {
-                documentModal.append('<div class="docList"><span><strong>Список вложенных файлов:</strong></span> <ul class="mt-1">'); // Открываем список
-                for (let i = 0; i < this.files.length; i++) {
-                    let doc = this.files[i].name;
-                    documentModal.find('ul').append('<div class="d-flex gap-2 justify-content-between align-items-center mb-3">'
-                        + '<li>' + doc + '</li>' +
-                        '<button type="button" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Удалить вложенный файл из списка">' +
-                        '<i class="bi bi-trash3"></i></button></div>'); // Добавляем файл в список
+            // Обработчик загрузки документов
+            $('#docUpload').change(function() {
+                let fileList = this.files;
+                let documentList = $('#documentList');
+                documentList.empty(); // Очищаем список документов перед добавлением новых
+
+                for (let i = 0; i < fileList.length; i++) {
+                    let file = fileList[i];
+                    let fileName = file.name;
+                    let listItem = $('<a>').attr('href', '#').text(fileName);
+                    documentList.append(listItem);
+                    documentList.append($('<br>'));
                 }
-                documentModal.append('</ul></div>'); // Закрываем список
-            });
-            $('#docDownloadModal').on('hidden.bs.modal', function () {
-                $(this).find('input[type=file]').val(''); // Сброс содержимого input
-                let documentModalFiles = $(this).find(".docList");
-                documentModalFiles.empty(); // Очистка содержимого модального окна
             });
 
+            // Обработчик загрузки изображений
+            $('#imageUpload').change(function() {
+                let fileList = this.files;
+                let uploadedImage = $('#uploadedImage');
+                if (fileList.length > 0) {
+                    let reader = new FileReader();
+                    reader.onload = function(e) {
+                        uploadedImage.attr('src', e.target.result);
+                    }
+                    reader.readAsDataURL(fileList[0]);
+                }
+            });
         });
     </script>
 
-    {{-- динамическое создание вкладок обслуживание --}}
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
+
+            // ------------ динамическое создание вкладок обслуживание  ------------
+
             let serviceTabsCount = 1; // начальный счетчик вкладок для обслуживания
-
             // Обработчик нажатия на кнопку "Создать обслуживание"
-            $('button.btn.btn-primary').on('click',
-                function () {
-                    // Генерируем id для новой вкладки и ее содержимого
-                    let tabId = 'service_' + serviceTabsCount + '-tab';
-                    let paneId = 'service_' + serviceTabsCount;
+            $('.createService').on('click', function () {
+                // Генерируем id для новой вкладки и ее содержимого
+                let tabId = 'service_' + serviceTabsCount + '-tab';
+                let paneId = 'service_' + serviceTabsCount;
 
-                    // Создаем новую вкладку и ее содержимое
-                    let tab = $('<li class="nav-item" role="presentation"> \
+                // Создаем новую вкладку и ее содержимое
+                let tab = $('<li class="nav-item" role="presentation"> \
                     <button class="nav-link" id="' + tabId + '" data-bs-toggle="tab" data-bs-target="#' + paneId + '" type="button" role="tab" aria-controls="' + paneId + '" aria-selected="false">ОБСЛУЖИВАНИЕ ' + serviceTabsCount + '</button> \
                 </li>');
-                    let tabContent = $('<div class="tab-pane fade" id="' + paneId + '" role="tabpanel" aria-labelledby="' + tabId + '"> \
+                let tabContent = $('<div class="tab-pane fade" id="' + paneId + '" role="tabpanel" aria-labelledby="' + tabId + '"> \
                                 <div id="service__blocks" class="d-grid"> \
                                     {{-- ОБСЛУЖИВАНИЕ ТРМ --}} \
                                     <div class="member_card_style services"> \
@@ -280,12 +240,12 @@
                                                     </div> \
                                                     <div class="d-flex justify-content-between align-items-center gap-3"> \
                                                         <label class="w-100" for="prev_maintenance_date_' + serviceTabsCount + '">Дата предыдущего обслуживания</label> \
-                                                        <input id="prev_maintenance_date_' + serviceTabsCount + '" name="prev_maintenance_date" class="form-control w-100" \
+                                                        <input type="date" id="prev_maintenance_date_' + serviceTabsCount + '" name="prev_maintenance_date" class="form-control w-100" \
                                                             placeholder="Введите дату предыдущего обслуживания"> \
                                                     </div> \
                                                     <div class="d-flex justify-content-between align-items-center gap-3"> \
                                                         <label class="w-100" for="planned_maintenance_date_' + serviceTabsCount + '">Плановая дата обслуживания</label> \
-                                                        <input id="planned_maintenance_date_' + serviceTabsCount + '" name="planned_maintenance_date" class="form-control w-100" \
+                                                        <input type="date" id="planned_maintenance_date_' + serviceTabsCount + '" name="planned_maintenance_date" class="form-control w-100" \
                                                             placeholder="Введите плановую дату обслуживания"> \
                                                     </div> \
                                                     <div class="d-flex justify-content-between align-items-center gap-3"> \
@@ -316,34 +276,6 @@
                                                 <!-- Используем класс col-md-6 для создания двух столбцов на широких экранах -->\
                                                 <div class="grid-item">\
                                                     <div class="form-check d-flex align-items-center gap-2">\
-                                                        <input class="form-check-input" type="checkbox" value=" " id=" " data-toggle="tooltip" title="нажмите чтобы выбрать">\
-                                                            <label class="form-check-label form-control" for=" ">\
-                                                                работа 1\
-                                                            </label>\
-                                                    </div>\
-                                                </div>\
-                                                <div class="grid-item">\
-                                                    <div class="form-check d-flex align-items-center gap-2">\
-                                                        <input class="form-check-input" type="checkbox" value=" " id=" " data-toggle="tooltip" title="нажмите чтобы выбрать">\
-                                                            <label class="form-check-label form-control" for=" ">\
-                                                                работа 2\
-                                                            </label>\
-                                                    </div>\
-                                                </div>\
-                                                <div class="grid-item">\
-                                                    <div class="form-check d-flex align-items-center gap-2">\
-                                                        <input class="form-check-input" type="checkbox" value=" " id=" " data-toggle="tooltip" title="нажмите чтобы выбрать">\
-                                                            <label class="form-check-label form-control" for=" ">\
-                                                                работа 3\
-                                                            </label>\
-                                                    </div>\
-                                                </div>\
-                                                <div class="grid-item">\
-                                                    <div class="form-check d-flex align-items-center gap-2">\
-                                                        <input class="form-check-input" type="checkbox" value=" " id=" " data-toggle="tooltip" title="нажмите чтобы выбрать">\
-                                                            <label class="form-check-label form-control" for=" ">\
-                                                                работа 4\
-                                                            </label>\
                                                     </div>\
                                                 </div>\
                                             </div>\
@@ -382,17 +314,16 @@
                                 </div> \
                             </div>');
 
-                    // Добавляем новую вкладку и ее содержимое к соответствующим элементам
-                    $('#cardObjectTab').append(tab);
-                    $('#cardObjectTabContent').append(tabContent);
+                // Добавляем новую вкладку и ее содержимое к соответствующим элементам
+                $('#cardObjectTab').append(tab);
+                $('#cardObjectTabContent').append(tabContent);
 
-                    // Обновляем обработчик событий для выбора цвета
-                    updateColorPicker();
+                // Обновляем обработчик событий для выбора цвета
+                updateColorPicker();
 
-                    // Увеличиваем счетчик вкладок для обслуживания
-                    serviceTabsCount++;
-                });
-
+                // Увеличиваем счетчик вкладок для обслуживания
+                serviceTabsCount++;
+            });
             // Функция для обновления обработчика событий для выбора цвета
             function updateColorPicker() {
                 // Получаем все блоки цветов
@@ -408,34 +339,102 @@
                     $('#selectedColor').val(selectedColor);
                 });
             }
-
             // Вызываем функцию для обновления обработчика событий для выбора цвета
             updateColorPicker();
-        });
-    </script>
 
-    {{-- документы --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // модалка документы
-            let documentModal = $("#docDownloadModal .modal-body");
-            $('input[type=file]').on('change', function () {
-                documentModal.append('<div class="docList"><span><strong>Список вложенных файлов:</strong></span> <ul class="mt-1">'); // Открываем список
-                for (let i = 0; i < this.files.length; i++) {
-                    let doc = this.files[i].name;
-                    documentModal.find('ul').append('<div class="d-flex gap-2 justify-content-between align-items-center mb-3">'
-                        + '<li>' + doc + '</li>' +
-                        '<button type="button" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Удалить вложенный файл из списка">' +
-                        '<i class="bi bi-trash3"></i></button></div>'); // Добавляем файл в список
+
+            // Обработка клика по кнопке "Добавить вид работы"
+            $("#addTypeOfWork").click(function() {
+                // Получаем значение вида работы из поля ввода
+                let typeOfWork = $("#typeOfWorkInput").val();
+                if (typeOfWork.trim() !== '') {
+                    // Создаем новый элемент списка для нового вида работы
+                    let listItem = '<div class="form-check d-flex align-items-center gap-2">' +
+                        '<label class="form-check-label">' + typeOfWork + '</label>' +
+                        '</div>';
+                    // Добавляем новый элемент списка после последнего элемента в блоке "Виды работ"
+                    $(".typesOfWork .grid-item .form-check:last").after(listItem);
+                    // Очищаем поле ввода после добавления
+                    $("#typeOfWorkInput").val('');
                 }
-                documentModal.append('</ul></div>'); // Закрываем список
-            });
-            $('#docDownloadModal').on('hidden.bs.modal', function () {
-                $(this).find('input[type=file]').val(''); // Сброс содержимого input
-                let documentModalFiles = $(this).find(".docList");
-                documentModalFiles.empty(); // Очистка содержимого модального окна
             });
 
+             //------------  обработчик сохранения данных  ------------
+
+            $(".saveCard").click(function() {
+                // Создаем объект FormData для отправки данных на сервер, включая файлы
+                let formData = new FormData();
+
+                // Собираем данные с основной формы
+                formData.append('infrastructure', $("input[name=infrastructure]").val());
+                formData.append('name', $("input[name=name]").val());
+                formData.append('number', $("input[name=number]").val());
+                formData.append('location', $("input[name=location]").val());
+                formData.append('date_arrival', $("input[name=date_arrival]").val());
+                formData.append('date_usage', $("input[name=date_usage]").val());
+                formData.append('date_cert_end', $("input[name=date_cert_end]").val());
+                formData.append('date_usage_end', $("input[name=date_usage_end]").val());
+                // Собираем данные о загруженных изображениях
+                let imageFiles = $("#imageUpload")[0].files;
+                for (let i = 0; i < imageFiles.length; i++) {
+                    formData.append('images[]', imageFiles[i]);
+                }
+                // Собираем данные о загруженных файлах
+                let docFiles = $("#docUpload")[0].files;
+                for (let j = 0; j < docFiles.length; j++) {
+                    formData.append('files[]', docFiles[j]);
+                }
+
+                // Собираем данные с каждой вкладки обслуживания
+                for (let i = 1; i < serviceTabsCount; i++) {
+                    let serviceData = {
+                        service_type: $("#service_type_" + i).val(),
+                        short_name: $("#short_name_" + i).val(),
+                        performer: $("#performer_" + i).val(),
+                        responsible: $("#responsible_" + i).val(),
+                        frequency: $("#frequency_" + i).val(),
+                        prev_maintenance_date: $("#prev_maintenance_date_" + i).val(),
+                        planned_maintenance_date: $("#planned_maintenance_date_" + i).val(),
+                        selectedColor: $("#selectedColor").val(),
+                    };
+                    // Добавляем собранные данные в formData
+                    for (let key in serviceData) {
+                        formData.append("services[" + i + "][" + key + "]", serviceData[key]);
+                    }
+
+                    // Собираем данные о расходных материалах и ЗИП
+                    let materials = $("#service_" + i + " .material_text textarea").val();
+                    formData.append("services[" + i + "][materials]", materials);
+                }
+
+                // Добавляем виды работ к данным
+                const typesOfWork = [];
+                $(".typesOfWork .form-check-label").each(function() {
+                    typesOfWork.push($(this).text());
+                });
+                formData.append('types_of_work', typesOfWork);
+
+
+                // Отправляем данные на сервер
+                $.ajax({
+                    type: "POST",
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: "/save-card-data",
+                    data: formData,
+                    processData: false, // Не обрабатывать данные
+                    contentType: false, // Не устанавливать тип содержимого
+                    success: function(response) {
+                        // Обработка успешного ответа от сервера (например, отображение сообщения об успешном сохранении)
+                        alert("Данные успешно сохранены!");
+                    },
+                    error: function(error) {
+                        // Обработка ошибки при сохранении данных
+                        alert("Ошибка при сохранении данных!");
+                    }
+                });
+            });
         });
     </script>
 @endsection

@@ -17,39 +17,49 @@ Route::middleware(['guest'])->group(function () {
 
 // Все маршруты доступны только аутентифицированным пользователям
 Route::middleware(['auth'])->group(function () {
-    //ЛИЧНЫЙ КАБИНЕТ
-    Route::get('/home/profile', [App\Http\Controllers\HomeController::class, 'profile'])->name('profile');
-    Route::put('/home/profile/update', [App\Http\Controllers\HomeController::class, 'updateProfile'])->name('profile.update');
-    Route::put('/home/profile/change-password', [App\Http\Controllers\HomeController::class, 'changePassword'])->name('profile.change-password');
 
-    // РЕЕСТРЫ
-    //Реестр объектов
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    // ---------------------------- ЛИЧНЫЙ КАБИНЕТ --------------------------------------------------------------------
+        Route::get('/home/profile', [App\Http\Controllers\HomeController::class, 'profile'])->name('profile');
+        // обновление данных профиля
+        Route::put('/home/profile/update', [App\Http\Controllers\HomeController::class, 'updateProfile'])->name('profile.update');
+        // изменение пароля профиля
+        Route::put('/home/profile/change-password', [App\Http\Controllers\HomeController::class, 'changePassword'])->name('profile.change-password');
+    // ----------------------------------------------------------------------------------------------------------------
 
-    //Реестр заказов
-    Route::get('/reestr-work-orders', [App\Http\Controllers\HomeController::class, 'reestrWorkOrdersView'])->name('reestr-workOrders');
+    // ---------------------------- РЕЕСТРЫ ----------------------------------------------------------------------------
+        //Реестр объектов
+        Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+        //Реестр заказов
+        Route::get('/reestr-work-orders', [App\Http\Controllers\HomeController::class, 'reestrWorkOrdersView'])->name('reestr-workOrders');
+        //Реестр графиков
+        Route::get('/pageReestrGraph', [App\Http\Controllers\pageReestrGraphController::class, 'reestrGraphView'])->name('reestr-Graph');
+        //Route::get('/get-reestrGraph-details/{id}', 'App\Http\Controllers\pageReestrGraphController@getReestrGraphDetails')->name('get-reestrGraph-details');
+        //Реестр календарей
+        Route::get('/pageReestrCalendar', [App\Http\Controllers\pageReestrCalendarController::class, 'reestrCalendarView'])->name('reestr-Calendar');
+    // ----------------------------------------------------------------------------------------------------------------
 
-    //Реестр графиков
-    Route::get('/pageReestrGraph', [App\Http\Controllers\pageReestrGraphController::class, 'reestrGraphView'])->name('reestr-Graph');
-    //Route::get('/get-reestrGraph-details/{id}', 'App\Http\Controllers\pageReestrGraphController@getReestrGraphDetails')->name('get-reestrGraph-details');
+    // ---------------------------- КАРТОЧКА ОБЪЕКТА ------------------------------------------------------------------
+        Route::get('/home/card-object/{id}', [App\Http\Controllers\ObjectController::class, 'index'])->name('cardObject');
+        // передача изображения и документов карточки объекта
+        Route::get('/getImage/{id}', [App\Http\Controllers\ObjectController::class, 'getImage'])->name('getImage');
+        Route::get('/download-document/{id}', [App\Http\Controllers\ObjectController::class, 'downloadDocument'])->name('downloadDocument');
+        // СОЗДАНИЕ новой карточки объекта
+        Route::get('/home/card-object-create', [App\Http\Controllers\ObjectController::class, 'create'])->name('cardObject-create');
+        Route::post('/save-card-data', [App\Http\Controllers\ObjectController::class, 'saveData'])->name('cardObject-create-save');
+        // РЕДАКТИРОВАНИЕ существующей карточки объекта
+        Route::get('/home/card-object/edit', [App\Http\Controllers\ObjectController::class, 'edit'])->name('cardObject-edit');
+    // ----------------------------------------------------------------------------------------------------------------
 
-    //Реестр календарей
-    Route::get('/pageReestrCalendar', [App\Http\Controllers\pageReestrCalendarController::class, 'reestrCalendarView'])->name('reestr-Calendar');
+    // ---------------------------- КАРТОЧКА ЗАКАЗ-НАРЯДА -------------------------------------------------------------
+        Route::get('/reestr-work-orders/card-work-order', [App\Http\Controllers\workOrderController::class, 'index'])->name('workOrder');
+    // ----------------------------------------------------------------------------------------------------------------
 
+    // ---------------------------- КАРТОЧКА ГРАФИКА ------------------------------------------------------------------
+        Route::get('/pageReestrGraph/card-graph', [App\Http\Controllers\GraphController::class, 'index'])->name('cardGraph');
+    // ----------------------------------------------------------------------------------------------------------------
 
-
-    // КАРТОЧКА ОБЪЕКТА
-    Route::get('/home/card-object', [App\Http\Controllers\ObjectController::class, 'index'])->name('cardObject');
-    Route::get('/home/card-object-create', [App\Http\Controllers\ObjectController::class, 'create'])->name('cardObject-create');
-    Route::get('/home/card-object/edit', [App\Http\Controllers\ObjectController::class, 'edit'])->name('cardObject-edit');
-
-    // КАРТОЧКА ЗАКАЗ-НАРЯДА
-    Route::get('/reestr-work-orders/card-work-order', [App\Http\Controllers\workOrderController::class, 'index'])->name('workOrder');
-
-    //КАРТОЧКА ГРАФИКА
-    Route::get('/pageReestrGraph/card-graph', [App\Http\Controllers\GraphController::class, 'index'])->name('cardGraph');
-
-    //КАРТОЧКА КАЛЕНДАРЯ
-    Route::get('/pageReestrCalendar/card-calendar', [App\Http\Controllers\CalendarController::class, 'index'])->name('cardCalendar');
+    // ---------------------------- КАРТОЧКА КАЛЕНДАРЯ ----------------------------------------------------------------
+        Route::get('/pageReestrCalendar/card-calendar', [App\Http\Controllers\CalendarController::class, 'index'])->name('cardCalendar');
+    // ----------------------------------------------------------------------------------------------------------------
 });
 

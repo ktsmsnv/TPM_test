@@ -127,19 +127,19 @@
     </header>
     @endif
     <main>
-        <ul class="breadcrumbs container">
-            @if(Route::currentRouteName() !== 'register')
-                @foreach ($breadcrumbs as $crumb)
-                    <li>
-                        @if ($loop->last)
-                            <span style="color: grey;">{{ $crumb->title }}</span>
-                        @else
-                            <a href="{{ $crumb->url }}">{{ $crumb->title }}</a>
-                        @endif
-                    </li>
-                @endforeach
-            @endif
-        </ul>
+{{--        <ul class="breadcrumbs container">--}}
+{{--            @if(Route::currentRouteName() !== 'register')--}}
+{{--                @foreach ($breadcrumbs as $crumb)--}}
+{{--                    <li>--}}
+{{--                        @if ($loop->last)--}}
+{{--                            <span style="color: grey;">{{ $crumb->title }}</span>--}}
+{{--                        @else--}}
+{{--                            <a href="{{ $crumb->url }}">{{ $crumb->title }}</a>--}}
+{{--                        @endif--}}
+{{--                    </li>--}}
+{{--                @endforeach--}}
+{{--            @endif--}}
+{{--        </ul>--}}
 
         @yield('content')
     </main>

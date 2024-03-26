@@ -6,16 +6,13 @@
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
-                <h1 class="mb-4"><strong>Карточка объекта</strong></h1>
+                <h1 class="mb-4"><strong>Карточка
+                        объекта: {{ $data_CardObjectMain->name ?? 'Название объекта не найдено' }}</strong></h1>
             </div>
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
-                    {{-- <button type="button" class="btn btn-success">Сохранить</button>--}}
                     <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
-
                     <a href="" type="button" class="btn btn-primary">Скопировать карточку объекта</a>
-                    {{-- <button type="button" class="btn btn-primary me-5" data-bs-toggle="modal" data-bs-target="#imageDownloadModal">Загрузить изображение</button>--}}
-
                     <a href="/home/card-object/edit" type="button" class="btn btn-outline-danger">Редактировать</a>
                 </div>
             </div>
@@ -43,7 +40,8 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    <div class="tooltip-wrapper" data-toggle="tooltip" title="для создания нажмите кнопку РЕДАКТИРОВАТЬ">
+                                    <div class="tooltip-wrapper" data-toggle="tooltip"
+                                         title="для создания нажмите кнопку РЕДАКТИРОВАТЬ">
                                         <button class="btn btn-primary" disabled>Создать обслуживание</button>
                                     </div>
                                 </div>
@@ -51,37 +49,45 @@
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид инфраструктуры</label>
-                                            <input name="" class="form-control w-100" readonly>
+                                            <input name="" class="form-control w-100" readonly
+                                                   placeholder="{{ $data_CardObjectMain->infrastructure ?? 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Наименование объекта</label>
-                                            <input name="" class="form-control w-100" readonly>
+                                            <input name="" class="form-control w-100" readonly
+                                                   placeholder="{{ $data_CardObjectMain->name ?? 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Инв./заводской №</label>
-                                            <input class="form-control w-100" name="" readonly>
+                                            <input class="form-control w-100" name="" readonly
+                                                   placeholder="{{ $data_CardObjectMain->number ?? 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Место установки</label>
-                                            <input class="form-control  w-100" name="" readonly>
+                                            <input class="form-control  w-100" name="" readonly
+                                                   placeholder="{{ $data_CardObjectMain->location ?? 'нет данных' }}">
                                         </div>
                                     </div>
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата прихода</label>
-                                            <input class="form-control w-100" name="" readonly>
+                                            <input class="form-control w-100" name="" readonly
+                                                   placeholder="{{ isset($data_CardObjectMain->date_arrival) ? date('d-m-Y', strtotime($data_CardObjectMain->date_arrival)) : 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата ввода в эксплуатацию</label>
-                                            <input class="form-control w-100" name="" readonly>
+                                            <input class="form-control w-100" name="" readonly
+                                                   placeholder="{{ isset($data_CardObjectMain->date_usage) ? date('d-m-Y', strtotime($data_CardObjectMain->date_usage)) : 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата окончания аттестации/гарантии</label>
-                                            <input class="form-control w-100" name="" readonly>
+                                            <input class="form-control w-100" name="" readonly
+                                                   placeholder="{{ isset($data_CardObjectMain->date_cert_end) ?  date('d-m-Y', strtotime($data_CardObjectMain->date_cert_end)) : 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата вывода из эксплуатации</label>
-                                            <input class="form-control  w-100" name="" readonly>
+                                            <input class="form-control  w-100" name="" readonly
+                                                   placeholder="{{ isset($data_CardObjectMain->date_usage_end) ? date('d-m-Y', strtotime($data_CardObjectMain->date_usage_end)) : 'нет данных' }}">
                                         </div>
                                     </div>
                                 </div>
@@ -92,18 +98,24 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Документация</h4>
-                                    <div class="tooltip-wrapper" data-toggle="tooltip" title="для вложения нажмите кнопку РЕДАКТИРОВАТЬ">
-                                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#docDownloadModal" disabled>Вложить документ</button>
+                                    <div class="tooltip-wrapper" data-toggle="tooltip"
+                                         title="для вложения нажмите кнопку РЕДАКТИРОВАТЬ">
+                                        <button class="btn btn-primary" data-bs-toggle="modal"
+                                                data-bs-target="#docDownloadModal" disabled>Вложить документ
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="objectDocs">
                                     <ul>
-                                        <li class="d-flex align-items-center gap-3 mb-4">
-                                            <div class="tooltip-wrapper" data-toggle="tooltip" title="для удаления нажмите кнопку РЕДАКТИРОВАТЬ">
-                                                <button type="button" class="btn btn-danger btn-sm" disabled ><i class="bi bi-trash3"></i></button>
-                                            </div>
-                                            <a href="" data-toggle="tooltip" title="нажмите чтобы скачать">Акт входного контроля Сварочный аппарат полуавтомат.pdf</a>
-                                        </li>
+                                        @if ($data_CardObjectMainDocs !== null)
+                                            @foreach ($data_CardObjectMainDocs as $file)
+                                                <li>
+                                                    <a href="{{ route('downloadDocument', $file->id) }}">{{ $file->file_name }}</a>
+                                                </li>
+                                            @endforeach
+                                        @else
+                                            <p>Нет доступных документов</p>
+                                        @endif
                                     </ul>
                                 </div>
                             </div>
@@ -113,17 +125,26 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Изображение объекта</h4>
-                                    <div class="tooltip-wrapper" data-toggle="tooltip" title="для загрузки нажмите кнопку РЕДАКТИРОВАТЬ">
-                                        <button class="btn btn-primary disabled" data-bs-toggle="modal" data-bs-target="#imageDownloadModal">Загрузить</button>
+                                    <div class="tooltip-wrapper" data-toggle="tooltip"
+                                         title="для загрузки нажмите кнопку РЕДАКТИРОВАТЬ">
+                                        <button class="btn btn-primary disabled" data-bs-toggle="modal"
+                                                data-bs-target="#imageDownloadModal">Загрузить
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="objectImage">
-                                    <img src="http://placehold.it/350x450"/>
+                                    @if ($data_CardObjectMain)
+                                        <img src="{{ route('getImage', ['id' => $data_CardObjectMain->id]) }}"
+                                             alt="Image">
+                                    @else
+                                        <p>Нет доступных изображений</p>
+                                    @endif
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 {{-- ВКЛАДКА "ОБСЛУЖИВАНИЕ" --}}
                 <div class="tab-pane fade" id="service_1" role="tabpanel" aria-labelledby="service_1-tab">
                     <div id="service__blocks" class="d-grid">
@@ -135,7 +156,8 @@
                                     <button class="btn btn-primary">Обновить даты</button>
                                     <div>
                                         <input type="checkbox" class="form-check-input me-1" id="disableInTable">
-                                        <label class="form-check-label disableInTable" for="disableInTable">Не выводить
+                                        <label class="form-check-label disableInTable" for="disableInTable">Не
+                                            выводить
                                             на основной
                                             экран, в график TPM и не отправлять уведомления</label>
                                     </div>
@@ -190,37 +212,47 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Виды работ</h4>
-                                    <div class="tooltip-wrapper" data-toggle="tooltip" title="для добавления нажмите кнопку РЕДАКТИРОВАТЬ">
-                                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#typesModal" disabled>Добавить вид работ</button>
+                                    <div class="tooltip-wrapper" data-toggle="tooltip"
+                                         title="для добавления нажмите кнопку РЕДАКТИРОВАТЬ">
+                                        <button class="btn btn-primary" data-bs-toggle="modal"
+                                                data-bs-target="#typesModal" disabled>Добавить вид работ
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="typesOfWork">
                                     <!-- Используем класс row для создания строки -->
                                     <div class="grid-container">
                                         <!-- Используем класс col-md-6 для создания двух столбцов на широких экранах -->
-                                        <div class="grid-item" >
+                                        <div class="grid-item">
                                             <div class="form-check d-flex align-items-center gap-2">
-                                                <label class="form-check-label form-control" data-toggle="tooltip" title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ">
+                                                <label class="form-check-label form-control" data-toggle="tooltip"
+                                                       title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ">
                                                     работа 1
                                                 </label>
                                             </div>
                                         </div>
                                         <div class="grid-item">
-                                            <div class="form-check d-flex align-items-center gap-2" data-toggle="tooltip" title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ">
+                                            <div class="form-check d-flex align-items-center gap-2"
+                                                 data-toggle="tooltip"
+                                                 title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ">
                                                 <label class="form-check-label form-control" for=" ">
                                                     работа 2
                                                 </label>
                                             </div>
                                         </div>
                                         <div class="grid-item">
-                                            <div class="form-check d-flex align-items-center gap-2" data-toggle="tooltip" title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ">
+                                            <div class="form-check d-flex align-items-center gap-2"
+                                                 data-toggle="tooltip"
+                                                 title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ">
                                                 <label class="form-check-label form-control" for=" ">
                                                     работа 3
                                                 </label>
                                             </div>
                                         </div>
                                         <div class="grid-item">
-                                            <div class="form-check d-flex align-items-center gap-2" data-toggle="tooltip" title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ">
+                                            <div class="form-check d-flex align-items-center gap-2"
+                                                 data-toggle="tooltip"
+                                                 title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ">
                                                 <label class="form-check-label form-control" for=" ">
                                                     работа 4
                                                 </label>
@@ -238,7 +270,8 @@
                                 </div>
                                 <div class="material_text w-100">
                                     <!-- Добавляем textarea с атрибутом placeholder -->
-                                    <textarea class="form-control" readonly data-toggle="tooltip" title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ"></textarea>
+                                    <textarea class="form-control" readonly data-toggle="tooltip"
+                                              title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -247,8 +280,11 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Изображение объекта</h4>
-                                    <div class="tooltip-wrapper" data-toggle="tooltip" title="для загрузки нажмите кнопку РЕДАКТИРОВАТЬ">
-                                        <button class="btn btn-primary disabled" data-bs-toggle="modal" data-bs-target="#imageDownloadModal">Загрузить</button>
+                                    <div class="tooltip-wrapper" data-toggle="tooltip"
+                                         title="для загрузки нажмите кнопку РЕДАКТИРОВАТЬ">
+                                        <button class="btn btn-primary disabled" data-bs-toggle="modal"
+                                                data-bs-target="#imageDownloadModal">Загрузить
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="objectImage">
@@ -260,133 +296,5 @@
                 </div>
             </div>
         </div>
-
-        <!-- Загрузка изображения модальное окно -->
-        <div class="modal fade" id="imageDownloadModal" tabindex="-1" aria-labelledby="imageDownloadModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="imageDownloadModalLabel"><strong>Загрузка изображения объекта</strong></h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <span>Загрузите изображение:</span>
-                        <input class="form-control w-100 mt-2" type="file"  accept="image/*, .jpg, .jpeg, .png" title="Выберите изображение в формате .jpg, .jpeg, .png">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                        <button type="button" class="btn btn-primary">Загрузить</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Загрузка документа модальное окно -->
-        <div class="modal fade" id="docDownloadModal" tabindex="-1" aria-labelledby="docDownloadModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="docDownloadModalLabel"><strong>Загрузка документов объекта</strong></h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <span>Загрузите документ:</span>
-                        <input class="form-control w-100 mt-2 mb-3" type="file" multiple="multiple" title="Выберите файлы">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                        <button type="button" class="btn btn-primary">Загрузить</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Добавить виды работ модальное окно -->
-        <div class="modal fade" id="typesModal" tabindex="-1" aria-labelledby="typesModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="typesModalLabel"><strong>Добавление вида работ</strong></h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="d-flex align-items-center gap-1">
-                            <label class="w-50">Вид работы</label>
-                            <input name="" placeholder="Введите название вида работы" class="form-control w-100">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-                        <button type="button" class="btn btn-primary">Добавить</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- выбор цвета  в календаре--}}
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                $("#cardObjectTab").show;
-
-                // Получаем все блоки цветов
-                const colorOptions = document.querySelectorAll('.color-option');
-                // Добавляем обработчик события для каждого блока цвета
-                colorOptions.forEach(option => {
-                    option.addEventListener('click', () => {
-                        // Убираем рамку у всех блоков цветов
-                        colorOptions.forEach(opt => opt.classList.remove('selected'));
-                        // Добавляем рамку только выбранному блоку цвета
-                        option.classList.add('selected');
-                        // Получаем цвет выбранного блока и устанавливаем его в скрытом поле ввода
-                        const selectedColor = option.getAttribute('data-color');
-                        document.getElementById('selectedColor').value = selectedColor;
-                    });
-                });
-
-                // модалка документы
-                let documentModal = $("#docDownloadModal .modal-body");
-                $('input[type=file]').on('change', function() {
-                    documentModal.append('<div class="docList"><span><strong>Список вложенных файлов:</strong></span> <ul class="mt-1">'); // Открываем список
-                    for (let i = 0; i < this.files.length; i++) {
-                        let doc = this.files[i].name;
-                        documentModal.find('ul').append('<div class="d-flex gap-2 justify-content-between align-items-center mb-3">'
-                            +'<li>' + doc + '</li>' +
-                            '<button type="button" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Удалить вложенный файл из списка">' +
-                            '<i class="bi bi-trash3"></i></button></div>'); // Добавляем файл в список
-                    }
-                    documentModal.append('</ul></div>'); // Закрываем список
-                });
-                $('#docDownloadModal').on('hidden.bs.modal', function () {
-                    $(this).find('input[type=file]').val(''); // Сброс содержимого input
-                    let documentModalFiles = $(this).find(".docList");
-                    documentModalFiles.empty(); // Очистка содержимого модального окна
-                });
-
-            });
-        </script>
-
-        {{-- вывод вложенных документов --}}
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                // модалка документы
-                let documentModal = $("#docDownloadModal .modal-body");
-                $('input[type=file]').on('change', function() {
-                    documentModal.append('<div class="docList"><span><strong>Список вложенных файлов:</strong></span> <ul class="mt-1">'); // Открываем список
-                    for (let i = 0; i < this.files.length; i++) {
-                        let doc = this.files[i].name;
-                        documentModal.find('ul').append('<div class="d-flex gap-2 justify-content-between align-items-center mb-3">'
-                            +'<li>' + doc + '</li>' +
-                            '<button type="button" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Удалить вложенный файл из списка">' +
-                            '<i class="bi bi-trash3"></i></button></div>'); // Добавляем файл в список
-                    }
-                    documentModal.append('</ul></div>'); // Закрываем список
-                });
-                $('#docDownloadModal').on('hidden.bs.modal', function () {
-                    $(this).find('input[type=file]').val(''); // Сброс содержимого input
-                    let documentModalFiles = $(this).find(".docList");
-                    documentModalFiles.empty(); // Очистка содержимого модального окна
-                });
-
-            });
-        </script>
+    </div>
 @endsection

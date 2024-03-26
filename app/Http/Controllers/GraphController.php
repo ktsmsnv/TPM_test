@@ -12,6 +12,6 @@ class GraphController extends Controller
     public function index()
     {
         $breadcrumbs = Breadcrumbs::generate('card-graph');
-        return view('card-graph', compact('breadcrumbs'));
+        return view('cards/card-graph', compact('breadcrumbs'));
     }
 }

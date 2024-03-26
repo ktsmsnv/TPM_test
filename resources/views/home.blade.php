@@ -70,12 +70,14 @@
                             </tr>
                             </thead>
                             <tbody>
+                            @foreach($objects as $object)
                             <tr data-id="1">
                                 <td></td>
                                 <td>из карточки объекта</td>
                                 <td class="tool-tip" title="открыть карточку объекта">
-                                    <a href="/home/card-object" >
-                                        Сварочное оборудование JASIC MIG 3500 TECH N222</a>
+                                    <a href="{{ route('cardObject', ['id' => $object->id]) }}" target="_blank">
+                                        {{ $object->name }}
+                                    </a>
                                 </td>
                                 <td>из карточки объекта</td>
                                 <td>из карточки объекта</td>
@@ -90,6 +92,7 @@
                                 <td><a href="/card-work-order"  class="tool-tip" title="открыть карточку заказ-наярда">№ заказа</a></td>
                                 <td><a href=""  class="tool-tip" title="открыть карточку календаря">№ календаря</a></td>
                             </tr>
+                            @endforeach
                             </tbody>
                         </table>
                     </div>

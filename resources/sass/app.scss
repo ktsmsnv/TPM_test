@@ -240,6 +240,15 @@ main {
     &-inputs {
 
     }
+    .objectImage {
+        position: relative;
+        margin: 0 auto;
+        img {
+            object-fit: contain;
+            max-width: 450px;
+            position: relative;
+        }
+    }
 }
 .custom_tab_style1 {
     &.nav-tabs {
