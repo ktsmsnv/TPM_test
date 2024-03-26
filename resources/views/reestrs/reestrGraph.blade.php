@@ -99,11 +99,11 @@
     </div>
 
     <!-- Модальное окно подтверждения удаления -->
-    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteRGLabel" aria-hidden="true">
+    <div class="modal fade" id="confirmDeleteRGModal" tabindex="-1" aria-labelledby="confirmDeleteRGLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="confirmDeleteModalLabel">Подтверждение удаления</h5>
+                    <h5 class="modal-title" id="confirmDeleteRGModalLabel">Подтверждение удаления</h5>
                     <button type="button" class="btn-close" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -111,7 +111,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteButton">Удалить</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteRGButton">Удалить</button>
                 </div>
             </div>
         </div>
@@ -122,8 +122,8 @@
             let $table = $('#reestrGraph');
             var $remove = $('#remove');
             var selections = [];
-            let $confirmDelete = $('#confirmDeleteModal'); // Ссылка на модальное окно
-            let $confirmDeleteButton = $('#confirmDeleteButton'); // Кнопка "Удалить" в модальном окне
+            let $confirmDeleteRG = $('#confirmDeleteRGModal'); // Ссылка на модальное окно
+            let $confirmDeleteRGButton = $('#confirmDeleteRGButton'); // Кнопка "Удалить" в модальном окне
 
 
             function getIdSelections() {
@@ -175,17 +175,17 @@
                         values: ids
                     });
                     $remove.prop('disabled', true);
-                    showConfirmDeleteModal();
+                    showConfirmDeleteRGModal();
                 });
 
                 // Функция для отображения модального окна удаления
-                function showConfirmDeleteModal() {
-                    $confirmDelete.modal('show');
+                function showConfirmDeleteRGModal() {
+                    $confirmDeleteRG.modal('show');
                 }
                 // Обработчик события нажатия на кнопку "Удалить" в модальном окне
-                $confirmDeleteButton.click(function () {
+                $confirmDeleteRGButton.click(function () {
                     // добавить логику для удаления элементов
-                    $confirmDelete.modal('hide');
+                    $confirmDeleteRG.modal('hide');
                 });
             }
 
