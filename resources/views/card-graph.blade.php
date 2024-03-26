@@ -1,4 +1,4 @@
-{{--страница карточка объекта --}}
+{{--страница карточка графа --}}
 @extends('layouts.app')
 
 @section('content')
@@ -22,14 +22,14 @@
             {{-- КАРТОЧКА С ВКЛАДКОЙ --}}
             <ul class="nav nav-tabs custom_tab_style1" id="cardGraphTab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="main-tab" data-bs-toggle="tab" data-bs-target="#main"
-                            type="button" role="tab" aria-controls="main" aria-selected="true">ОСНОВНАЯ
+                    <button class="nav-link active" id="mainCardGraph-tab" data-bs-toggle="tab" data-bs-target="#mainCardGraph"
+                            type="button" role="tab" aria-controls="mainCardGraph" aria-selected="true">ОСНОВНАЯ
                     </button>
                 </li>
             </ul>
             <div class="tab-content" id="cardGraphTabContent">
                 {{-- ВКЛАДКА "ОСНОВНАЯ" --}}
-                <div class="tab-pane fade show active" id="main" role="tabpanel" aria-labelledby="main-tab">
+                <div class="tab-pane fade show active" id="mainCardGraph" role="tabpanel" aria-labelledby="mainCardGraph-tab">
                     <div id="main__blocks" class="d-grid">
                         {{-- ОБЩИЕ ДАННЫЕ --}}
                         <div class="member_card_style general">
@@ -84,7 +84,7 @@
                                     <h4>График ТРМ</h4>
                                 </div>
                                 <div class="objectDocs">
-                                    <table id="reestrObject"
+                                    <table id="reestrCardGraph"
                                            data-toolbar="#toolbar"
                                            data-search="true"
                                            data-show-refresh="true"
@@ -160,23 +160,7 @@
             $(document).ready(function () {
                 $("#cardGraphTab").show;
 
-                // Получаем все блоки цветов
-                const colorOptions = document.querySelectorAll('.color-option');
-                // Добавляем обработчик события для каждого блока цвета
-                colorOptions.forEach(option => {
-                    option.addEventListener('click', () => {
-                        // Убираем рамку у всех блоков цветов
-                        colorOptions.forEach(opt => opt.classList.remove('selected'));
-                        // Добавляем рамку только выбранному блоку цвета
-                        option.classList.add('selected');
-                        // Получаем цвет выбранного блока и устанавливаем его в скрытом поле ввода
-                        const selectedColor = option.getAttribute('data-color');
-                        document.getElementById('selectedColor').value = selectedColor;
-                    });
-                });
-
-
-                let $table = $('#reestrObject');
+                let $table = $('#reestrCardGraph');
                 var $remove = $('#remove');
                 var selections = [];
 
