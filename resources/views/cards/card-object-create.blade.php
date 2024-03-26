@@ -421,7 +421,7 @@
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    url: "/save-card-data", // Замените на ваш маршрут для обработки сохранения данных
+                    url: "/save-card-data",
                     data: formData,
                     processData: false, // Не обрабатывать данные
                     contentType: false, // Не устанавливать тип содержимого
