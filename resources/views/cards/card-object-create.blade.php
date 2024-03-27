@@ -270,7 +270,7 @@
                                             <h4>Виды работ</h4>\
                                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#typesModal">Добавить вид работ</button>\
                                     </div>\
-                                        <div class="typesOfWork">\
+                                        <div class="typesOfWork" id="typesOfWork">\
                                             <!-- Используем класс row для создания строки -->\
                                             <div class="grid-container">\
                                                 <!-- Используем класс col-md-6 для создания двух столбцов на широких экранах -->\
@@ -343,21 +343,25 @@
             updateColorPicker();
 
 
+            // Объявляем переменную typesOfWork в глобальной области видимости
+            let typesOfWork = [];
             // Обработка клика по кнопке "Добавить вид работы"
             $("#addTypeOfWork").click(function() {
                 // Получаем значение вида работы из поля ввода
-                let typeOfWork = $("#typeOfWorkInput").val();
-                if (typeOfWork.trim() !== '') {
+                let typeOfWork = $("#typeOfWorkInput").val().trim();
+                if (typeOfWork !== '') {
+                    // Добавляем значение вида работы в массив typesOfWork
+                    typesOfWork.push(typeOfWork);
+
                     // Создаем новый элемент списка для нового вида работы
-                    let listItem = '<div class="form-check d-flex align-items-center gap-2">' +
-                        '<label class="form-check-label">' + typeOfWork + '</label>' +
-                        '</div>';
-                    // Добавляем новый элемент списка после последнего элемента в блоке "Виды работ"
-                    $(".typesOfWork .grid-item .form-check:last").after(listItem);
+                    let listItem = '<input name="types_of_work[]" value="' + typeOfWork + '">';
+                    // Добавляем скрытое поле с именем "types_of_work[]" и значением вида работы
+                    $("#typesOfWork").append(listItem);
                     // Очищаем поле ввода после добавления
                     $("#typeOfWorkInput").val('');
                 }
             });
+
 
              //------------  обработчик сохранения данных  ------------
 
@@ -396,6 +400,8 @@
                         prev_maintenance_date: $("#prev_maintenance_date_" + i).val(),
                         planned_maintenance_date: $("#planned_maintenance_date_" + i).val(),
                         selectedColor: $("#selectedColor").val(),
+
+                        service_id: i
                     };
                     // Добавляем собранные данные в formData
                     for (let key in serviceData) {
@@ -405,14 +411,15 @@
                     // Собираем данные о расходных материалах и ЗИП
                     let materials = $("#service_" + i + " .material_text textarea").val();
                     formData.append("services[" + i + "][materials]", materials);
+
+                    for (let j = 0; j < typesOfWork.length; j++) {
+                        formData.append("services[" + i + "][types_of_work][" + j + "]", typesOfWork[j]);
+                    }
                 }
 
-                // Собираем данные о виде работы и добавляем их к formData
-                let typesOfWork = []; // Создаем массив для хранения видов работ
-                $(".typesOfWork .form-check-label").each(function(index) {
-                    typesOfWork.push($(this).text()); // Добавляем каждый вид работы в массив
-                });
-                formData.append('types_of_work', JSON.stringify(typesOfWork)); // Передаем массив как JSON строку
+                // Добавляем массив typesOfWork в formData
+                // formData.append('types_of_work', JSON.stringify(typesOfWork));
+
 
                 // Отправляем данные на сервер
                 $.ajax({
