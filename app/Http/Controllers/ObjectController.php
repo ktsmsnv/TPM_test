@@ -149,16 +149,12 @@ class ObjectController extends Controller
             }
         }
 
-        // Обработка сохранения видов работ
+        // Сохраняем виды работ
         if ($request->has('types_of_work')) {
-            $typesOfWorkString = $request->types_of_work;
-            $typesOfWorkArray = explode(',', $typesOfWorkString); // Разбиваем строку на массив по запятой
-            foreach ($typesOfWorkArray as $typeOfWork) {
-                // Создаем новую запись для вида работы в модели CardObjectServicesTypes
+            foreach ($request->types_of_work as $typeOfWork) {
                 $newTypeOfWork = new CardObjectServicesTypes();
                 $newTypeOfWork->card_id = $card->id;
-                $newTypeOfWork->type_work = $typeOfWork; // Тип работы извлекается из массива, полученного из строки
-                // Сохраняем данные о видах работ
+                $newTypeOfWork->type_work = $typeOfWork;
                 $newTypeOfWork->save();
             }
         }
