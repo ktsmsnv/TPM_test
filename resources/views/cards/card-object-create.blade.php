@@ -407,13 +407,12 @@
                     formData.append("services[" + i + "][materials]", materials);
                 }
 
-                // Добавляем виды работ к данным
-                const typesOfWork = [];
-                $(".typesOfWork .form-check-label").each(function() {
-                    typesOfWork.push($(this).text());
+                // Собираем данные о виде работы и добавляем их к formData
+                let typesOfWork = []; // Создаем массив для хранения видов работ
+                $(".typesOfWork .form-check-label").each(function(index) {
+                    typesOfWork.push($(this).text()); // Добавляем каждый вид работы в массив
                 });
-                formData.append('types_of_work', typesOfWork);
-
+                formData.append('types_of_work', JSON.stringify(typesOfWork)); // Передаем массив как JSON строку
 
                 // Отправляем данные на сервер
                 $.ajax({
