@@ -8,7 +8,6 @@
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-success">Выбрать период действия</button>
                     <button type="button" class="btn btn-success">Показать активные графики</button>
-                    <button type="button" class="btn btn-primary">Реестр графиков ТРМ</button>
                 </div>
             </div>
             <select class="form-control d-none" id="locale">

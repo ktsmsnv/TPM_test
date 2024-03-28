@@ -10,7 +10,7 @@
                     <a type="button" class="btn btn-success" data-toggle="tooltip" title="без даты вывода объекта из эксплуатации">Показать активные объекты</a>
                     <a href="/home/card-object-create" target="_blank" type="button" class="btn btn-primary">Создать карточку объекта</a>
                     <a type="button" class="btn btn-primary btn-primary--2">Скопировать карточку объекта</a>
-                    <a type="button" class="btn btn-light">Сформировать график TPM</a>
+                    <a type="button" class="btn btn-light" href="/pageReestrGraph/card-graph">Сформировать график TPM</a>
                     <a type="button" class="btn btn-light">Сформировать календарь TPM</a>
                     <a type="button" class="btn btn-light">Сформировать заказ-наряд TPM</a>
                 </div>
