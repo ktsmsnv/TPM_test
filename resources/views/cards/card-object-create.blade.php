@@ -254,7 +254,7 @@
                                                     <div class="color-option green" data-color="#00ff00"></div> \
                                                     <div class="color-option blue" data-color="#0000ff"></div> \
                                                 </div> \
-                                                <input type="hidden" id="selectedColor" name="selectedColor"> \
+                                                <input type="hidden" id="selectedColor_' + serviceTabsCount + '" name="selectedColor"> \
                                             </div> \
                                         </div> \
                                     </div> \
@@ -291,7 +291,7 @@
                                  </div>\
                                 <div class="material_text w-100">\
                                 <!-- Добавляем textarea с атрибутом placeholder -->\
-                                <textarea class="form-control" placeholder="Введите расходные материалы и ЗИП"></textarea>\
+                                <textarea id="materialsTextArea_' + serviceTabsCount + '" class="form-control materialsTextArea" placeholder="Введите расходные материалы и ЗИП"></textarea>\
                             </div>\
                             </div>\
                              </div>\
@@ -333,9 +333,12 @@
                         colorOptions.removeClass('selected');
                         // Добавляем рамку только выбранному блоку цвета
                         $(this).addClass('selected');
-                        // Получаем цвет выбранного блока и устанавливаем его в скрытом поле ввода
+                        // Получаем цвет выбранного блока
                         const selectedColor = $(this).data('color');
-                        $('#selectedColor').val(selectedColor);
+                        // Находим скрытое поле выбранного цвета для текущей вкладки
+                        const selectedColorField = $(this).closest('.tab-pane').find('input[name="selectedColor"]');
+                        // Устанавливаем значение цвета в скрытое поле ввода текущей вкладки
+                        selectedColorField.val(selectedColor);
                     });
                 }
                 // Вызываем функцию для обновления обработчика событий для выбора цвета
@@ -348,20 +351,19 @@
                 $("#addTypeOfWork").click(function() {
                     let typeOfWork = $("#typeOfWorkInput").val().trim();
                     if (typeOfWork !== '') {
-                        let currentServiceId = $('.tab-pane.active').attr('id'); // Получаем id текущей активной вкладки
-                        // Проверяем, есть ли уже массив с видами работ для этой вкладки, если нет, то создаем его
+                        let currentServiceId = $('.tab-pane.active').attr('id');
                         if (!typesOfWorkByService[currentServiceId]) {
                             typesOfWorkByService[currentServiceId] = [];
                         }
-                        // Добавляем вид работы в массив для текущей вкладки
                         typesOfWorkByService[currentServiceId].push(typeOfWork);
-
                         let listItem = '<input name="services[' + currentServiceId + '][types_of_work][]" value="' + typeOfWork + '">';
                         $("#" + currentServiceId + " .typesOfWork").append(listItem);
                         $("#typeOfWorkInput").val('');
+
+                        // Обновляем объект formData
+                        formData.append("services[" + currentServiceId + "][types_of_work][]", typeOfWork);
                     }
                 });
-
              //------------  обработчик сохранения данных  ------------
 
                 $(".saveCard").click(function () {
@@ -377,11 +379,13 @@
                     formData.append('date_usage', $("input[name=date_usage]").val());
                     formData.append('date_cert_end', $("input[name=date_cert_end]").val());
                     formData.append('date_usage_end', $("input[name=date_usage_end]").val());
+
                     // Собираем данные о загруженных изображениях
                     let imageFiles = $("#imageUpload")[0].files;
                     for (let i = 0; i < imageFiles.length; i++) {
                         formData.append('images[]', imageFiles[i]);
                     }
+
                     // Собираем данные о загруженных файлах
                     let docFiles = $("#docUpload")[0].files;
                     for (let j = 0; j < docFiles.length; j++) {
@@ -398,31 +402,27 @@
                             frequency: $("#frequency_" + i).val(),
                             prev_maintenance_date: $("#prev_maintenance_date_" + i).val(),
                             planned_maintenance_date: $("#planned_maintenance_date_" + i).val(),
-                            selectedColor: $("#selectedColor").val(),
-
+                            selectedColor: $("#selectedColor_" + i).val(),
                             service_id: i
                         };
+
                         // Добавляем собранные данные в formData
                         for (let key in serviceData) {
                             formData.append("services[" + i + "][" + key + "]", serviceData[key]);
                         }
 
-                        // Собираем данные о расходных материалах и ЗИП
-                        let materials = $("#service_" + i + " .material_text textarea").val();
+                        // Получаем материалы для текущей вкладки
+                        let materials = $("#materialsTextArea_" + i).val();
                         formData.append("services[" + i + "][materials]", materials);
 
-                        // Собираем данные с каждой вкладки обслуживания
-                        for (let serviceId in typesOfWorkByService) {
-                            let typesOfWork = typesOfWorkByService[serviceId];
-                            for (let i = 0; i < typesOfWork.length; i++) {
-                                formData.append("services[" + serviceId + "][types_of_work][" + i + "]", typesOfWork[i]);
-                            }
+                        // Добавляем виды работ для данного обслуживания
+                        let typesOfWork = typesOfWorkByService[i];
+                        if (typesOfWork && typesOfWork.length > 0) {
+                            typesOfWork.forEach(function(type) {
+                                formData.append("services[" + i + "][types_of_work][]", type);
+                            });
                         }
                     }
-
-                // Добавляем массив typesOfWork в formData
-                // formData.append('types_of_work', JSON.stringify(typesOfWork));
-
 
                     // Отправляем данные на сервер
                     $.ajax({

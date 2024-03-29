@@ -123,13 +123,23 @@ class ObjectController extends Controller
         // Обработка сохранения данных об обслуживаниях
         if ($request->has('services')) {
             $services = $request->services;
-            foreach ($services as $service) {
-                $serviceData = $service; // Получаем данные об обслуживании
-                $typesOfWork = $service['types_of_work'];
-                $selectedColor = $serviceData['selectedColor']; // Получаем выбранный цвет для календаря
+            foreach ($services as $serviceId => $service) {
+                // Получаем данные об обслуживании
+                $serviceData = $service;
+                // Получаем список видов работ для текущего обслуживания
+                $typesOfWork = [];
+                foreach ($service as $key => $value) {
+                    if (str_contains($key, 'types_of_work')) {
+                        foreach ($value as $work) {
+                            $typesOfWork[] = $work;
+                        }
+                    }
+                }
+                // Получаем остальные данные об обслуживании
+                $selectedColor = $serviceData['selectedColor'];
                 $materials = $serviceData['materials']; // Получаем данные о расходных материалах
 
-                // Создаем новую запись для обслуживания в модели Service
+                // Создаем новую запись для обслуживания в модели CardObjectServices
                 $newService = new CardObjectServices();
                 $newService->service_type = $serviceData['service_type'];
                 $newService->short_name = $serviceData['short_name'];
@@ -155,6 +165,7 @@ class ObjectController extends Controller
                 }
             }
         }
+
 
         // Возвращаем ответ об успешном сохранении данных
         return response()->json(['message' => 'Данные успешно сохранены'], 200);
