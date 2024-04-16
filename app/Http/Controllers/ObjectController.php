@@ -124,24 +124,31 @@ class ObjectController extends Controller
         if ($request->has('services')) {
             $services = $request->services;
             foreach ($services as $service) {
-                $serviceData = $service; // Получаем данные об обслуживании
-                $typesOfWork = $service['types_of_work'];
-                $selectedColor = $serviceData['selectedColor']; // Получаем выбранный цвет для календаря
-                $materials = $serviceData['materials']; // Получаем данные о расходных материалах
+                // Получаем данные об обслуживании
+                $serviceType = $service['service_type'];
+                $shortName = $service['short_name'];
+                $performer = $service['performer'];
+                $responsible = $service['responsible'];
+                $frequency = $service['frequency'];
+                $prevMaintenanceDate = $service['prev_maintenance_date'];
+                $plannedMaintenanceDate = $service['planned_maintenance_date'];
+                $selectedColor = $service['selectedColor'];
+                $materials = $service['materials'];
 
-                // Создаем новую запись для обслуживания в модели Service
+                // Получаем виды работ
+                $typesOfWork = $service['types_of_work'] ?? [];
+
+                // Создаем новую запись для обслуживания в модели CardObjectServices
                 $newService = new CardObjectServices();
-                $newService->service_type = $serviceData['service_type'];
-                $newService->short_name = $serviceData['short_name'];
-                $newService->performer = $serviceData['performer'];
-                $newService->responsible = $serviceData['responsible'];
-                $newService->frequency = $serviceData['frequency'];
-                $newService->prev_maintenance_date = $serviceData['prev_maintenance_date'];
-                $newService->planned_maintenance_date = $serviceData['planned_maintenance_date'];
-                $newService->calendar_color = $selectedColor; // Сохраняем выбранный цвет для календаря
-                $newService->consumable_materials = $materials; // Сохраняем данные о расходных материалах
-
-                // Связываем обслуживание с карточкой объекта
+                $newService->service_type = $serviceType;
+                $newService->short_name = $shortName;
+                $newService->performer = $performer;
+                $newService->responsible = $responsible;
+                $newService->frequency = $frequency;
+                $newService->prev_maintenance_date = $prevMaintenanceDate;
+                $newService->planned_maintenance_date = $plannedMaintenanceDate;
+                $newService->calendar_color = $selectedColor;
+                $newService->consumable_materials = $materials;
                 $newService->card_object_main_id = $card->id;
                 $newService->save();
 
@@ -155,6 +162,8 @@ class ObjectController extends Controller
                 }
             }
         }
+
+
 
         // Возвращаем ответ об успешном сохранении данных
         return response()->json(['message' => 'Данные успешно сохранены'], 200);
