@@ -27,6 +27,7 @@
 body {
     font-family: "DM Sans", sans-serif;
 }
+
 .container {
     position: relative;
     width: 95% !important;
@@ -34,9 +35,11 @@ body {
     margin: 0 auto;
     padding: 0;
 }
+
 main {
     padding: 50px 0 20px;
 }
+
 /* Стили для хлебных крошек */
 .breadcrumbs {
     list-style: none;
@@ -354,10 +357,7 @@ main {
     #f8f9fa;
 }
 
-//----------------- CARD WORK ORDER -----------------------
-
-
-
+//----------------- CARD CALENDAR -----------------------
 #calendar {
     max-width: 1200px;
     margin: 40px auto;

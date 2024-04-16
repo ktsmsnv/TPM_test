@@ -27,20 +27,17 @@ class ObjectController extends Controller
     }
 
 
-    // Получение изображения
+    // ------------------  Получение изображения  --------------------------
     public function getImage($id)
     {
         // Получаем объект CardObjectMain по его id
         $cardObject = CardObjectMain::find($id);
-
         // Проверяем, существует ли такой объект и содержит ли он изображение
         if ($cardObject && $cardObject->image) {
             // Получаем бинарные данные изображения
             $binaryData = $cardObject->image;
-
             // Определяем тип бинарных данных
             $contentType = finfo_buffer(finfo_open(), $binaryData->getData(), FILEINFO_MIME_TYPE);
-
             // Возвращаем содержимое изображения с правильным заголовком
             return response($binaryData->getData(), 200)
                 ->header('Content-Type', $contentType);
@@ -50,7 +47,7 @@ class ObjectController extends Controller
         }
     }
 
-    //Получение документа (СКАЧИВАНИЕ)
+    // ------------------  Получение документа (СКАЧИВАНИЕ)  ------------------
     public function downloadDocument($id)
     {
         // Находим запись файла по идентификатору
@@ -62,14 +59,14 @@ class ObjectController extends Controller
     }
 
 
-    // СОЗДАНИЕ карточки объекта (переход на страницу)
+    // ------------------  СОЗДАНИЕ карточки объекта (переход на страницу)  ------------------
     public function create()
     {
         $breadcrumbs = Breadcrumbs::generate('card-object-create');
         return view('cards/card-object-create', compact('breadcrumbs'));
     }
 
-    // РЕДАКТИРОВАНИЕ карточки объекта (переход на страницу)
+    // ------------------  РЕДАКТИРОВАНИЕ карточки объекта (переход на страницу) ------------------
     public function edit()
     {
         $breadcrumbs = Breadcrumbs::generate('/card-object/edit');
@@ -77,7 +74,7 @@ class ObjectController extends Controller
     }
 
 
-    //СОХРАНЕНИЕ НОВОЙ карточки объекта (СОЗДАНИЕ)
+    //------------------ СОХРАНЕНИЕ НОВОЙ карточки объекта (СОЗДАНИЕ) ------------------
     public function saveData(Request $request)
     {
         // Обработка сохранения основных данных карточки
@@ -95,7 +92,7 @@ class ObjectController extends Controller
         // Обработка сохранения изображений
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                $content = file_get_contents($image->getRealPath()); // Получение содержимого файла
+                $content = file_get_contents($image->getRealPath()); // Получение содержимого файа
                 $binaryData = new Binary($content, Binary::TYPE_GENERIC); // Создание объекта Binary с двоичными данными
 
                 // Присваиваем двоичные данные к полю image модели CardObjectMain
@@ -127,37 +124,45 @@ class ObjectController extends Controller
         if ($request->has('services')) {
             $services = $request->services;
             foreach ($services as $service) {
-                $serviceData = $service; // Получаем данные об обслуживании
-                $selectedColor = $serviceData['selectedColor']; // Получаем выбранный цвет для календаря
-                $materials = $serviceData['materials']; // Получаем данные о расходных материалах
+                // Получаем данные об обслуживании
+                $serviceType = $service['service_type'];
+                $shortName = $service['short_name'];
+                $performer = $service['performer'];
+                $responsible = $service['responsible'];
+                $frequency = $service['frequency'];
+                $prevMaintenanceDate = $service['prev_maintenance_date'];
+                $plannedMaintenanceDate = $service['planned_maintenance_date'];
+                $selectedColor = $service['selectedColor'];
+                $materials = $service['materials'];
 
-                // Создаем новую запись для обслуживания в модели Service
+                // Получаем виды работ
+                $typesOfWork = $service['types_of_work'] ?? [];
+
+                // Создаем новую запись для обслуживания в модели CardObjectServices
                 $newService = new CardObjectServices();
-                $newService->service_type = $serviceData['service_type'];
-                $newService->short_name = $serviceData['short_name'];
-                $newService->performer = $serviceData['performer'];
-                $newService->responsible = $serviceData['responsible'];
-                $newService->frequency = $serviceData['frequency'];
-                $newService->prev_maintenance_date = $serviceData['prev_maintenance_date'];
-                $newService->planned_maintenance_date = $serviceData['planned_maintenance_date'];
-                $newService->calendar_color = $selectedColor; // Сохраняем выбранный цвет для календаря
-                $newService->consumable_materials = $materials; // Сохраняем данные о расходных материалах
-
-                // Связываем обслуживание с карточкой объекта
+                $newService->service_type = $serviceType;
+                $newService->short_name = $shortName;
+                $newService->performer = $performer;
+                $newService->responsible = $responsible;
+                $newService->frequency = $frequency;
+                $newService->prev_maintenance_date = $prevMaintenanceDate;
+                $newService->planned_maintenance_date = $plannedMaintenanceDate;
+                $newService->calendar_color = $selectedColor;
+                $newService->consumable_materials = $materials;
                 $newService->card_object_main_id = $card->id;
                 $newService->save();
+
+                // Сохраняем варианты работ
+                foreach ($typesOfWork as $typeOfWork) {
+                    $newTypeOfWork = new CardObjectServicesTypes();
+                    $newTypeOfWork->card_id = $card->id;
+                    $newTypeOfWork->card_services_id = $newService->id;
+                    $newTypeOfWork->type_work = $typeOfWork;
+                    $newTypeOfWork->save();
+                }
             }
         }
 
-        // Сохраняем виды работ
-        if ($request->has('types_of_work')) {
-            foreach ($request->types_of_work as $typeOfWork) {
-                $newTypeOfWork = new CardObjectServicesTypes();
-                $newTypeOfWork->card_id = $card->id;
-                $newTypeOfWork->type_work = $typeOfWork;
-                $newTypeOfWork->save();
-            }
-        }
 
 
         // Возвращаем ответ об успешном сохранении данных

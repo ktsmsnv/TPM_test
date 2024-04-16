@@ -18,4 +18,9 @@ protected $fillable = ['card_id',
 'planned_maintenance_date',
 'calendar_color',
 'consumable_materials'];
+
+    public function cardObjectMain()
+    {
+        return $this->belongsTo(CardObjectMain::class, 'card_id');
+    }
 }
