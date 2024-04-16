@@ -346,10 +346,11 @@
 
                 // Инициализируем массив typesOfWork
                 let typesOfWorkByService = {};
-
+                let formData = new FormData();
                 // Обработка клика по кнопке "Добавить вид работы"
                 $("#addTypeOfWork").click(function() {
                     let typeOfWork = $("#typeOfWorkInput").val().trim();
+                    console.log("Добавлен вид работы:", typeOfWork);
                     if (typeOfWork !== '') {
                         let currentServiceId = $('.tab-pane.active').attr('id');
                         if (!typesOfWorkByService[currentServiceId]) {
@@ -361,14 +362,14 @@
                         $("#typeOfWorkInput").val('');
 
                         // Обновляем объект formData
-                        formData.append("services[" + currentServiceId + "][types_of_work][]", typeOfWork);
+                         formData.append("services[" + currentServiceId + "][types_of_work][]", typeOfWork);
                     }
                 });
              //------------  обработчик сохранения данных  ------------
 
                 $(".saveCard").click(function () {
                     // Создаем объект FormData для отправки данных на сервер, включая файлы
-                    let formData = new FormData();
+                    // let formData = new FormData();
 
                     // Собираем данные с основной формы
                     formData.append('infrastructure', $("input[name=infrastructure]").val());
@@ -392,8 +393,10 @@
                         formData.append('files[]', docFiles[j]);
                     }
 
+                    let servicesData = [];
                     // Собираем данные с каждой вкладки обслуживания
                     for (let i = 1; i < serviceTabsCount; i++) {
+                        console.log("Виды работ для вкладки", i + ":", typesOfWorkByService[i]);
                         let serviceData = {
                             service_type: $("#service_type_" + i).val(),
                             short_name: $("#short_name_" + i).val(),
@@ -403,26 +406,32 @@
                             prev_maintenance_date: $("#prev_maintenance_date_" + i).val(),
                             planned_maintenance_date: $("#planned_maintenance_date_" + i).val(),
                             selectedColor: $("#selectedColor_" + i).val(),
-                            service_id: i
+                            materials: $("#materialsTextArea_" + i).val(), // Добавляем данные о расходных материалах
+                            types_of_work: typesOfWorkByService[i] // Добавляем данные о видах работ
                         };
+                        // Добавляем данные в массив servicesData
+                        servicesData.push(serviceData);
 
-                        // Добавляем собранные данные в formData
-                        for (let key in serviceData) {
-                            formData.append("services[" + i + "][" + key + "]", serviceData[key]);
-                        }
+                        // // Добавляем собранные данные в formData
+                        // for (let key in serviceData) {
+                        //     formData.append("services[" + i + "][" + key + "]", serviceData[key]);
+                        // }
 
-                        // Получаем материалы для текущей вкладки
-                        let materials = $("#materialsTextArea_" + i).val();
-                        formData.append("services[" + i + "][materials]", materials);
-
-                        // Добавляем виды работ для данного обслуживания
-                        let typesOfWork = typesOfWorkByService[i];
-                        if (typesOfWork && typesOfWork.length > 0) {
-                            typesOfWork.forEach(function(type) {
-                                formData.append("services[" + i + "][types_of_work][]", type);
-                            });
-                        }
+                        // // Получаем материалы для текущей вкладки
+                        // let materials = $("#materialsTextArea_" + i).val();
+                        // formData.append("services[" + i + "][materials]", materials);
+                        //
+                        // // Добавляем виды работ для данного обслуживания
+                        // let typesOfWork = typesOfWorkByService[i];
+                        // if (typesOfWork && typesOfWork.length > 0) {
+                        //     typesOfWork.forEach(function(type) {
+                        //         formData.append("services[" + i + "][types_of_work][]", type);
+                        //     });
+                        // }
                     }
+
+                    // Добавляем массив servicesData в formData
+                    formData.append("services", JSON.stringify(servicesData));
 
                     // Отправляем данные на сервер
                     $.ajax({
@@ -437,10 +446,12 @@
                         success: function (response) {
                             // Обработка успешного ответа от сервера (например, отображение сообщения об успешном сохранении)
                             alert("Данные успешно сохранены!");
+                            console.log(formData);
                         },
                         error: function (error) {
                             // Обработка ошибки при сохранении данных
                             alert("Ошибка при сохранении данных!");
+                            console.log(formData);
                         }
                     });
                 });
