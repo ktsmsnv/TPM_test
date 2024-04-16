@@ -42,8 +42,16 @@
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид инфраструктуры</label>
-                                            <input name="infrastructure" placeholder="Введите вид инфраструктуры"
-                                                   class="form-control w-100">
+                                            {{-- <input name="infrastructure" placeholder="Введите вид инфраструктуры" class="form-control w-100">--}}
+                                            <select class="form-select" name="infrastructure">
+                                                <option value="" disabled selected>Выберите вид</option>
+                                                <option value="Технологическая">Технологическая</option>
+                                                <option value="Информационная">Информационная</option>
+                                                <option value="Бытовая">Бытовая</option>
+                                                <option value="Инженерная">Инженерная</option>
+                                                <option value="Электротехническая">Электротехническая</option>
+                                                <option value="Безопасность">Безопасность</option>
+                                            </select>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Наименование объекта</label>
@@ -57,8 +65,22 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Место установки</label>
-                                            <input class="form-control  w-100" name="location"
-                                                   placeholder="Введите место установки">
+                                            {{-- <input class="form-control  w-100" name="location" placeholder="Введите место установки">--}}
+                                            <select class="form-select" name="location">
+                                                <option value="" disabled selected>Выберите место</option>
+                                                <option value="Участок ЭОБ">Участок ЭОБ</option>
+                                                <option value="Участок сборки">Участок сборки</option>
+                                                <option value="БВЗ (1 этаж)">БВЗ (1 этаж)</option>
+                                                <option value="БВЗ (2 этаж)">БВЗ (2 этаж)</option>
+                                                <option value="ЦУП (1 этаж)">ЦУП (1 этаж)</option>
+                                                <option value="ЦУП (2 этаж)">ЦУП (2 этаж)</option>
+                                                <option value="Офис (1 этаж)">Офис (1 этаж)</option>
+                                                <option value="Офис (2 этаж)">Офис (2 этаж)</option>
+                                                <option value="Офис (3 этаж)">Офис (3 этаж)</option>
+                                                <option value="Серверная">Серверная</option>
+                                                <option value="Основной склад">Основной склад</option>
+                                                <option value="Мезонин">Мезонин</option>
+                                            </select>
                                         </div>
                                     </div>
                                     <div class="d-flex flex-column gap-3 w-50">
@@ -146,9 +168,9 @@
         </div>
 
 
-        {{-- документы --}}
         <script>
             let uploadedImageSrc = null; // Переменная для хранения пути к загруженному изображению
+
             document.addEventListener('DOMContentLoaded', function () {
                 // Обработчик загрузки документов
                 $('#docUpload').change(function () {
@@ -160,10 +182,19 @@
                         let file = fileList[i];
                         let fileName = file.name;
                         let listItem = $('<a>').attr('href', '#').text(fileName);
-                        documentList.append(listItem);
-                        documentList.append($('<br>'));
+                        let deleteButton = $('<i class="bi bi-x-circle docDelete ms-3"></i>');
+                        let documentItem = $('<div class="documentItem">').append(listItem, deleteButton);
+                        documentList.append(documentItem);
                     }
                 });
+
+                $(document).on('click', '.docDelete', function () {
+                    // Находим родительский элемент строки документации, содержащий нажатую кнопку "Удалить документ"
+                    let parent = $(this).closest('.documentItem');
+                    // Удаляем эту строку документации
+                    parent.remove();
+                });
+
 
                 // Обработчик загрузки изображений
                 $('#imageUpload').change(function () {
@@ -174,9 +205,20 @@
                             uploadedImageSrc = e.target.result; // Сохраняем путь к загруженному изображению
                             $('.objectImage img').attr('src', uploadedImageSrc); // Отображаем изображение на вкладке "Основная"
                             $('.member_card_style.image .objectImage img').attr('src', uploadedImageSrc); // Отображаем изображение на других вкладках
+                            $('.member_card_style.image .member-info').append(
+                                '<div class="objectImage__delete mt-4"><button class="btn btn-danger imageDelete">Удалить</button></div>'
+                            );
                         }
                         reader.readAsDataURL(fileList[0]);
                     }
+                });
+                $(document).on('click', '.imageDelete', function () {
+                    // Находим родительский элемент кнопки "Удалить"
+                    let parent = $(this).closest('.member_card_style.image .member-info');
+                    // Удаляем изображение из родительского элемента
+                    parent.find('.objectImage img').attr('src', 'http://placehold.it/350x450'); // Устанавливаем атрибут src пустой строкой
+                    // Удаляем кнопку "Удалить"
+                    $(this).closest('.objectImage__delete').remove();
                 });
 
 
@@ -212,8 +254,14 @@
                                         <div class="d-flex flex-column gap-3 w-50"> \
                                             <div class="d-flex justify-content-between align-items-center gap-3"> \
                                                 <label class="w-100" for="service_type_' + serviceTabsCount + '">Вид обслуживания</label> \
-                                                <input id="service_type_' + serviceTabsCount + '" name="service_type" placeholder="Введите вид обслуживания" \
-                                                    class="form-control w-100"> \
+                                                <select id="service_type_' + serviceTabsCount + '" class="form-select" name="service_type">\
+                                                        <option value="" disabled selected>Выберите вид</option>\
+                                                        <option value="Регламентные работы">Регламентные работы</option>\
+                                                        <option value="Техническое обслуживание">Техническое обслуживание</option>\
+                                                        <option value="Сервисное техническое обслуживание">Сервисное техническое обслуживание</option>\
+                                                        <option value="Капитальный ремонт">Капитальный ремонт</option>\
+                                                        <option value="Аварийный ремонт">Аварийный ремонт</option>\
+                                                </select>\
                                             </div> \
                                             <div class="d-flex justify-content-between align-items-center gap-3"> \
                                                 <label class="w-100" for="short_name_' + serviceTabsCount + '">Сокращенное название</label> \
@@ -234,8 +282,14 @@
                                         <div class="d-flex flex-column gap-3 w-50"> \
                                             <div class="d-flex justify-content-between align-items-center gap-3"> \
                                                 <label class="w-100" for="frequency_' + serviceTabsCount + '">Периодичность</label> \
-                                                <input id="frequency_' + serviceTabsCount + '" name="frequency" class="form-control w-100" \
-                                                    placeholder="Введите периодичность"> \
+                                                 <select id="frequency_' + serviceTabsCount + '"class="form-select" name="frequency">\
+                                                        <option value="" disabled selected>Выберите периодичность</option>\
+                                                        <option value="Сменное">Сменное</option>\
+                                                        <option value="Ежемесячное">Ежемесячное</option>\
+                                                        <option value="Ежеквартальное">Ежеквартальное</option>\
+                                                        <option value="Полугодовое">Полугодовое</option>\
+                                                        <option value="Ежегодное">Ежегодное</option>\
+                                                </select>\
                                             </div> \
                                             <div class="d-flex justify-content-between align-items-center gap-3"> \
                                                 <label class="w-100" for="prev_maintenance_date_' + serviceTabsCount + '">Дата предыдущего обслуживания</label> \
@@ -353,18 +407,18 @@
                     console.log("Добавлен вид работы:", typeOfWork);
                     if (typeOfWork !== '') {
                         let currentServiceId = $('.tab-pane.active').attr('id');
-                        if (!typesOfWorkByService[currentServiceId]) {
-                            typesOfWorkByService[currentServiceId] = [];
-                        }
-                        typesOfWorkByService[currentServiceId].push(typeOfWork);
-                        let listItem = '<input name="services[' + currentServiceId + '][types_of_work][]" value="' + typeOfWork + '">';
+                        // if (!typesOfWorkByService[currentServiceId]) {
+                        //     typesOfWorkByService[currentServiceId] = [];
+                        // }
+                        // typesOfWorkByService[currentServiceId].push(typeOfWork);
+                        let listItem = '<input name="types_of_work[]" value="' + typeOfWork + '">';
                         $("#" + currentServiceId + " .typesOfWork").append(listItem);
-                        $("#typeOfWorkInput").val('');
-
-                        // Обновляем объект formData
-                         formData.append("services[" + currentServiceId + "][types_of_work][]", typeOfWork);
+                        // formData.append('services[types_of_work][]', typeOfWork);
+                        // console.log("текущие работы во вкладке",currentServiceId,": ",  typesOfWorkByService[currentServiceId]);
                     }
                 });
+
+
              //------------  обработчик сохранения данных  ------------
 
                 $(".saveCard").click(function () {
@@ -372,10 +426,10 @@
                     // let formData = new FormData();
 
                     // Собираем данные с основной формы
-                    formData.append('infrastructure', $("input[name=infrastructure]").val());
+                    formData.append('infrastructure', $("select[name=infrastructure]").val());
                     formData.append('name', $("input[name=name]").val());
                     formData.append('number', $("input[name=number]").val());
-                    formData.append('location', $("input[name=location]").val());
+                    formData.append('location', $("select[name=location]").val());
                     formData.append('date_arrival', $("input[name=date_arrival]").val());
                     formData.append('date_usage', $("input[name=date_usage]").val());
                     formData.append('date_cert_end', $("input[name=date_cert_end]").val());
@@ -394,9 +448,12 @@
                     }
 
                     let servicesData = [];
+                    let typesOfWorkValues = $("input[name='types_of_work[]']").map(function() {
+                        return $(this).val();
+                    }).get();
+                    formData.append('types_of_work', typesOfWorkValues);
                     // Собираем данные с каждой вкладки обслуживания
                     for (let i = 1; i < serviceTabsCount; i++) {
-                        console.log("Виды работ для вкладки", i + ":", typesOfWorkByService[i]);
                         let serviceData = {
                             service_type: $("#service_type_" + i).val(),
                             short_name: $("#short_name_" + i).val(),
@@ -407,27 +464,11 @@
                             planned_maintenance_date: $("#planned_maintenance_date_" + i).val(),
                             selectedColor: $("#selectedColor_" + i).val(),
                             materials: $("#materialsTextArea_" + i).val(), // Добавляем данные о расходных материалах
-                            types_of_work: typesOfWorkByService[i] // Добавляем данные о видах работ
+
+                            // types_of_work: typesOfWorkByService[i],
                         };
                         // Добавляем данные в массив servicesData
                         servicesData.push(serviceData);
-
-                        // // Добавляем собранные данные в formData
-                        // for (let key in serviceData) {
-                        //     formData.append("services[" + i + "][" + key + "]", serviceData[key]);
-                        // }
-
-                        // // Получаем материалы для текущей вкладки
-                        // let materials = $("#materialsTextArea_" + i).val();
-                        // formData.append("services[" + i + "][materials]", materials);
-                        //
-                        // // Добавляем виды работ для данного обслуживания
-                        // let typesOfWork = typesOfWorkByService[i];
-                        // if (typesOfWork && typesOfWork.length > 0) {
-                        //     typesOfWork.forEach(function(type) {
-                        //         formData.append("services[" + i + "][types_of_work][]", type);
-                        //     });
-                        // }
                     }
 
                     // Добавляем массив servicesData в formData

@@ -278,6 +278,9 @@ main {
     .documentation {
         grid-row: 2 / 3;
         grid-column: span 2;
+        .docDelete {
+            cursor: pointer;
+        }
     }
     .image {
         grid-row: 1 / 3;
