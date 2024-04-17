@@ -353,10 +353,11 @@
                             {{-- ИЗОБРАЖЕНИЕ --}}\
                             <div class="member_card_style image">\
                                 <div class="member-info">\
-                                <div class="d-flex justify-content-between mb-4">\
-                                <h4>Изображение объекта</h4>\
-                                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#imageDownloadModal">Загрузить</button>\
-                            </div>\
+                                 <div class="d-flex justify-content-between mb-4">\
+                                    <h4>Изображение объекта</h4>\
+                                <label for="imageUpload" class="btn btn-primary">Загрузить</label>\
+                                <input type="file" id="imageUpload" class="d-none" multiple accept="image/*">\
+                                </div>\
                             <div class="objectImage">\
                                   <img src="' + uploadedImageSrc + '"/>\
                             </div>\
@@ -411,7 +412,8 @@
                         //     typesOfWorkByService[currentServiceId] = [];
                         // }
                         // typesOfWorkByService[currentServiceId].push(typeOfWork);
-                        let listItem = '<input name="types_of_work[]" value="' + typeOfWork + '">';
+                        let listItem = '<input class="form-control" ' +
+                            'name="types_of_work[]" value="' + typeOfWork + '">';
                         $("#" + currentServiceId + " .typesOfWork").append(listItem);
                         // formData.append('services[types_of_work][]', typeOfWork);
                         // console.log("текущие работы во вкладке",currentServiceId,": ",  typesOfWorkByService[currentServiceId]);

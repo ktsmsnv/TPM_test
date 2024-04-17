@@ -7,7 +7,7 @@
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
                 <h1 class="mb-4"><strong>Карточка
-                        объекта: {{ $data_CardObjectMain->name ?? 'Название объекта не найдено' }}</strong></h1>
+                        объекта: "{{ $data_CardObjectMain->name ?? 'Название объекта не найдено' }}"</strong></h1>
             </div>
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
@@ -52,44 +52,44 @@
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид инфраструктуры</label>
                                             <input name="" class="form-control w-100" readonly
-                                                   placeholder="{{ $data_CardObjectMain->infrastructure ?? 'нет данных' }}">
+                                                   value="{{ $data_CardObjectMain->infrastructure ?? 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Наименование объекта</label>
                                             <input name="" class="form-control w-100" readonly
-                                                   placeholder="{{ $data_CardObjectMain->name ?? 'нет данных' }}">
+                                                   value="{{ $data_CardObjectMain->name ?? 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Инв./заводской №</label>
                                             <input class="form-control w-100" name="" readonly
-                                                   placeholder="{{ $data_CardObjectMain->number ?? 'нет данных' }}">
+                                                   value="{{ $data_CardObjectMain->number ?? 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Место установки</label>
                                             <input class="form-control  w-100" name="" readonly
-                                                   placeholder="{{ $data_CardObjectMain->location ?? 'нет данных' }}">
+                                                   value="{{ $data_CardObjectMain->location ?? 'нет данных' }}">
                                         </div>
                                     </div>
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата прихода</label>
                                             <input class="form-control w-100" name="" readonly
-                                                   placeholder="{{ isset($data_CardObjectMain->date_arrival) ? date('d-m-Y', strtotime($data_CardObjectMain->date_arrival)) : 'нет данных' }}">
+                                                   value="{{ isset($data_CardObjectMain->date_arrival) ? date('d-m-Y', strtotime($data_CardObjectMain->date_arrival)) : 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата ввода в эксплуатацию</label>
                                             <input class="form-control w-100" name="" readonly
-                                                   placeholder="{{ isset($data_CardObjectMain->date_usage) ? date('d-m-Y', strtotime($data_CardObjectMain->date_usage)) : 'нет данных' }}">
+                                                   value="{{ isset($data_CardObjectMain->date_usage) ? date('d-m-Y', strtotime($data_CardObjectMain->date_usage)) : 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата окончания аттестации/гарантии</label>
                                             <input class="form-control w-100" name="" readonly
-                                                   placeholder="{{ isset($data_CardObjectMain->date_cert_end) ?  date('d-m-Y', strtotime($data_CardObjectMain->date_cert_end)) : 'нет данных' }}">
+                                                   value="{{ isset($data_CardObjectMain->date_cert_end) ?  date('d-m-Y', strtotime($data_CardObjectMain->date_cert_end)) : 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата вывода из эксплуатации</label>
                                             <input class="form-control  w-100" name="" readonly
-                                                   placeholder="{{ isset($data_CardObjectMain->date_usage_end) ? date('d-m-Y', strtotime($data_CardObjectMain->date_usage_end)) : 'нет данных' }}">
+                                                   value="{{ isset($data_CardObjectMain->date_usage_end) ? date('d-m-Y', strtotime($data_CardObjectMain->date_usage_end)) : 'нет данных' }}">
                                         </div>
                                     </div>
                                 </div>
@@ -192,11 +192,11 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата предыдущего обслуживания</label>
-                                            <input class="form-control w-100" name="" value="{{ $service->prev_maintenance_date }}" readonly>
+                                            <input class="form-control w-100" name="" value="{{ date('d-m-Y', strtotime($service->prev_maintenance_date)) }}" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Плановая дата обслуживания</label>
-                                            <input class="form-control w-100" name="" value="{{ $service->planned_maintenance_date }}" readonly>
+                                            <input class="form-control w-100" name="" value="{{ date('d-m-Y', strtotime($service->planned_maintenance_date)) }}" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Цвет в календаре</label>
