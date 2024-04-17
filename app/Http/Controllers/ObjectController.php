@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AdditionalFile;
 use Illuminate\Http\Request;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use App\Models\CardObjectMain;
@@ -23,7 +22,7 @@ class ObjectController extends Controller
 //    }
     public function index($id)
     {
-        $data_CardObjectMain = CardObjectMain::find($id);
+        $data_CardObjectMain = CardObjectMain::with(['services', 'services.services_types'])->find($id);
         $data_CardObjectMainDocs = CardObjectMainDoc::where('card_object_main_id', $id)->get();
         return view('cards/card-object', compact('data_CardObjectMain', 'data_CardObjectMainDocs'));
     }
@@ -69,10 +68,11 @@ class ObjectController extends Controller
     }
 
     // ------------------  РЕДАКТИРОВАНИЕ карточки объекта (переход на страницу) ------------------
-    public function edit()
+    public function edit($id)
     {
-        $breadcrumbs = Breadcrumbs::generate('/card-object/edit');
-        return view('cards/card-object-edit', compact('breadcrumbs'));
+        $data_CardObjectMain = CardObjectMain::find($id);
+//        $breadcrumbs = Breadcrumbs::generate('/card-object/edit');
+        return view('cards/card-object-edit', compact('data_CardObjectMain'));
     }
 
 
@@ -168,7 +168,7 @@ class ObjectController extends Controller
         }
 
         // Возвращаем ответ об успешном сохранении данных
-        return response()->json(['message' => 'Данные успешно сохранены'], 200);
+        return redirect()->route('cardObject', ['id' => $cardId]);
     }
 
 }

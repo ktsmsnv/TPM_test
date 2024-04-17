@@ -21,13 +21,9 @@ class HomeController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
-    {
-        $objects = CardObjectMain::all();
-        // Генерация хлебных крошек
+    public function index() {
+        $objects = CardObjectMain::with('services')->get();
         $breadcrumbs = Breadcrumbs::generate('home');
-
-        // Возвращение представления с передачей хлебных крошек
         return view('home', compact('breadcrumbs', 'objects'));
     }
 

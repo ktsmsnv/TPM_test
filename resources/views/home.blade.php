@@ -35,10 +35,10 @@
                                data-show-fullscreen="true"
                                data-show-columns="true"
                                data-show-columns-toggle-all="true"
-                               data-detail-view="true"
+{{--                               data-detail-view="true"--}}
                                data-show-export="true"
                                data-click-to-select="true"
-                               data-detail-formatter="detailFormatter"
+{{--                               data-detail-formatter="detailFormatter"--}}
                                data-minimum-count-columns="2"
                                data-show-pagination-switch="true"
                                data-pagination="true"
@@ -57,7 +57,7 @@
                                 <th>Наименование объекта</th>
                                 <th>Дата ввода в эксплуатацию</th>
                                 <th>Дата вывода из эксплуатации</th>
-                                <th>Дата окончания аттестаци/гарантии</th>
+                                <th>Дата окончания аттестации/гарантии</th>
                                 <th>Инв./заводской номер</th>
                                 <th>Место установки</th>
                                 <th>Плановая дата обслуживания</th>
@@ -71,27 +71,75 @@
                             </thead>
                             <tbody>
                             @foreach($objects as $object)
-                            <tr data-id="1">
-                                <td></td>
-                                <td>из карточки объекта</td>
-                                <td class="tool-tip" title="открыть карточку объекта">
-                                    <a href="{{ route('cardObject', ['id' => $object->id]) }}" target="_blank">
-                                        {{ $object->name }}
-                                    </a>
-                                </td>
-                                <td>из карточки объекта</td>
-                                <td>из карточки объекта</td>
-                                <td>из карточки объекта</td>
-                                <td>из карточки объекта</td>
-                                <td>из карточки объекта</td>
-                                <td  class="tool-tip" title="ближайшее обслуживание">выбор ближайшего обслуживания из вкладок карточки объекта</td>
-                                <td>из карточки объекта</td>
-                                <td>из карточки объекта</td>
-                                <td>из карточки объекта</td>
-                                <td>из карточки объекта</td>
-                                <td><a href="/card-work-order"  class="tool-tip" title="открыть карточку заказ-наярда">№ заказа</a></td>
-                                <td><a href=""  class="tool-tip" title="открыть карточку календаря">№ календаря</a></td>
-                            </tr>
+                                <tr data-id="1">
+                                    <td></td>
+                                    <td> {{ $object->infrastructure }}</td>
+                                    <td class="tool-tip" title="открыть карточку объекта">
+                                        <a href="{{ route('cardObject', ['id' => $object->id]) }}" target="_blank">
+                                            {{ $object->name }}
+                                        </a>
+                                    </td>
+                                    <td>{{ $object->date_usage }}</td>
+                                    <td>{{ $object->date_usage_end }}</td>
+                                    <td>{{ $object->date_cert_end }}</td>
+                                    <td>{{ $object->number }}</td>
+                                    <td>{{ $object->location }}</td>
+                                    <td class="tool-tip" title="ближайшее обслуживание">
+                                        @if ($object->services->isNotEmpty())
+                                                <?php
+                                                // Начальное значение для ближайшей даты
+                                                $nearestMaintenanceDate = null;
+                                                // Проходимся по всем сервисам объекта
+                                                foreach ($object->services as $service) {
+                                                    // Получаем планируемую дату обслуживания
+                                                    $plannedMaintenanceDate = $service->planned_maintenance_date;
+                                                    // Если ближайшая дата пуста или текущая планируемая дата ближе к текущей дате
+                                                    if (!$nearestMaintenanceDate || strtotime($plannedMaintenanceDate) < strtotime($nearestMaintenanceDate)) {
+                                                        $nearestMaintenanceDate = $plannedMaintenanceDate;
+                                                        $nearestService = $service;
+                                                    }
+                                                }
+                                                ?>
+                                            <span>{{ $nearestMaintenanceDate }}</span>
+                                        @else
+                                            Нет запланированных обслуживаний
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($nearestService)
+                                            {{ $nearestService->prev_maintenance_date }}
+                                        @else
+                                            Нет даты предыдущего обслуживания
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($nearestService)
+                                            {{ $nearestService->service_type }}
+                                        @else
+                                            Нет вида ближайшего обслуживания
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($nearestService)
+                                            {{ $nearestService->performer }}
+                                        @else
+                                            Нет performer
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($nearestService)
+                                            {{ $nearestService->responsible }}
+                                        @else
+                                            Нет responsible
+                                        @endif
+                                    </td>
+                                        <td>
+                                            <a href="/reestr-work-orders/card-work-order" class="tool-tip" title="открыть карточку заказ-наярда">№ заказа</a>
+                                        </td>
+                                        <td>
+                                            <a href="" class="tool-tip" title="открыть карточку календаря">№ календаря</a>
+                                        </td>
+                                </tr>
                             @endforeach
                             </tbody>
                         </table>
