@@ -8,6 +8,7 @@ use App\Models\CardObjectMain;
 use App\Models\CardObjectMainDoc;
 use App\Models\CardObjectServices;
 use App\Models\CardObjectServicesTypes;
+use Illuminate\Support\Facades\Log;
 use MongoDB\BSON\Binary;
 
 class ObjectController extends Controller
@@ -21,7 +22,7 @@ class ObjectController extends Controller
 //    }
     public function index($id)
     {
-        $data_CardObjectMain = CardObjectMain::find($id);
+        $data_CardObjectMain = CardObjectMain::with(['services', 'services.services_types'])->find($id);
         $data_CardObjectMainDocs = CardObjectMainDoc::where('card_object_main_id', $id)->get();
         return view('cards/card-object', compact('data_CardObjectMain', 'data_CardObjectMainDocs'));
     }
@@ -67,10 +68,11 @@ class ObjectController extends Controller
     }
 
     // ------------------  РЕДАКТИРОВАНИЕ карточки объекта (переход на страницу) ------------------
-    public function edit()
+    public function edit($id)
     {
-        $breadcrumbs = Breadcrumbs::generate('/card-object/edit');
-        return view('cards/card-object-edit', compact('breadcrumbs'));
+        $data_CardObjectMain = CardObjectMain::find($id);
+//        $breadcrumbs = Breadcrumbs::generate('/card-object/edit');
+        return view('cards/card-object-edit', compact('data_CardObjectMain'));
     }
 
 
@@ -89,6 +91,7 @@ class ObjectController extends Controller
         $card->date_usage_end = $request->date_usage_end;
         // Сохранение основных данных карточки
         $card->save();
+        $cardId = $card->id;
         // Обработка сохранения изображений
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
@@ -122,7 +125,7 @@ class ObjectController extends Controller
 
         // Обработка сохранения данных об обслуживаниях
         if ($request->has('services')) {
-            $services = $request->services;
+            $services = json_decode($request->services, true); // Преобразуем JSON в массив
             foreach ($services as $service) {
                 // Получаем данные об обслуживании
                 $serviceType = $service['service_type'];
@@ -135,9 +138,6 @@ class ObjectController extends Controller
                 $selectedColor = $service['selectedColor'];
                 $materials = $service['materials'];
 
-                // Получаем виды работ
-                $typesOfWork = $service['types_of_work'] ?? [];
-
                 // Создаем новую запись для обслуживания в модели CardObjectServices
                 $newService = new CardObjectServices();
                 $newService->service_type = $serviceType;
@@ -149,24 +149,26 @@ class ObjectController extends Controller
                 $newService->planned_maintenance_date = $plannedMaintenanceDate;
                 $newService->calendar_color = $selectedColor;
                 $newService->consumable_materials = $materials;
-                $newService->card_object_main_id = $card->id;
+                $newService->card_object_main_id =$cardId;
                 $newService->save();
+                $serviceId = $newService->id;
 
-                // Сохраняем варианты работ
-                foreach ($typesOfWork as $typeOfWork) {
-                    $newTypeOfWork = new CardObjectServicesTypes();
-                    $newTypeOfWork->card_id = $card->id;
-                    $newTypeOfWork->card_services_id = $newService->id;
-                    $newTypeOfWork->type_work = $typeOfWork;
-                    $newTypeOfWork->save();
+                if ($request->has('types_of_work')) {
+                    $typesOfWork = explode(",", $request->input('types_of_work'));
+                    foreach ($typesOfWork as $typeOfWork) {
+                        CardObjectServicesTypes::create([
+                            'card_id' => $cardId,
+                            'card_services_id' => $serviceId,
+                            'type_work' => $typeOfWork,
+                        ]);
+                    }
                 }
+
             }
         }
 
-
-
         // Возвращаем ответ об успешном сохранении данных
-        return response()->json(['message' => 'Данные успешно сохранены'], 200);
+        return redirect()->route('cardObject', ['id' => $cardId]);
     }
 
 }
