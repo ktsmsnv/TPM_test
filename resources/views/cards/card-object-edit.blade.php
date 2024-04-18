@@ -256,7 +256,7 @@
                                         @foreach ($service->services_types as $type)
                                             <div class="grid-item">
                                                 <div class="form-check d-flex align-items-center gap-2">
-                                                    <input class="form-control" name="types_of_work[]"
+                                                    <input class="form-control" name="types_of_work[service_{{ $key + 1 }}][]"
                                                            value="{{ $type->type_work }}">
                                                 </div>
                                             </div>
@@ -568,7 +568,7 @@
             // Вызываем функцию для обновления обработчика событий для выбора цвета
             updateColorPicker();
 
-            // Инициализируем массив typesOfWork
+// Инициализируем объект typesOfWorkByService
             let typesOfWorkByService = {};
             let formData = new FormData();
             // Обработка клика по кнопке "Добавить вид работы"
@@ -577,17 +577,21 @@
                 console.log("Добавлен вид работы:", typeOfWork);
                 if (typeOfWork !== '') {
                     let currentServiceId = $('.tab-pane.active').attr('id');
-                    // if (!typesOfWorkByService[currentServiceId]) {
-                    //     typesOfWorkByService[currentServiceId] = [];
-                    // }
-                    // typesOfWorkByService[currentServiceId].push(typeOfWork);
-                    let listItem = '<input  class="form-control" name="types_of_work[]" value="' + typeOfWork + '">';
+                    let listItem = '<input class="form-control" ' +
+                        'name="types_of_work[' + currentServiceId + '][]" value="' + typeOfWork + '">';
+
+                    // Добавляем вид работы в typesOfWorkByService
+                    if (!typesOfWorkByService[currentServiceId]) {
+                        typesOfWorkByService[currentServiceId] = [];
+                    }
+                    typesOfWorkByService[currentServiceId].push(typeOfWork);
+
                     $("#" + currentServiceId + " .typesOfWork").append(listItem);
-                    // formData.append('services[types_of_work][]', typeOfWork);
-                    // console.log("текущие работы во вкладке",currentServiceId,": ",  typesOfWorkByService[currentServiceId]);
+
+                    // Выводим данные о типах работ в консоль для проверки
+                    console.log("typesOfWorkByService:", typesOfWorkByService);
                 }
             });
-
 
             //------------  обработчик сохранения данных  ------------
 
@@ -618,12 +622,15 @@
                 }
 
                 let servicesData = [];
-                let typesOfWorkValues = $("input[name='types_of_work[]']").map(function() {
-                    return $(this).val();
-                }).get();
-                formData.append('types_of_work', typesOfWorkValues);
                 // Собираем данные с каждой вкладки обслуживания
                 for (let i = 1; i < serviceTabsCount; i++) {
+                    // let typesOfWorkValues = typesOfWorkByService['service_' + i] || [];
+                    let currentServiceId = 'service_' + i;
+                    let typesOfWorkValues = [];
+                    // Собираем данные о видах работ из формы для текущей вкладки
+                    $("#" + currentServiceId + " .typesOfWork input[name='types_of_work[" + currentServiceId + "][]']").each(function () {
+                        typesOfWorkValues.push($(this).val());
+                    });
                     let serviceData = {
                         service_type: $("#service_type_" + i).val(),
                         short_name: $("#short_name_" + i).val(),
@@ -634,6 +641,7 @@
                         planned_maintenance_date: $("#planned_maintenance_date_" + i).val(),
                         selectedColor: $("#selectedColor_" + i).val(),
                         materials: $("#materialsTextArea_" + i).val(),
+                        types_of_work: typesOfWorkValues,
                     };
                     // Добавляем данные в массив servicesData
                     servicesData.push(serviceData);

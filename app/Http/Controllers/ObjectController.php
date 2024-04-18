@@ -242,16 +242,14 @@ class ObjectController extends Controller
                 $newService->card_object_main_id = $id; // Используем $id для привязки к карточке объекта
                 $newService->save();
 
-                // Обработка и добавление новых записей типов работ для каждого обслуживания
-                if ($request->has('types_of_work')) {
-                    $typesOfWork = explode(",", $request->input('types_of_work'));
-                    foreach ($typesOfWork as $typeOfWork) {
-                        CardObjectServicesTypes::create([
-                            'card_id' => $id,
-                            'card_services_id' => $newService->id,
-                            'type_work' => $typeOfWork,
-                        ]);
-                    }
+                // Получаем данные о виде работ для текущего обслуживания
+                $typesOfWork = $service['types_of_work'];
+                foreach ($typesOfWork as $typeOfWork) {
+                    CardObjectServicesTypes::create([
+                        'card_id' => $id,
+                        'card_services_id' => $newService->id,
+                        'type_work' => $typeOfWork,
+                    ]);
                 }
             }
         }
