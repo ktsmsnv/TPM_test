@@ -10,7 +10,7 @@
                     <a type="button" class="btn btn-success" data-toggle="tooltip" title="без даты вывода объекта из эксплуатации">Показать активные объекты</a>
                     <a href="/home/card-object-create" target="_blank" type="button" class="btn btn-primary">Создать карточку объекта</a>
                     <a type="button" class="btn btn-primary btn-primary--2">Скопировать карточку объекта</a>
-                    <a type="button" class="btn btn-light" href="/pageReestrGraph/card-graph">Сформировать график TPM</a>
+                    <button id="generateGraphTPM" class="btn btn-light" disabled>Сформировать график TPM</button>
                     <a type="button" class="btn btn-light">Сформировать календарь TPM</a>
                     <a type="button" class="btn btn-light">Сформировать заказ-наряд TPM</a>
                 </div>
@@ -35,10 +35,10 @@
                                data-show-fullscreen="true"
                                data-show-columns="true"
                                data-show-columns-toggle-all="true"
-{{--                               data-detail-view="true"--}}
+                               {{--                               data-detail-view="true"--}}
                                data-show-export="true"
                                data-click-to-select="true"
-{{--                               data-detail-formatter="detailFormatter"--}}
+                               {{--                               data-detail-formatter="detailFormatter"--}}
                                data-minimum-count-columns="2"
                                data-show-pagination-switch="true"
                                data-pagination="true"
@@ -135,12 +135,12 @@
                                             Нет responsible
                                         @endif
                                     </td>
-                                        <td>
-                                            <a href="/reestr-work-orders/card-work-order" class="tool-tip" title="открыть карточку заказ-наярда">№ заказа</a>
-                                        </td>
-                                        <td>
-                                            <a href="" class="tool-tip" title="открыть карточку календаря">№ календаря</a>
-                                        </td>
+                                    <td>
+                                        <a href="/reestr-work-orders/card-work-order" class="tool-tip" title="открыть карточку заказ-наярда">№ заказа</a>
+                                    </td>
+                                    <td>
+                                        <a href="" class="tool-tip" title="открыть карточку календаря">№ календаря</a>
+                                    </td>
                                 </tr>
                             @endforeach
                             </tbody>
@@ -175,6 +175,7 @@
         $(document).ready(function () {
             let $table = $('#reestrObject');
             var $remove = $('#remove');
+            var $generateGraphTPM = $('#generateGraphTPM');
             var selections = [];
             let $confirmDelete = $('#confirmDeleteModal'); // Ссылка на модальное окно
             let $confirmDeleteButton = $('#confirmDeleteButton'); // Кнопка "Удалить" в модальном окне
@@ -226,6 +227,7 @@
                 $table.on('check.bs.table uncheck.bs.table ' +  'check-all.bs.table uncheck-all.bs.table',
                     function () {
                         $remove.prop('disabled', !$table.bootstrapTable('getSelections').length)
+                        $generateGraphTPM.prop('disabled', !$table.bootstrapTable('getSelections').length)
                         selections = getIdSelections()
                         console.log(selections);
                     })
@@ -238,6 +240,15 @@
                     });
                     $remove.prop('disabled', true);
                     showConfirmDeleteModal();
+                });
+
+                $generateGraphTPM.click(function (){
+                    let ids = getIdSelections();
+                    console.log(ids);
+                    if (ids.length > 0) {
+                        // Сформируйте URL с ID выбранных записей и перенаправьте пользователя на страницу формирования графика TPM
+                        window.location.href = "/pageReestrGraph/card-graph-create?ids=" + ids.join(',');
+                    }
                 });
 
                 // Функция для отображения модального окна удаления
@@ -259,4 +270,3 @@
 
     </script>
 @endsection
-
