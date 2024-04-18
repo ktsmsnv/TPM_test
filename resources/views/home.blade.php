@@ -79,9 +79,9 @@
                                             {{ $object->name }}
                                         </a>
                                     </td>
-                                    <td>{{ $object->date_usage }}</td>
-                                    <td>{{ $object->date_usage_end }}</td>
-                                    <td>{{ $object->date_cert_end }}</td>
+                                    <td>{{  date('d-m-Y', strtotime($object->date_usage )) }}</td>
+                                    <td>{{ date('d-m-Y', strtotime($object->date_usage_end )) }}</td>
+                                    <td>{{ date('d-m-Y', strtotime($object->date_cert_end )) }}</td>
                                     <td>{{ $object->number }}</td>
                                     <td>{{ $object->location }}</td>
                                     <td class="tool-tip" title="ближайшее обслуживание">
@@ -100,14 +100,14 @@
                                                     }
                                                 }
                                                 ?>
-                                            <span>{{ $nearestMaintenanceDate }}</span>
+                                            <span>{{ date('d-m-Y', strtotime($nearestMaintenanceDate)) }}</span>
                                         @else
                                             Нет запланированных обслуживаний
                                         @endif
                                     </td>
                                     <td>
                                         @if ($nearestService)
-                                            {{ $nearestService->prev_maintenance_date }}
+                                            {{ date('d-m-Y', strtotime($nearestService->prev_maintenance_date)) }}
                                         @else
                                             Нет даты предыдущего обслуживания
                                         @endif

@@ -47,7 +47,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/home/card-object-create', [App\Http\Controllers\ObjectController::class, 'create'])->name('cardObject-create');
         Route::post('/save-card-data', [App\Http\Controllers\ObjectController::class, 'saveData'])->name('cardObject-create-save');
         // РЕДАКТИРОВАНИЕ существующей карточки объекта
-    Route::get('/home/card-object/edit/{id}', [App\Http\Controllers\ObjectController::class, 'edit'])->name('cardObject-edit');
+        Route::get('/home/card-object/edit/{id}', [App\Http\Controllers\ObjectController::class, 'edit'])->name('cardObject-edit');
+        Route::post('/edit-card-object-save/{id}', [App\Http\Controllers\ObjectController::class, 'editSave'])->name('cardObject-editSave');
+
     // ----------------------------------------------------------------------------------------------------------------
 
     // ---------------------------- КАРТОЧКА ЗАКАЗ-НАРЯДА -------------------------------------------------------------

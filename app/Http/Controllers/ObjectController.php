@@ -71,8 +71,9 @@ class ObjectController extends Controller
     public function edit($id)
     {
         $data_CardObjectMain = CardObjectMain::find($id);
+        $data_CardObjectMainDocs = CardObjectMainDoc::where('card_object_main_id', $id)->get();
 //        $breadcrumbs = Breadcrumbs::generate('/card-object/edit');
-        return view('cards/card-object-edit', compact('data_CardObjectMain'));
+        return view('cards/card-object-edit', compact('data_CardObjectMain', 'data_CardObjectMainDocs'));
     }
 
 
@@ -170,5 +171,106 @@ class ObjectController extends Controller
         // Возвращаем ответ об успешном сохранении данных
         return redirect()->route('cardObject', ['id' => $cardId]);
     }
+
+    //------------------ СОХРАНЕНИЕ ИЗМЕНЕНИЙ карточки объекта (РЕДАКТИРОВАНИЕ) ------------------
+    public function editSave(Request $request, $id)
+    {
+        // Находим карточку объекта по переданному идентификатору
+        $card = CardObjectMain::find($id);
+
+        // Проверяем, найдена ли карточка
+        if (!$card) {
+            // Если карточка не найдена, возвращаем ошибку или редирект на страницу ошибки
+            return response()->json(['error' => 'Карточка объекта не найдена'], 404);
+        }
+
+        // Обновляем основные данные карточки объекта
+        $card->infrastructure = $request->infrastructure;
+        $card->name = $request->name;
+        $card->number = $request->number;
+        $card->location = $request->location;
+        $card->date_arrival = $request->date_arrival;
+        $card->date_usage = $request->date_usage;
+        $card->date_cert_end = $request->date_cert_end;
+        $card->date_usage_end = $request->date_usage_end;
+
+        // Сохраняем изменения
+        $card->save();
+
+        // Обновляем изображения (если есть новые изображения)
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $content = file_get_contents($image->getRealPath()); // Получение содержимого файа
+                $binaryData = new Binary($content, Binary::TYPE_GENERIC); // Создание объекта Binary с двоичными данными
+
+                // Присваиваем двоичные данные к полю image модели CardObjectMain
+                $card->image = $binaryData;
+                $card->save();
+                // Сохраняем файл в папку на сервере
+                $path = $image->storeAs('public/images', $image->getClientOriginalName());
+            }
+        }
+
+        // Обновляем документы (если есть новые документы)
+        if ($request->hasFile('files')) {
+            // Удаляем старые файлы документов для данной карточки объекта
+            CardObjectMainDoc::where('card_object_main_id', $id)->delete();
+            foreach ($request->file('files') as $file) {
+                $content = file_get_contents($file->getRealPath()); // Получение содержимого файла
+                $binaryData = new Binary($content, Binary::TYPE_GENERIC); // Создание объекта Binary с двоичными данными
+
+                // Создаем новую запись для файла в модели CardObjectMainDoc
+                $doc = new CardObjectMainDoc();
+                $doc->file_content = $binaryData; // Присваиваем двоичные данные к полю file_content модели CardObjectMainDoc
+                $doc->file_name = $file->getClientOriginalName();
+                $doc->card_object_main_id = $card->id;
+                $doc->save();
+                // Сохраняем файл в папку на сервере
+                $path = $file->storeAs('public/files', $file->getClientOriginalName());
+            }
+        }
+
+        // Обновляем данные об обслуживаниях (удаляем старые и добавляем новые)
+        if ($request->has('services')) {
+            $servicesData = json_decode($request->services, true);
+
+            // Удаляем старые записи об обслуживаниях для данной карточки объекта
+            CardObjectServices::where('card_object_main_id', $id)->delete();
+            CardObjectServicesTypes::where('card_id', $id)->delete();
+
+            // Обработка и добавление новых записей об обслуживаниях
+            foreach ($servicesData as $service) {
+                // Создаем новую запись об обслуживании в таблице CardObjectServices
+                $newService = new CardObjectServices();
+                $newService->service_type = $service['service_type'];
+                $newService->short_name = $service['short_name'];
+                $newService->performer = $service['performer'];
+                $newService->responsible = $service['responsible'];
+                $newService->frequency = $service['frequency'];
+                $newService->prev_maintenance_date = $service['prev_maintenance_date'];
+                $newService->planned_maintenance_date = $service['planned_maintenance_date'];
+                $newService->calendar_color = $service['selectedColor'];
+                $newService->consumable_materials = $service['materials'];
+                $newService->card_object_main_id = $id; // Используем $id для привязки к карточке объекта
+                $newService->save();
+
+                // Обработка и добавление новых записей типов работ для каждого обслуживания
+                if ($request->has('types_of_work')) {
+                    $typesOfWork = explode(",", $request->input('types_of_work'));
+                    foreach ($typesOfWork as $typeOfWork) {
+                        CardObjectServicesTypes::create([
+                            'card_id' => $id,
+                            'card_services_id' => $newService->id,
+                            'type_work' => $typeOfWork,
+                        ]);
+                    }
+                }
+            }
+        }
+
+        // Возвращаем успешный ответ или редирект на страницу карточки объекта
+        return response()->json(['success' => 'Данные карточки объекта успешно обновлены'], 200);
+    }
+
 
 }
