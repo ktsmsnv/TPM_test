@@ -124,47 +124,35 @@ class ObjectController extends Controller
         }
 
 
-        // Обработка сохранения данных об обслуживаниях
+        /// Обработка сохранения данных об обслуживаниях
         if ($request->has('services')) {
             $services = json_decode($request->services, true); // Преобразуем JSON в массив
             foreach ($services as $service) {
-                // Получаем данные об обслуживании
-                $serviceType = $service['service_type'];
-                $shortName = $service['short_name'];
-                $performer = $service['performer'];
-                $responsible = $service['responsible'];
-                $frequency = $service['frequency'];
-                $prevMaintenanceDate = $service['prev_maintenance_date'];
-                $plannedMaintenanceDate = $service['planned_maintenance_date'];
-                $selectedColor = $service['selectedColor'];
-                $materials = $service['materials'];
-
                 // Создаем новую запись для обслуживания в модели CardObjectServices
                 $newService = new CardObjectServices();
-                $newService->service_type = $serviceType;
-                $newService->short_name = $shortName;
-                $newService->performer = $performer;
-                $newService->responsible = $responsible;
-                $newService->frequency = $frequency;
-                $newService->prev_maintenance_date = $prevMaintenanceDate;
-                $newService->planned_maintenance_date = $plannedMaintenanceDate;
-                $newService->calendar_color = $selectedColor;
-                $newService->consumable_materials = $materials;
-                $newService->card_object_main_id =$cardId;
+                $newService->service_type = $service['service_type'];
+                $newService->short_name = $service['short_name'];
+                $newService->performer = $service['performer'];
+                $newService->responsible = $service['responsible'];
+                $newService->frequency = $service['frequency'];
+                $newService->prev_maintenance_date = $service['prev_maintenance_date'];
+                $newService->planned_maintenance_date = $service['planned_maintenance_date'];
+                $newService->calendar_color = $service['selectedColor'];
+                $newService->consumable_materials = $service['materials'];
+                $newService->card_object_main_id = $cardId;
                 $newService->save();
                 $serviceId = $newService->id;
 
-                if ($request->has('types_of_work')) {
-                    $typesOfWork = explode(",", $request->input('types_of_work'));
-                    foreach ($typesOfWork as $typeOfWork) {
-                        CardObjectServicesTypes::create([
-                            'card_id' => $cardId,
-                            'card_services_id' => $serviceId,
-                            'type_work' => $typeOfWork,
-                        ]);
-                    }
+                // Получаем данные о виде работ для текущего обслуживания
+                $typesOfWork = $service['types_of_work'];
+//                dd($typesOfWork);
+                foreach ($typesOfWork as $typeOfWork) {
+                    CardObjectServicesTypes::create([
+                        'card_id' => $cardId,
+                        'card_services_id' => $serviceId,
+                        'type_work' => $typeOfWork,
+                    ]);
                 }
-
             }
         }
 
@@ -254,16 +242,14 @@ class ObjectController extends Controller
                 $newService->card_object_main_id = $id; // Используем $id для привязки к карточке объекта
                 $newService->save();
 
-                // Обработка и добавление новых записей типов работ для каждого обслуживания
-                if ($request->has('types_of_work')) {
-                    $typesOfWork = explode(",", $request->input('types_of_work'));
-                    foreach ($typesOfWork as $typeOfWork) {
-                        CardObjectServicesTypes::create([
-                            'card_id' => $id,
-                            'card_services_id' => $newService->id,
-                            'type_work' => $typeOfWork,
-                        ]);
-                    }
+                // Получаем данные о виде работ для текущего обслуживания
+                $typesOfWork = $service['types_of_work'];
+                foreach ($typesOfWork as $typeOfWork) {
+                    CardObjectServicesTypes::create([
+                        'card_id' => $id,
+                        'card_services_id' => $newService->id,
+                        'type_work' => $typeOfWork,
+                    ]);
                 }
             }
         }

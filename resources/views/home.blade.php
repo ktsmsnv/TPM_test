@@ -49,6 +49,7 @@
                             <thead>
                             <tr>
                                 <th></th>
+                                <th class="d-none"></th>
                                 <th colspan="6"></th>
                                 <th colspan="8"></th>
                             </tr>
@@ -71,8 +72,9 @@
                             </thead>
                             <tbody>
                             @foreach($objects as $object)
-                                <tr data-id="1">
+                                <tr data-id="{{ $object->id }}">
                                     <td></td>
+                                    <td>{{ $object->id }}</td>
                                     <td> {{ $object->infrastructure }}</td>
                                     <td class="tool-tip" title="открыть карточку объекта">
                                         <a href="{{ route('cardObject', ['id' => $object->id]) }}" target="_blank">
@@ -179,8 +181,8 @@
 
             function getIdSelections() {
                 return $.map($table.bootstrapTable('getSelections'), function (row) {
-                    return row.id;
-                });
+                    return row.id
+                })
             }
 
             function responseHandler(res) {
@@ -209,15 +211,24 @@
                             align: 'center',
                             valign: 'middle'
                         },
+                        {
+                            title: 'Item ID',
+                            field: 'id',
+                            rowspan: 2,
+                            align: 'center',
+                            valign: 'middle'
+                        },
                         { field: 'obj', title: 'Объекты инфраструктуры', align: 'center' },
                         { field: 'serv', title: 'Обслуживание TPM', align: 'center' },
                     ]
                 });
 
-                $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
-                    $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
-                    selections = getIdSelections();
-                });
+                $table.on('check.bs.table uncheck.bs.table ' +  'check-all.bs.table uncheck-all.bs.table',
+                    function () {
+                        $remove.prop('disabled', !$table.bootstrapTable('getSelections').length)
+                        selections = getIdSelections()
+                        console.log(selections);
+                    })
 
                 $remove.click(function () {
                     let ids = getIdSelections();

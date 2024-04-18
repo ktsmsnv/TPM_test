@@ -399,7 +399,7 @@
                 // Вызываем функцию для обновления обработчика событий для выбора цвета
                 updateColorPicker();
 
-                // Инициализируем массив typesOfWork
+                // Инициализируем объект typesOfWorkByService
                 let typesOfWorkByService = {};
                 let formData = new FormData();
                 // Обработка клика по кнопке "Добавить вид работы"
@@ -408,15 +408,18 @@
                     console.log("Добавлен вид работы:", typeOfWork);
                     if (typeOfWork !== '') {
                         let currentServiceId = $('.tab-pane.active').attr('id');
-                        // if (!typesOfWorkByService[currentServiceId]) {
-                        //     typesOfWorkByService[currentServiceId] = [];
-                        // }
-                        // typesOfWorkByService[currentServiceId].push(typeOfWork);
                         let listItem = '<input class="form-control" ' +
-                            'name="types_of_work[]" value="' + typeOfWork + '">';
+                            'name="types_of_work[' + currentServiceId + '][]" value="' + typeOfWork + '">';
+
+                        // Добавляем вид работы в typesOfWorkByService
+                        if (!typesOfWorkByService[currentServiceId]) {
+                            typesOfWorkByService[currentServiceId] = [];
+                        }
+                        typesOfWorkByService[currentServiceId].push(typeOfWork);
+
                         $("#" + currentServiceId + " .typesOfWork").append(listItem);
-                        // formData.append('services[types_of_work][]', typeOfWork);
-                        // console.log("текущие работы во вкладке",currentServiceId,": ",  typesOfWorkByService[currentServiceId]);
+                        // Выводим данные о типах работ в консоль для проверки
+                        console.log("typesOfWorkByService:", typesOfWorkByService);
                     }
                 });
 
@@ -424,9 +427,6 @@
              //------------  обработчик сохранения данных  ------------
 
                 $(".saveCard").click(function () {
-                    // Создаем объект FormData для отправки данных на сервер, включая файлы
-                    // let formData = new FormData();
-
                     // Собираем данные с основной формы
                     formData.append('infrastructure', $("select[name=infrastructure]").val());
                     formData.append('name', $("input[name=name]").val());
@@ -450,12 +450,9 @@
                     }
 
                     let servicesData = [];
-                    let typesOfWorkValues = $("input[name='types_of_work[]']").map(function() {
-                        return $(this).val();
-                    }).get();
-                    formData.append('types_of_work', typesOfWorkValues);
                     // Собираем данные с каждой вкладки обслуживания
                     for (let i = 1; i < serviceTabsCount; i++) {
+                        let typesOfWorkValues = typesOfWorkByService['service_' + i] || [];
                         let serviceData = {
                             service_type: $("#service_type_" + i).val(),
                             short_name: $("#short_name_" + i).val(),
@@ -466,13 +463,15 @@
                             planned_maintenance_date: $("#planned_maintenance_date_" + i).val(),
                             selectedColor: $("#selectedColor_" + i).val(),
                             materials: $("#materialsTextArea_" + i).val(), // Добавляем данные о расходных материалах
-
-                            // types_of_work: typesOfWorkByService[i],
+                            types_of_work: typesOfWorkValues,
                         };
                         // Добавляем данные в массив servicesData
                         servicesData.push(serviceData);
                     }
 
+                    // // Преобразуем типы работ в строку и добавляем в formData
+                    // let typesOfWorkString = JSON.stringify(typesOfWorkByService);
+                    // formData.append("types_of_work", typesOfWorkString);
                     // Добавляем массив servicesData в formData
                     formData.append("services", JSON.stringify(servicesData));
 
@@ -498,6 +497,7 @@
                         }
                     });
                 });
+
             });
         </script>
 @endsection
