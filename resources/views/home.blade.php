@@ -232,21 +232,34 @@
 
                 $remove.click(function () {
                     let ids = getIdSelections();
-                    $table.bootstrapTable('remove', {
-                        field: 'id',
-                        values: ids
-                    });
-                    $remove.prop('disabled', true);
-                    showConfirmDeleteModal();
+                    if (ids.length > 0) {
+                        showConfirmDeleteModal();
+                    }
                 });
 
                 // Функция для отображения модального окна удаления
                 function showConfirmDeleteModal() {
                     $confirmDelete.modal('show');
                 }
+
                 // Обработчик события нажатия на кнопку "Удалить" в модальном окне
                 $confirmDeleteButton.click(function () {
-                    // добавить логику для удаления элементов
+                    let ids = getIdSelections();
+                    $.ajax({
+                        type: "POST",
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        url: "{{ route('delete-cardObject') }}",
+                        data: { ids: ids },
+                        success: function (response) {
+                            // Обновить таблицу после успешного удаления
+                            $table.bootstrapTable('refresh');
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
                     $confirmDelete.modal('hide');
                 });
             }
