@@ -49,6 +49,8 @@ Route::middleware(['auth'])->group(function () {
         // РЕДАКТИРОВАНИЕ существующей карточки объекта
         Route::get('/home/card-object/edit/{id}', [App\Http\Controllers\ObjectController::class, 'edit'])->name('cardObject-edit');
         Route::post('/edit-card-object-save/{id}', [App\Http\Controllers\ObjectController::class, 'editSave'])->name('cardObject-editSave');
+        // удаление обслуживания у карточки
+        Route::delete('/delete-service/{cardId}/{serviceId}', [App\Http\Controllers\ObjectController::class, 'deleteService'])->name('delete.service');
 
     // ----------------------------------------------------------------------------------------------------------------
 

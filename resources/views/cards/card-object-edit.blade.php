@@ -165,6 +165,7 @@
             @foreach ($data_CardObjectMain->services as $key => $service)
                 <div class="tab-pane fade @if ($key === 0) @endif" id="service_{{ $key + 1 }}" role="tabpanel"
                      aria-labelledby="service_{{ $key + 1 }}-tab">
+                    <button class="btn btn-danger mt-3 delete_service">Удалить</button>
                     <div id="service__blocks" class="d-grid">
                         {{-- ОБСЛУЖИВАНИЕ ТРМ --}}
                         <div class="member_card_style services">
@@ -220,11 +221,11 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата предыдущего обслуживания</label>
-                                            <input id="prev_maintenance_date_{{ $key + 1 }}" class="form-control w-100" name="prev_maintenance_date" value="{{ date('d-m-Y', strtotime($service->prev_maintenance_date)) }}" >
+                                            <input id="prev_maintenance_date_{{ $key + 1 }}" type="date" class="form-control w-100" name="prev_maintenance_date" value="{{ date('d-m-Y', strtotime($service->prev_maintenance_date)) }}" >
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Плановая дата обслуживания</label>
-                                            <input id="planned_maintenance_date_{{ $key + 1 }}" class="form-control w-100" name="planned_maintenance_date" value="{{ date('d-m-Y', strtotime($service->planned_maintenance_date)) }}" >
+                                            <input id="planned_maintenance_date_{{ $key + 1 }}" type="date" class="form-control w-100" name="planned_maintenance_date" value="{{ date('d-m-Y', strtotime($service->planned_maintenance_date)) }}" >
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Цвет в календаре</label>
@@ -258,6 +259,7 @@
                                                 <div class="form-check d-flex align-items-center gap-2">
                                                     <input class="form-control" name="types_of_work[service_{{ $key + 1 }}][]"
                                                            value="{{ $type->type_work }}">
+                                                    <i class="bi bi-x-circle typesOfWork_Delete ms-3"></i>
                                                 </div>
                                             </div>
                                         @endforeach
@@ -297,6 +299,34 @@
                     </div>
                 </div>
             @endforeach
+            @if ($data_CardObjectMain->services->isNotEmpty())
+                <script>
+                    //------------  обработчик удаления данных об обслуживании ------------
+                    $(".delete_service").click(function () {
+                        let serviceIndex = $(this).closest('.tab-pane').index() + 1; // Индекс вкладки обслуживания
+                        let serviceId = "{{ $data_CardObjectMain->services[$key]->id }}"; // Идентификатор обслуживания
+                        // Отправляем запрос на удаление обслуживания на сервер
+                        $.ajax({
+                            type: "DELETE",
+                            url: "/delete-service/{{ $data_CardObjectMain->id }}/" + serviceId,
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function (response) {
+                                // Обновляем страницу или выполняем другие действия после успешного удаления обслуживания
+                                alert("Обслуживание успешно удалено");
+                                // Перезагрузка страницы
+                                location.reload();
+                            },
+                            error: function (error) {
+                                // Обработка ошибки удаления обслуживания
+                                alert("Ошибка при удалении обслуживания");
+                                console.error(error);
+                            }
+                        });
+                    });
+                </script>
+            @endif
         </div>
     </div>
 
@@ -330,6 +360,7 @@
         let uploadedImageSrc = '{{ $imageSrc }}'; // Переменная для хранения пути к загруженному изображению
 
         document.addEventListener('DOMContentLoaded', function () {
+            let formData = new FormData();
             // Обработчик загрузки документов
             $('#docUpload').change(function () {
                 let fileList = this.files;
@@ -343,14 +374,18 @@
                     let deleteButton = $('<i class="bi bi-x-circle docDelete ms-3"></i>');
                     let documentItem = $('<div class="documentItem">').append(listItem, deleteButton);
                     documentList.append(documentItem);
+                    // Добавляем файл к formData
+                    formData.append('files[]', file);
                 }
             });
 
             $(document).on('click', '.docDelete', function () {
-                // Находим родительский элемент строки документации, содержащий нажатую кнопку "Удалить документ"
                 let parent = $(this).closest('.documentItem');
-                // Удаляем эту строку документации
+                let fileName = parent.find('a').text();
                 parent.remove();
+                formData.append('files_delete[]', fileName); // Добавляем имя файла к formData
+                // При удалении файла из списка, удаляем его из formData
+                formData.delete('files[]', fileName);
             });
 
 
@@ -568,17 +603,21 @@
             // Вызываем функцию для обновления обработчика событий для выбора цвета
             updateColorPicker();
 
-// Инициализируем объект typesOfWorkByService
+            // Инициализируем объект typesOfWorkByService
             let typesOfWorkByService = {};
-            let formData = new FormData();
             // Обработка клика по кнопке "Добавить вид работы"
             $("#addTypeOfWork").click(function() {
                 let typeOfWork = $("#typeOfWorkInput").val().trim();
                 console.log("Добавлен вид работы:", typeOfWork);
                 if (typeOfWork !== '') {
                     let currentServiceId = $('.tab-pane.active').attr('id');
-                    let listItem = '<input class="form-control" ' +
-                        'name="types_of_work[' + currentServiceId + '][]" value="' + typeOfWork + '">';
+                    let listItem = '<div class="grid-item">' +
+                        '<div class="form-check d-flex align-items-center gap-2">' +
+                        '<input class="form-control" ' +
+                        'name="types_of_work[' + currentServiceId + '][]" value="' + typeOfWork + '">' +
+                        '<i class="bi bi-x-circle typesOfWork_Delete ms-3"></i>' +
+                        '</div>' +
+                        '</div>';
 
                     // Добавляем вид работы в typesOfWorkByService
                     if (!typesOfWorkByService[currentServiceId]) {
@@ -586,18 +625,31 @@
                     }
                     typesOfWorkByService[currentServiceId].push(typeOfWork);
 
-                    $("#" + currentServiceId + " .typesOfWork").append(listItem);
+                    $("#" + currentServiceId + " .grid-container").append(listItem);
 
                     // Выводим данные о типах работ в консоль для проверки
                     console.log("typesOfWorkByService:", typesOfWorkByService);
                 }
             });
 
-            //------------  обработчик сохранения данных  ------------
+            $(document).on('click', '.typesOfWork_Delete', function () {
+                // Находим родительский элемент блока типа работы
+                let parent = $(this).closest('.grid-item');
+                // Находим ввод с типом работы
+                let typeOfWorkInput = parent.find('.form-control');
+                // Получаем значение типа работы
+                let typeOfWork = typeOfWorkInput.val().trim();
+                // Скрываем родительский элемент блока типа работы
+                parent.hide();
+                // Добавляем имя типа работы к formData
+                formData.append('types_of_work_delete[]', typeOfWork);
+            });
 
+
+
+            //------------  обработчик сохранения данных  ------------
             $(".saveEditObject").click(function () {
                 // Создаем объект FormData для отправки данных на сервер, включая файлы
-                // let formData = new FormData();
 
                 // Собираем данные с основной формы
                 formData.append('infrastructure', $("select[name=infrastructure]").val());
@@ -615,11 +667,11 @@
                     formData.append('images[]', imageFiles[i]);
                 }
 
-                // Собираем данные о загруженных файлах
-                let docFiles = $("#docUpload")[0].files;
-                for (let j = 0; j < docFiles.length; j++) {
-                    formData.append('files[]', docFiles[j]);
-                }
+                // // Собираем данные о загруженных файлах
+                // let docFiles = $("#docUpload")[0].files;
+                // for (let j = 0; j < docFiles.length; j++) {
+                //     formData.append('files[]', docFiles[j]);
+                // }
 
                 let servicesData = [];
                 // Собираем данные с каждой вкладки обслуживания
@@ -672,6 +724,8 @@
                     }
                 });
             });
+
         });
+
     </script>
 @endsection
