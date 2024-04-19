@@ -152,6 +152,7 @@
                                 @if ($data_CardObjectMain)
                                     <img src="{{ route('getImage', ['id' => $data_CardObjectMain->id]) }}"
                                          alt="Image">
+                                    <div class="objectImage__delete mt-4"><button class="btn btn-danger imageDelete">Удалить</button></div>
                                 @else
                                     <p>Нет доступных изображений</p>
                                 @endif
@@ -290,6 +291,7 @@
                                     @if ($data_CardObjectMain)
                                         <img src="{{ route('getImage', ['id' => $data_CardObjectMain->id]) }}"
                                              alt="Image">
+                                        <div class="objectImage__delete mt-4"><button class="btn btn-danger imageDelete">Удалить</button></div>
                                     @else
                                         <p>Нет доступных изображений</p>
                                     @endif
@@ -378,7 +380,6 @@
                     formData.append('files[]', file);
                 }
             });
-
             $(document).on('click', '.docDelete', function () {
                 let parent = $(this).closest('.documentItem');
                 let fileName = parent.find('a').text();
@@ -387,7 +388,6 @@
                 // При удалении файла из списка, удаляем его из formData
                 formData.delete('files[]', fileName);
             });
-
 
             // Обработчик загрузки изображений
             $('#imageUpload').change(function () {
@@ -398,11 +398,11 @@
                         uploadedImageSrc = e.target.result; // Сохраняем путь к загруженному изображению
                         $('.objectImage img').attr('src', uploadedImageSrc); // Отображаем изображение на вкладке "Основная"
                         $('.member_card_style.image .objectImage img').attr('src', uploadedImageSrc); // Отображаем изображение на других вкладках
-                        $('.member_card_style.image .member-info').append(
-                            '<div class="objectImage__delete mt-4"><button class="btn btn-danger imageDelete">Удалить</button></div>'
-                        );
                     }
                     reader.readAsDataURL(fileList[0]);
+
+                    // Добавляем изображение к formData
+                    formData.append('images[]', fileList[0]);
                 }
             });
             $(document).on('click', '.imageDelete', function () {
@@ -631,7 +631,6 @@
                     console.log("typesOfWorkByService:", typesOfWorkByService);
                 }
             });
-
             $(document).on('click', '.typesOfWork_Delete', function () {
                 // Находим родительский элемент блока типа работы
                 let parent = $(this).closest('.grid-item');
@@ -649,8 +648,6 @@
 
             //------------  обработчик сохранения данных  ------------
             $(".saveEditObject").click(function () {
-                // Создаем объект FormData для отправки данных на сервер, включая файлы
-
                 // Собираем данные с основной формы
                 formData.append('infrastructure', $("select[name=infrastructure]").val());
                 formData.append('name', $("input[name=name]").val());
@@ -660,18 +657,6 @@
                 formData.append('date_usage', $("input[name=date_usage]").val());
                 formData.append('date_cert_end', $("input[name=date_cert_end]").val());
                 formData.append('date_usage_end', $("input[name=date_usage_end]").val());
-
-                // Собираем данные о загруженных изображениях
-                let imageFiles = $("#imageUpload")[0].files;
-                for (let i = 0; i < imageFiles.length; i++) {
-                    formData.append('images[]', imageFiles[i]);
-                }
-
-                // // Собираем данные о загруженных файлах
-                // let docFiles = $("#docUpload")[0].files;
-                // for (let j = 0; j < docFiles.length; j++) {
-                //     formData.append('files[]', docFiles[j]);
-                // }
 
                 let servicesData = [];
                 // Собираем данные с каждой вкладки обслуживания

@@ -408,8 +408,13 @@
                     console.log("Добавлен вид работы:", typeOfWork);
                     if (typeOfWork !== '') {
                         let currentServiceId = $('.tab-pane.active').attr('id');
-                        let listItem = '<input class="form-control" ' +
-                            'name="types_of_work[' + currentServiceId + '][]" value="' + typeOfWork + '">';
+                        let listItem = '<div class="grid-item">' +
+                            '<div class="form-check d-flex align-items-center gap-2">' +
+                            '<input class="form-control" ' +
+                            'name="types_of_work[' + currentServiceId + '][]" value="' + typeOfWork + '">' +
+                            '<i class="bi bi-x-circle typesOfWork_Delete ms-3"></i>' +
+                            '</div>' +
+                            '</div>';
 
                         // Добавляем вид работы в typesOfWorkByService
                         if (!typesOfWorkByService[currentServiceId]) {
@@ -422,7 +427,16 @@
                         console.log("typesOfWorkByService:", typesOfWorkByService);
                     }
                 });
-
+                $(document).on('click', '.typesOfWork_Delete', function () {
+                    // Находим родительский элемент блока типа работы
+                    let parent = $(this).closest('.grid-item');
+                    // Находим ввод с типом работы
+                    let typeOfWorkInput = parent.find('.form-control');
+                    // Получаем значение типа работы
+                    let typeOfWork = typeOfWorkInput.val().trim();
+                    // Скрываем родительский элемент блока типа работы
+                    parent.hide();
+                });
 
              //------------  обработчик сохранения данных  ------------
 
