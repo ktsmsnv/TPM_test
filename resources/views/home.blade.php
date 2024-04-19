@@ -86,13 +86,13 @@
                                     <td>{{ date('d-m-Y', strtotime($object->date_cert_end )) }}</td>
                                     <td>{{ $object->number }}</td>
                                     <td>{{ $object->location }}</td>
-                                    <td class="tool-tip" title="ближайшее обслуживание">
+                                    <td class="tool-tip" title="ближайшее обслуживание из всех">
                                         @if ($object->services->isNotEmpty())
                                                 <?php
                                                 // Начальное значение для ближайшей даты
                                                 $nearestMaintenanceDate = null;
-                                                // Проходимся по всем сервисам объекта
-                                                foreach ($object->services as $service) {
+                                                // Проходимся по всем сервисам объекта, исключая те, у которых поле checked равно true
+                                                foreach ($object->services->where('checked', false) as $service) {
                                                     // Получаем планируемую дату обслуживания
                                                     $plannedMaintenanceDate = $service->planned_maintenance_date;
                                                     // Если ближайшая дата пуста или текущая планируемая дата ближе к текущей дате

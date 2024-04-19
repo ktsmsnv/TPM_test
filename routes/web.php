@@ -52,6 +52,7 @@ Route::middleware(['auth'])->group(function () {
         // удаление обслуживания у карточки
         Route::delete('/delete-service/{cardId}/{serviceId}', [App\Http\Controllers\ObjectController::class, 'deleteService'])->name('delete.service');
 
+        Route::post('/update-type-checked', [App\Http\Controllers\ObjectController::class, 'updateChecked'])->name('update-type-checked');
     // ----------------------------------------------------------------------------------------------------------------
 
     // ---------------------------- КАРТОЧКА ЗАКАЗ-НАРЯДА -------------------------------------------------------------
