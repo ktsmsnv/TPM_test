@@ -29,6 +29,7 @@ Route::middleware(['auth'])->group(function () {
     // ---------------------------- РЕЕСТРЫ ----------------------------------------------------------------------------
         //Реестр объектов
         Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+        Route::post('/delete-cardObject', [App\Http\Controllers\HomeController::class,'deleteObject'])->name('delete-cardObject');
         //Реестр заказов
         Route::get('/reestr-work-orders', [App\Http\Controllers\HomeController::class, 'reestrWorkOrdersView'])->name('reestr-workOrders');
         //Реестр графиков
@@ -53,6 +54,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/delete-service/{cardId}/{serviceId}', [App\Http\Controllers\ObjectController::class, 'deleteService'])->name('delete.service');
 
         Route::post('/update-type-checked', [App\Http\Controllers\ObjectController::class, 'updateChecked'])->name('update-type-checked');
+
     // ----------------------------------------------------------------------------------------------------------------
 
     // ---------------------------- КАРТОЧКА ЗАКАЗ-НАРЯДА -------------------------------------------------------------
