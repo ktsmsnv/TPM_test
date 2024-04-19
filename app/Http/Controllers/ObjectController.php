@@ -139,6 +139,7 @@ class ObjectController extends Controller
                 $newService->planned_maintenance_date = $service['planned_maintenance_date'];
                 $newService->calendar_color = $service['selectedColor'];
                 $newService->consumable_materials = $service['materials'];
+                $newService->checked = $service['checked'];
                 $newService->card_object_main_id = $cardId;
                 $newService->save();
                 $serviceId = $newService->id;
@@ -248,6 +249,7 @@ class ObjectController extends Controller
                 $newService->planned_maintenance_date = $service['planned_maintenance_date'];
                 $newService->calendar_color = $service['selectedColor'];
                 $newService->consumable_materials = $service['materials'];
+                $newService->checked = $service['checked'];
                 $newService->card_object_main_id = $id; // Используем $id для привязки к карточке объекта
                 $newService->save();
 
@@ -294,6 +296,22 @@ class ObjectController extends Controller
         CardObjectServicesTypes::where('card_services_id', $serviceId)->delete();
         // Возвращаем успешный ответ
         return response()->json(['success' => 'Обслуживание успешно удалено'], 200);
+    }
+
+    public function updateChecked(Request $request)
+    {
+        $typeId = $request->type_id;
+        $checked = $request->checked;
+
+        $type = CardObjectServicesTypes::find($typeId);
+        if (!$type) {
+            return response()->json(['error' => 'Вид работы не найден'], 404);
+        }
+
+        $type->checked = $checked;
+        $type->save();
+
+        return response()->json(['success' => 'Поле checked успешно обновлено'], 200);
     }
 
 }

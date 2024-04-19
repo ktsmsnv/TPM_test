@@ -158,13 +158,15 @@
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Обслуживание ТРМ {{ $key + 1 }}</h4>
                                     <button class="btn btn-primary">Обновить даты</button>
-{{--                                    <div>--}}
-{{--                                        <input type="checkbox" class="form-check-input me-1" id="disableInTable">--}}
-{{--                                        <label class="form-check-label disableInTable" for="disableInTable">Не--}}
-{{--                                            выводить--}}
-{{--                                            на основной--}}
-{{--                                            экран, в график TPM и не отправлять уведомления</label>--}}
-{{--                                    </div>--}}
+                                    <div data-toggle="tooltip"
+                                         title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ">
+                                        <input type="checkbox" class="form-check-input me-1" id="disableInTable_{{ $key + 1 }}"
+                                               @if ($service->checked) checked @endif disabled>
+                                        <label class="form-check-label disableInTable" for="disableInTable">Не
+                                            выводить
+                                            на основной
+                                            экран, в график TPM и не отправлять уведомления</label>
+                                    </div>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
@@ -224,17 +226,43 @@
                                 <div class="typesOfWork">
                                     <!-- Используем класс row для создания строки -->
                                     <div class="grid-container">
-                                            @foreach ($service->services_types as $type)
-                                                <div class="grid-item">
-                                                    <div class="form-check d-flex align-items-center gap-2">
-                                                        <label class="form-check-label form-control" data-toggle="tooltip"
-                                                               title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ">
-                                                            {{ $type->type_work }}
-                                                        </label>
-                                                    </div>
+                                        @foreach ($service->services_types as $type)
+                                            <div class="grid-item">
+                                                <div class="form-check d-flex align-items-center gap-2">
+                                                    <input type="checkbox" class="form-check-input type-checkbox"
+                                                           id="type_{{ $type->id }}" data-id="{{ $type->id }}"
+                                                        {{ $type->checked ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="type_{{ $type->id }}">
+                                                        {{ $type->type_work }}
+                                                    </label>
                                                 </div>
-                                            @endforeach
+                                            </div>
+                                        @endforeach
                                     </div>
+                                    <script>
+                                        $('.type-checkbox').on('change', function () {
+                                            var typeId = $(this).data('id');
+                                            var isChecked = $(this).is(':checked');
+
+                                            $.ajax({
+                                                type: "POST",
+                                                headers: {
+                                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                                },
+                                                url: "{{ route('update-type-checked') }}",
+                                                data: {
+                                                    type_id: typeId,
+                                                    checked: isChecked ? 1 : 0 // Преобразуем в целое число для сохранения в MongoDB
+                                                },
+                                                success: function (response) {
+                                                    console.log(response);
+                                                },
+                                                error: function (error) {
+                                                    console.log(error);
+                                                }
+                                            });
+                                        });
+                                    </script>
                                 </div>
                             </div>
                         </div>
