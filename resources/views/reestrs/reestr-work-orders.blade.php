@@ -87,7 +87,7 @@
                             <tr data-id="1">
                                 <td></td>
                                 <th>из карточки заказа</th>
-                                <td><a href="/home/card-object" class="tool-tip" title="открыть карточку графика">Сварочное оборудование JASIC MIG 3500 TECH N222</a></td>
+                                <td><a href="/reestr-work-orders/card-work-order" target="_blank" class="tool-tip" title="открыть карточку графика">Сварочное оборудование JASIC MIG 3500 TECH N222</a></td>
                                 <th>из карточки заказа</th>
                                 <th>из карточки заказа</th>
                                 <th>из карточки заказа</th>
