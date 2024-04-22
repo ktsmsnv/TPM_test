@@ -29,9 +29,13 @@ Route::middleware(['auth'])->group(function () {
     // ---------------------------- РЕЕСТРЫ ----------------------------------------------------------------------------
         //Реестр объектов
         Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+        // Передача данных таблиц в реестр bootstraptable
         Route::get('/get-objects',  [App\Http\Controllers\HomeController::class, 'getObjects'])->name('get-objects');
+        // Копия карточки объекта
+        Route::post('/copy-cardObject', [App\Http\Controllers\HomeController::class, 'copyObject'])->name('copy-cardObject');
 
-        Route::post('/delete-cardObject', [App\Http\Controllers\HomeController::class,'deleteObject'])->name('delete-cardObject');
+
+    Route::post('/delete-cardObject', [App\Http\Controllers\HomeController::class,'deleteObject'])->name('delete-cardObject');
         //Реестр заказов
         Route::get('/reestr-work-orders', [App\Http\Controllers\HomeController::class, 'reestrWorkOrdersView'])->name('reestr-workOrders');
         //Реестр графиков
