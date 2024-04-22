@@ -11,10 +11,8 @@
                 <div class="d-flex gap-2">
                     <a id="showActiveBtn" type="button" class="btn btn-success" data-toggle="tooltip"
                        title="без даты вывода объекта из эксплуатации">Показать активные объекты</a>
-                    <a href="/home/card-object-create" target="_blank" type="button" class="btn btn-primary">Создать
-                        карточку объекта</a>
-                    <a type="button" class="btn btn-primary btn-primary--2 copy_cardObject">Скопировать карточку
-                        объекта</a>
+                    <a href="/home/card-object-create" target="_blank" type="button" class="btn btn-primary">Создать карточку объекта</a>
+                    <a type="button" class="btn btn-primary btn-primary--2 copy_cardObject">Скопировать карточку объекта</a>
                     <a type="button" class="btn btn-light">Сформировать график TPM</a>
                     <a type="button" class="btn btn-light">Сформировать календарь TPM</a>
                     <a type="button" class="btn btn-light">Сформировать заказ-наряд TPM</a>
@@ -326,6 +324,35 @@
                 refreshTable(); // Перезагружаем таблицу, чтобы сбросить фильтр
                 isActiveFilter = false; // Устанавливаем флаг фильтрации в неактивное состояние
             }
+
+
+            // создание копии карточки объекта
+            $('.copy_cardObject').click(function () {
+                let selectedRows = $table.bootstrapTable('getSelections');
+                let ids = selectedRows.map(row => row.id);
+                if (ids.length > 0) {
+                    ids.forEach(function(id) {
+                        $.ajax({
+                            type: "POST",
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            url: "{{ route('copy-cardObject') }}",
+                            data: {id: id},
+                            success: function (response) {
+                                // Обновить таблицу после успешного создания копии карточки объекта
+                                refreshTable();
+                            },
+                            error: function (error) {
+                                console.log(error);
+                            }
+                        });
+                    });
+                }
+            });
+
+
+
         });
     </script>
 @endsection

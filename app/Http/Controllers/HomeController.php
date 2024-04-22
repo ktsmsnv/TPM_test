@@ -66,6 +66,25 @@ class HomeController extends Controller
         return response()->json($formattedObjects);
     }
 
+    public function copyObject(Request $request)
+    {
+        $id = $request->id; // Получаем идентификатор карточки объекта, которую нужно скопировать
+        $originalObject = CardObjectMain::with('services')->find($id);
+
+        // Создаем копию карточки объекта
+        $copiedObject = $originalObject->replicate();
+        $copiedObject->save();
+
+        // Создаем копии связанных сервисов карточки объекта
+        foreach ($originalObject->services as $service) {
+            $copiedService = $service->replicate();
+            $copiedService->card_object_main_id = $copiedObject->id;
+            $copiedService->save();
+        }
+
+        return response()->json(['success' => 'Карточка объекта успешно скопирована'], 200);
+    }
+
 
 
 
