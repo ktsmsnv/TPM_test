@@ -9,13 +9,14 @@
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
-                <h2 class="mb-4"><strong>Карточка графика</strong></h2>
+                <h1 class="mb-4"><strong>Карточка
+                        графика: "{{ $data_CardObjectMain->name ?? 'Название объекта не найдено' }}"</strong></h1>
             </div>
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-success">Сохранить</button>
-                    <button type="button" class="btn btn-secondary me-5">Закрыть</button>
+                    <a href="/pageReestrGraph" type="button" class="btn btn-secondary me-5">Закрыть</a>
                     <button type="button" class="btn btn-success">Выгрузить PDF</button>
+                    <a href="{{ route('cardGraph-edit', ['id' => $data_CardObjectMain->_id]) }}" target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
                 </div>
             </div>
 
@@ -42,13 +43,13 @@
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид инфраструктуры</label>
-                                            <input name="" placeholder="Введите вид инфраструктуры"
-                                                   class="form-control w-100">
+                                            <input name="" placeholder="Введите вид инфраструктуры" class="form-control w-100"
+                                                   readonly value="{{ $data_CardObjectMain->infrastructure ?? 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Куратор</label>
-                                            <input name="" placeholder="Введите куратора"
-                                                   class="form-control w-100">
+                                            <input name="" placeholder="Введите куратора" class="form-control w-100"
+                                                   readonly value="{{$data_CardObjectMain->graph->first()->curator ?? 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Год действия</label>

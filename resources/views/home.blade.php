@@ -81,7 +81,7 @@
                                             {{ $object->name }}
                                         </a>
                                     </td>
-                                    <td>{{  date('d-m-Y', strtotime($object->date_usage )) }}</td>
+                                    <td>{{ date('d-m-Y', strtotime($object->date_usage )) }}</td>
                                     <td>{{ date('d-m-Y', strtotime($object->date_usage_end )) }}</td>
                                     <td>{{ date('d-m-Y', strtotime($object->date_cert_end )) }}</td>
                                     <td>{{ $object->number }}</td>
