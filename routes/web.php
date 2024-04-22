@@ -29,6 +29,8 @@ Route::middleware(['auth'])->group(function () {
     // ---------------------------- РЕЕСТРЫ ----------------------------------------------------------------------------
         //Реестр объектов
         Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+        Route::get('/get-objects',  [App\Http\Controllers\HomeController::class, 'getObjects'])->name('get-objects');
+
         Route::post('/delete-cardObject', [App\Http\Controllers\HomeController::class,'deleteObject'])->name('delete-cardObject');
         //Реестр заказов
         Route::get('/reestr-work-orders', [App\Http\Controllers\HomeController::class, 'reestrWorkOrdersView'])->name('reestr-workOrders');
