@@ -83,12 +83,12 @@
             }
 
 
-// Функция для получения данных с сервера
+            // Функция для получения данных с сервера
             function getObjectsFromServer() {
                 return $.get('/get-objects'); // Возвращаем Promise
             }
 
-// Функция для обновления таблицы
+            // Функция для обновления таблицы
             function refreshTable() {
                 getObjectsFromServer().done(function(data) {
                     initTable(data); // Инициализируем таблицу с новыми данными
@@ -264,6 +264,10 @@
                     selections = getIdSelections();
                 });
 
+
+
+
+
             // обработчик нажатия по кнопке удаления
             $remove.click(function () {
                 let ids = getIdSelections();
@@ -295,6 +299,8 @@
                 });
                 $confirmDelete.modal('hide');
             });
+
+
 
 
             let isActiveFilter = false; // Флаг, указывающий на текущее состояние фильтрации активных объектов
