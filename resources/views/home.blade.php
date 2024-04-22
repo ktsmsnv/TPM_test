@@ -5,16 +5,22 @@
     <div class="container">
         <div class="reestrObject">
             <div class="reestrObject__btns d-flex justify-content-between mb-5">
-                <button type="button" class="btn btn-secondary" data-toggle="tooltip" title="показать последние данные">Обновить реестр</button>
+                <button type="button" class="btn btn-secondary refreshTable" data-toggle="tooltip"
+                        title="показать последние данные">Обновить реестр
+                </button>
                 <div class="d-flex gap-2">
-                    <a type="button" class="btn btn-success" data-toggle="tooltip" title="без даты вывода объекта из эксплуатации">Показать активные объекты</a>
-                    <a href="/home/card-object-create" target="_blank" type="button" class="btn btn-primary">Создать карточку объекта</a>
-                    <a type="button" class="btn btn-primary btn-primary--2">Скопировать карточку объекта</a>
+                    <a id="showActiveBtn" type="button" class="btn btn-success" data-toggle="tooltip"
+                       title="без даты вывода объекта из эксплуатации">Показать активные объекты</a>
+                    <a href="/home/card-object-create" target="_blank" type="button" class="btn btn-primary">Создать
+                        карточку объекта</a>
+                    <a type="button" class="btn btn-primary btn-primary--2 copy_cardObject">Скопировать карточку
+                        объекта</a>
                     <a type="button" class="btn btn-light">Сформировать график TPM</a>
                     <a type="button" class="btn btn-light">Сформировать календарь TPM</a>
                     <a type="button" class="btn btn-light">Сформировать заказ-наряд TPM</a>
                 </div>
             </div>
+            <label for="locale"></label>
             <select class="form-control d-none" id="locale">
                 <option value="ru-RU">ru-RU</option>
             </select>
@@ -27,123 +33,13 @@
                                 <i class="fa fa-trash"></i> Удалить
                             </button>
                         </div>
-                        <table id="reestrObject"
-                               data-toolbar="#toolbar"
-                               data-search="true"
-                               data-show-refresh="true"
-                               data-show-toggle="true"
-                               data-show-fullscreen="true"
-                               data-show-columns="true"
-                               data-show-columns-toggle-all="true"
-{{--                               data-detail-view="true"--}}
-                               data-show-export="true"
-                               data-click-to-select="true"
-{{--                               data-detail-formatter="detailFormatter"--}}
-                               data-minimum-count-columns="2"
-                               data-show-pagination-switch="true"
-                               data-pagination="true"
-                               data-id-field="id"
-                               data-show-footer="true"
-                               data-side-pagination="server"
-                               data-response-handler="responseHandler">
-                            <thead>
-                            <tr>
-                                <th></th>
-                                <th class="d-none"></th>
-                                <th colspan="6"></th>
-                                <th colspan="8"></th>
-                            </tr>
-                            <tr>
-                                <th>Вид инфраструктуры</th>
-                                <th>Наименование объекта</th>
-                                <th>Дата ввода в эксплуатацию</th>
-                                <th>Дата вывода из эксплуатации</th>
-                                <th>Дата окончания аттестации/гарантии</th>
-                                <th>Инв./заводской номер</th>
-                                <th>Место установки</th>
-                                <th>Плановая дата обслуживания</th>
-                                <th>Фактическая дата предыдущего обслуживания</th>
-                                <th>Вид ближайшего обслуживания</th>
-                                <th>Исполнитель</th>
-                                <th>Ответственный</th>
-                                <th>Заказ-наряд</th>
-                                <th>Календарь TPM</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach($objects as $object)
-                                <tr data-id="{{ $object->id }}">
-                                    <td></td>
-                                    <td>{{ $object->id }}</td>
-                                    <td> {{ $object->infrastructure }}</td>
-                                    <td class="tool-tip" title="открыть карточку объекта">
-                                        <a href="{{ route('cardObject', ['id' => $object->id]) }}" target="_blank">
-                                            {{ $object->name }}
-                                        </a>
-                                    </td>
-                                    <td>{{  date('d-m-Y', strtotime($object->date_usage )) }}</td>
-                                    <td>{{ date('d-m-Y', strtotime($object->date_usage_end )) }}</td>
-                                    <td>{{ date('d-m-Y', strtotime($object->date_cert_end )) }}</td>
-                                    <td>{{ $object->number }}</td>
-                                    <td>{{ $object->location }}</td>
-                                    <td class="tool-tip" title="ближайшее обслуживание из всех">
-                                        @if ($object->services->isNotEmpty())
-                                                <?php
-                                                // Начальное значение для ближайшей даты
-                                                $nearestMaintenanceDate = null;
-                                                // Проходимся по всем сервисам объекта, исключая те, у которых поле checked равно true
-                                                foreach ($object->services->where('checked', false) as $service) {
-                                                    // Получаем планируемую дату обслуживания
-                                                    $plannedMaintenanceDate = $service->planned_maintenance_date;
-                                                    // Если ближайшая дата пуста или текущая планируемая дата ближе к текущей дате
-                                                    if (!$nearestMaintenanceDate || strtotime($plannedMaintenanceDate) < strtotime($nearestMaintenanceDate)) {
-                                                        $nearestMaintenanceDate = $plannedMaintenanceDate;
-                                                        $nearestService = $service;
-                                                    }
-                                                }
-                                                ?>
-                                            <span>{{ date('d-m-Y', strtotime($nearestMaintenanceDate)) }}</span>
-                                        @else
-                                            Нет запланированных обслуживаний
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ($nearestService)
-                                            {{ date('d-m-Y', strtotime($nearestService->prev_maintenance_date)) }}
-                                        @else
-                                            Нет даты предыдущего обслуживания
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ($nearestService)
-                                            {{ $nearestService->service_type }}
-                                        @else
-                                            Нет вида ближайшего обслуживания
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ($nearestService)
-                                            {{ $nearestService->performer }}
-                                        @else
-                                            Нет performer
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ($nearestService)
-                                            {{ $nearestService->responsible }}
-                                        @else
-                                            Нет responsible
-                                        @endif
-                                    </td>
-                                        <td>
-                                            <a href="/reestr-work-orders/card-work-order" class="tool-tip" title="открыть карточку заказ-наярда">№ заказа</a>
-                                        </td>
-                                        <td>
-                                            <a href="" class="tool-tip" title="открыть карточку календаря">№ календаря</a>
-                                        </td>
-                                </tr>
-                            @endforeach
-                            </tbody>
+                        <table id="reestrObject" data-url="/get-objects"
+                               data-toolbar="#toolbar" data-search=""
+                               data-show-refresh="true" data-show-toggle="true" data-show-fullscreen="true"
+                               data-show-columns="true" data-show-columns-toggle-all="true"
+                               data-show-export="true" data-click-to-select="true" data-minimum-count-columns="12"
+                               data-show-pagination-switch="true" data-pagination="true"
+                               data-id-field="id" data-response-handler="responseHandler">
                         </table>
                     </div>
                 </div>
@@ -152,7 +48,8 @@
     </div>
 
     <!-- Модальное окно подтверждения удаления -->
-    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteKPLabel" aria-hidden="true">
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteKPLabel"
+         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -170,106 +67,266 @@
         </div>
     </div>
 
-    {{-- настройка таблицы и модалка удаления --}}
     <script>
         $(document).ready(function () {
             let $table = $('#reestrObject');
-            var $remove = $('#remove');
-            var selections = [];
+            let $remove = $('#remove');
+            let selections = [];
             let $confirmDelete = $('#confirmDeleteModal'); // Ссылка на модальное окно
             let $confirmDeleteButton = $('#confirmDeleteButton'); // Кнопка "Удалить" в модальном окне
 
+            // выбор полей checked
             function getIdSelections() {
                 return $.map($table.bootstrapTable('getSelections'), function (row) {
                     return row.id
-                })
-            }
-
-            function responseHandler(res) {
-                $.each(res.rows, function (i, row) {
-                    row.state = $.inArray(row.id, selections) !== -1;
                 });
-                return res;
             }
 
-            function detailFormatter(index, row) {
-                var html = [];
-                $.each(row, function (key, value) {
-                    html.push('<p><b>' + key + ':</b> ' + value + '</p>');
+
+            // Функция для получения данных с сервера
+            function getObjectsFromServer() {
+                return $.get('/get-objects'); // Возвращаем Promise
+            }
+
+            // Функция для обновления таблицы
+            function refreshTable() {
+                getObjectsFromServer().done(function(data) {
+                    initTable(data); // Инициализируем таблицу с новыми данными
                 });
-                return html.join('');
             }
 
-            function initTable() {
+            $('.refreshTable').click(function () {
+                refreshTable();
+            });
+            // Функция для инициализации таблицы
+            function initTable(data) {
+                console.log('Данные:', data);
+                // Инициализация таблицы с данными
                 $table.bootstrapTable('destroy').bootstrapTable({
                     locale: $('#locale').val(),
+                    pagination: true,
+                    pageNumber: 1,
+                    pageSize: 10,
+                    pageList: [10, 25, 50, 'all'],
                     columns: [
-                        {
-                            field: 'state',
-                            checkbox: true,
-                            rowspan: 2,
-                            align: 'center',
-                            valign: 'middle'
-                        },
-                        {
-                            title: 'Item ID',
-                            field: 'id',
-                            rowspan: 2,
-                            align: 'center',
-                            valign: 'middle'
-                        },
-                        { field: 'obj', title: 'Объекты инфраструктуры', align: 'center' },
-                        { field: 'serv', title: 'Обслуживание TPM', align: 'center' },
-                    ]
-                });
+                        [
+                            {colspan: 8, title: 'Объекты инфраструктуры', align: 'center'},
+                            {colspan: 8, title: 'Обслуживание ТРМ', align: 'center'},
+                        ],
+                        [
+                            {field: 'state', checkbox: true, align: 'center', valign: 'middle'},
+                            {title: 'Item ID', field: 'id', align: 'center', valign: 'middle',  visible: false },
+                            {title: 'Вид инфраструктуры', field: 'infrastructure', align: 'center'},
+                            {
+                                title: 'Наименование объекта',
+                                field: 'name',
+                                align: 'center',
+                                formatter: function(value, row) {
+                                    // Создаем ссылку с помощью значения поля "name"
+                                    return '<a href="/home/card-object/' + row.id + '" target="_blank">' + value + '</a>';
+                                }
+                            },
 
-                $table.on('check.bs.table uncheck.bs.table ' +  'check-all.bs.table uncheck-all.bs.table',
-                    function () {
-                        $remove.prop('disabled', !$table.bootstrapTable('getSelections').length)
-                        selections = getIdSelections()
-                        console.log(selections);
-                    })
+                            {title: 'Дата ввода в эксплуатацию', field: 'date_arrival', align: 'center'},
+                            {title: 'Дата вывода из эксплуатации', field: 'date_usage_end', align: 'center'},
+                            {title: 'Дата окончания аттестации/гарантии', field: 'date_cert_end', align: 'center'},
+                            {title: 'Инв./заводской номер', field: 'number', align: 'center'},
 
-                $remove.click(function () {
-                    let ids = getIdSelections();
-                    if (ids.length > 0) {
-                        showConfirmDeleteModal();
+                            {title: 'Место установки', field: 'location', align: 'center'},
+                            {
+                                title: 'Плановая дата обслуживания',
+                                field: 'planned_maintenance_date',
+                                align: 'center',
+                                formatter: function(value, row) {
+                                    let nearestMaintenanceDate = null;
+                                    if (row.services && Array.isArray(row.services) && row.services.length > 0) {
+                                        row.services.forEach(function(service) {
+                                            if (!nearestMaintenanceDate || new Date(service.planned_maintenance_date) < new Date(nearestMaintenanceDate)) {
+                                                nearestMaintenanceDate = service.planned_maintenance_date;
+                                            }
+                                        });
+                                        return nearestMaintenanceDate ? nearestMaintenanceDate : 'Нет запланированных обслуживаний';
+                                    } else {
+                                        return 'Нет запланированных обслуживаний';
+                                    }
+                                }
+                            },
+                            {
+                                title: 'Фактическая дата предыдущего обслуживания',
+                                field: 'prev_maintenance_date',
+                                align: 'center',
+                                formatter: function(value, row) {
+                                    let nearestService = null;
+                                    if (row.services && Array.isArray(row.services) && row.services.length > 0) {
+                                        row.services.forEach(function(service) {
+                                            if (!nearestService || new Date(service.planned_maintenance_date) < new Date(nearestService.planned_maintenance_date)) {
+                                                nearestService = service;
+                                            }
+                                        });
+                                        return nearestService ? nearestService.prev_maintenance_date : 'Нет даты предыдущего обслуживания';
+                                    } else {
+                                        return 'Нет даты предыдущего обслуживания';
+                                    }
+                                }
+                            },
+                            {
+                                title: 'Вид ближайшего обслуживания',
+                                field: 'service_type',
+                                align: 'center',
+                                formatter: function(value, row) {
+                                    let nearestService = null;
+                                    if (row.services && Array.isArray(row.services) && row.services.length > 0) {
+                                        row.services.forEach(function(service) {
+                                            if (!nearestService || new Date(service.planned_maintenance_date) < new Date(nearestService.planned_maintenance_date)) {
+                                                nearestService = service;
+                                            }
+                                        });
+                                        return nearestService ? nearestService.service_type : 'Нет вида ближайшего обслуживания';
+                                    } else {
+                                        return 'Нет вида ближайшего обслуживания';
+                                    }
+                                }
+                            },
+                            {
+                                title: 'Исполнитель',
+                                field: 'performer',
+                                align: 'center',
+                                formatter: function(value, row) {
+                                    let nearestService = null;
+                                    if (row.services && Array.isArray(row.services) && row.services.length > 0) {
+                                        row.services.forEach(function(service) {
+                                            if (!nearestService || new Date(service.planned_maintenance_date) < new Date(nearestService.planned_maintenance_date)) {
+                                                nearestService = service;
+                                            }
+                                        });
+                                        return nearestService ? nearestService.performer : 'Нет исполнителя';
+                                    } else {
+                                        return 'Нет исполнителя';
+                                    }
+                                }
+                            },
+                            {
+                                title: 'Ответственный',
+                                field: 'responsible',
+                                align: 'center',
+                                formatter: function(value, row) {
+                                    let nearestService = null;
+                                    if (row.services && Array.isArray(row.services) && row.services.length > 0) {
+                                        row.services.forEach(function(service) {
+                                            if (!nearestService || new Date(service.planned_maintenance_date) < new Date(nearestService.planned_maintenance_date)) {
+                                                nearestService = service;
+                                            }
+                                        });
+                                        return nearestService ? nearestService.responsible : 'Нет ответственного';
+                                    } else {
+                                        return 'Нет ответственного';
+                                    }
+                                }
+                            },
+                            {
+                                title: 'Заказ-наряд',
+                                field: 'work_order',
+                                align: 'center',
+                                formatter: function(value, row) {
+                                    return '<a href="/reestr-work-orders/card-work-order" class="tool-tip" title="открыть карточку заказ-наряда">' + value + '</a>';
+                                }
+                            },
+                            {
+                                title: 'Календарь TPM',
+                                field: 'tpm_calendar',
+                                align: 'center',
+                                formatter: function(value, row) {
+                                    return '<a href="" class="tool-tip" title="открыть карточку календаря">' + value + '</a>';
+                                }
+                            }
+                        ],
+
+                    ],
+                    data: data,
+                    ajaxOptions: {
+                        success: function (data) {
+                            $table.bootstrapTable('load', data);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error(xhr.responseText);
+                        }
                     }
                 });
-
-                // Функция для отображения модального окна удаления
-                function showConfirmDeleteModal() {
-                    $confirmDelete.modal('show');
-                }
-
-                // Обработчик события нажатия на кнопку "Удалить" в модальном окне
-                $confirmDeleteButton.click(function () {
-                    let ids = getIdSelections();
-                    $.ajax({
-                        type: "POST",
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        url: "{{ route('delete-cardObject') }}",
-                        data: { ids: ids },
-                        success: function (response) {
-                            // Обновить таблицу после успешного удаления
-                            $table.bootstrapTable('refresh');
-                        },
-                        error: function (error) {
-                            console.log(error);
-                        }
-                    });
-                    $confirmDelete.modal('hide');
-                });
             }
-
-            $(function () {
-                initTable();
-                $('#locale').change(initTable);
+            //Вызов функции для получения данных с сервера
+            getObjectsFromServer().done(function(data) {
+                initTable(data); // Инициализируем таблицу с новыми данными
             });
-        });
 
+            $table.on('check.bs.table uncheck.bs.table ' + 'check-all.bs.table uncheck-all.bs.table',
+                function () {
+                    $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
+                    selections = getIdSelections();
+                });
+
+
+
+
+
+            // обработчик нажатия по кнопке удаления
+            $remove.click(function () {
+                let ids = getIdSelections();
+                if (ids.length > 0) {
+                    showConfirmDeleteModal();
+                }
+            });
+            // Функция для отображения модального окна удаления
+            function showConfirmDeleteModal() {
+                $confirmDelete.modal('show');
+            }
+            // Обработчик события нажатия на кнопку "Удалить" в модальном окне
+            $confirmDeleteButton.click(function () {
+                let ids = getIdSelections();
+                $.ajax({
+                    type: "POST",
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: "{{ route('delete-cardObject') }}",
+                    data: {ids: ids},
+                    success: function (response) {
+                        // Обновить таблицу после успешного удаления
+                        refreshTable();
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+                $confirmDelete.modal('hide');
+            });
+
+
+
+
+            let isActiveFilter = false; // Флаг, указывающий на текущее состояние фильтрации активных объектов
+            // Обработчик события нажатия на кнопку "Показать активные объекты"
+            $('#showActiveBtn').click(function () {
+                if (isActiveFilter) {
+                    resetFilter(); // Если фильтрация активна, сбрасываем её
+                } else {
+                    showActiveObjects(); // Если фильтрация неактивна, применяем фильтр
+                }
+            });
+            // Функция для отображения только активных объектов
+            function showActiveObjects() {
+                let data = $table.bootstrapTable('getData');
+                let activeObjects = data.filter(function (row) {
+                    return !row.date_usage_end;
+                });
+                $table.bootstrapTable('load', activeObjects);
+                isActiveFilter = true; // Устанавливаем флаг фильтрации в активное состояние
+            }
+            // Функция для сброса фильтрации и отображения всех объектов
+            function resetFilter() {
+                refreshTable(); // Перезагружаем таблицу, чтобы сбросить фильтр
+                isActiveFilter = false; // Устанавливаем флаг фильтрации в неактивное состояние
+            }
+        });
     </script>
 @endsection
 

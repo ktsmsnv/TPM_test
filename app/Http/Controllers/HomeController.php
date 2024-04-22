@@ -28,6 +28,46 @@ class HomeController extends Controller
         $breadcrumbs = Breadcrumbs::generate('home');
         return view('home', compact('breadcrumbs', 'objects'));
     }
+    public function getObjects() {
+        // Получаем объекты инфраструктуры с их сервисами
+        $objects = CardObjectMain::with('services')->get();
+        // Создаем массив для хранения всех данных
+        $formattedObjects = [];
+        // Проходимся по каждому объекту и выбираем все поля
+        foreach ($objects as $object) {
+            $formattedObject = [
+                'id' => $object->id,
+                'infrastructure' => $object->infrastructure,
+                'name' => $object->name,
+                'number' => $object->number,
+                'location' => $object->location,
+                'date_arrival' => $object->date_arrival,
+                'date_usage_end' => $object->date_usage_end,
+                'date_cert_end' => $object->date_cert_end,
+                'services' => $object->services->map(function($service) {
+                    return [
+                        'service_type' => $service->service_type,
+                        'short_name' => $service->short_name,
+                        'performer' => $service->performer,
+                        'responsible' => $service->responsible,
+                        'frequency' => $service->frequency,
+                        'prev_maintenance_date' => $service->prev_maintenance_date,
+                        'planned_maintenance_date' => $service->planned_maintenance_date,
+                        'calendar_color' => $service->calendar_color,
+                        'consumable_materials' => $service->consumable_materials,
+                    ];
+                })->toArray(),
+            ];
+
+            // Добавляем объект к массиву с отформатированными данными
+            $formattedObjects[] = $formattedObject;
+        }
+        // Возвращаем все данные в формате JSON с правильным заголовком Content-Type
+        return response()->json($formattedObjects);
+    }
+
+
+
 
     public function deleteObject(Request $request)
     {
