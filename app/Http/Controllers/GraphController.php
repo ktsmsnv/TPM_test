@@ -19,9 +19,20 @@ class GraphController extends Controller
     {
         $data_CardGraph = CardGraph::all();
         $data_CardObjectMain = CardObjectMain::with(['graph'])->find($id);
-//        dd($data_CardGraph->cura tor);
-//        dd($data_CardObjectMain);
-        return view('cards/card-graph', compact( 'data_CardObjectMain', 'data_CardGraph'));
+
+
+        $selectedObjectMain = CardObjectMain::where('_id', $id)->get();
+        $selectedObjectServices = CardObjectServices::where('card_object_main_id', $id)->get();
+        $maintenance = [
+            ['id' => 1, 'service_type' => 'Регламентные работы', 'short_name' => 'РР'],
+            ['id' => 2, 'service_type' => 'Техническое обслуживание', 'short_name' => 'ТО'],
+            ['id' => 3, 'service_type' => 'Сервисное техническое обслуживание', 'short_name' => 'СТО'],
+            ['id' => 4, 'service_type' => 'Капитальный ремонт', 'short_name' => 'КР'],
+            ['id' => 5, 'service_type' => 'Аварийный ремонт', 'short_name' => 'АР'],
+        ];
+
+        return view('cards/card-graph', compact( 'data_CardObjectMain', 'data_CardGraph',
+            'selectedObjectMain', 'selectedObjectServices', 'maintenance'));
     }
 
 
