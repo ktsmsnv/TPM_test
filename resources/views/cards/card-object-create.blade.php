@@ -187,14 +187,12 @@
                         documentList.append(documentItem);
                     }
                 });
-
                 $(document).on('click', '.docDelete', function () {
                     // Находим родительский элемент строки документации, содержащий нажатую кнопку "Удалить документ"
                     let parent = $(this).closest('.documentItem');
                     // Удаляем эту строку документации
                     parent.remove();
                 });
-
 
                 // Обработчик загрузки изображений
                 $('#imageUpload').change(function () {
@@ -223,7 +221,6 @@
 
 
                 // ------------ динамическое создание вкладок обслуживание  ------------
-
                 let serviceTabsCount = 1; // начальный счетчик вкладок для обслуживания
                 // Обработчик нажатия на кнопку "Создать обслуживание"
                 $('.createService').on('click', function () {
@@ -408,8 +405,13 @@
                     console.log("Добавлен вид работы:", typeOfWork);
                     if (typeOfWork !== '') {
                         let currentServiceId = $('.tab-pane.active').attr('id');
-                        let listItem = '<input class="form-control" ' +
-                            'name="types_of_work[' + currentServiceId + '][]" value="' + typeOfWork + '">';
+                        let listItem = '<div class="grid-item">' +
+                            '<div class="form-check d-flex align-items-center gap-2">' +
+                            '<input class="form-control" ' +
+                            'name="types_of_work[' + currentServiceId + '][]" value="' + typeOfWork + '">' +
+                            '<i class="bi bi-x-circle typesOfWork_Delete ms-3"></i>' +
+                            '</div>' +
+                            '</div>';
 
                         // Добавляем вид работы в typesOfWorkByService
                         if (!typesOfWorkByService[currentServiceId]) {
@@ -422,10 +424,104 @@
                         console.log("typesOfWorkByService:", typesOfWorkByService);
                     }
                 });
+                $(document).on('click', '.typesOfWork_Delete', function () {
+                    // Находим родительский элемент блока типа работы
+                    let parent = $(this).closest('.grid-item');
+                    // Находим ввод с типом работы
+                    let typeOfWorkInput = parent.find('.form-control');
+                    // Получаем значение типа работы
+                    let typeOfWork = typeOfWorkInput.val().trim();
+                    // Скрываем родительский элемент блока типа работы
+                    parent.hide();
+                });
+
+                // Обработчик изменения значения даты предыдущего обслуживания или периодичности
+                $(document).on('change', '[id^="prev_maintenance_date_"], [id^="frequency_"]', function () {
+                    // Обновляем плановую дату обслуживания при изменении периодичности или даты предыдущего обслуживания
+                    updatePlannedMaintenanceDate();
+                });
+                // Функция для обновления плановой даты обслуживания
+                function updatePlannedMaintenanceDate() {
+                    $('[id^="prev_maintenance_date_"]').each(function () {
+                        let index = $(this).attr('id').split('_')[3];
+                        let prevDateInput = $('#prev_maintenance_date_' + index);
+                        let plannedDateInput = $('#planned_maintenance_date_' + index);
+                        let frequency = $('#frequency_' + index).val();
+                        let dateUsageInput = $('input[name="date_usage"]');
+
+                        // Если дата предыдущего обслуживания не указана и дата ввода в эксплуатацию отсутствует, выходим из функции
+                        if (!prevDateInput.val() && !dateUsageInput.val()) return;
+
+                        // Если дата предыдущего обслуживания не указана, используем дату ввода в эксплуатацию
+                        let prevMaintenanceDate = prevDateInput.val() ? new Date(prevDateInput.val()) : new Date(dateUsageInput.val());
+                        let plannedMaintenanceDate = new Date(prevMaintenanceDate);
+
+                        // Выполняем соответствующие расчеты в зависимости от выбранной периодичности
+                        switch (frequency) {
+                            case 'Ежемесячное':
+                                plannedMaintenanceDate.setMonth(plannedMaintenanceDate.getMonth() + 1);
+                                break;
+                            case 'Ежеквартальное':
+                                plannedMaintenanceDate.setMonth(plannedMaintenanceDate.getMonth() + 3);
+                                break;
+                            case 'Полугодовое':
+                                plannedMaintenanceDate.setMonth(plannedMaintenanceDate.getMonth() + 6);
+                                break;
+                            case 'Ежегодное':
+                                plannedMaintenanceDate.setFullYear(plannedMaintenanceDate.getFullYear() + 1);
+                                break;
+                            default:
+                                // Если выбрана периодичность "Сменное" или что-то другое, выходим из функции
+                                return;
+                        }
+
+                        // Устанавливаем новую плановую дату обслуживания
+                        plannedDateInput.val(plannedMaintenanceDate.toISOString().slice(0, 10));
+                    });
+                }
+
+
+                // Обработчик изменения значения вида обслуживания
+                $(document).on('change', '[id^="service_type_"]', function () {
+                    console.log('Выбран вид обслуживания. Обновляем сокращенное название...');
+                    // Обновляем плановую дату обслуживания при изменении периодичности или даты предыдущего обслуживания
+                    updateInfrastructure();
+                });
+                // Функция для обновления сокращенного названия вида обслуживания
+                function updateInfrastructure() {
+                    console.log('Обновляем сокращенное название вида обслуживания...');
+                    $('[id^="service_type_"]').each(function () {
+                        let index = $(this).attr('id').split('_')[2];
+                        let infrastructure = $('#service_type_' + index).val();
+                        let shortNameInput = $('#short_name_' + index);
+
+                        // Выполняем соответствующие действия в зависимости от выбранного вида обслуживания
+                        switch (infrastructure) {
+                            case 'Регламентные работы':
+                                shortNameInput.val('РР');
+                                break;
+                            case 'Техническое обслуживание':
+                                shortNameInput.val('ТО');
+                                break;
+                            case 'Сервисное техническое обслуживание':
+                                shortNameInput.val('СТО');
+                                break;
+                            case 'Капитальный ремонт':
+                                shortNameInput.val('КР');
+                                break;
+                            case 'Аварийный ремонт':
+                                shortNameInput.val('АР');
+                                break;
+                            default:
+                                // Если выбран неизвестный вид обслуживания, очищаем поле сокращенного названия
+                                shortNameInput.val('');
+                                break;
+                        }
+                    });
+                }
 
 
              //------------  обработчик сохранения данных  ------------
-
                 $(".saveCard").click(function () {
                     // Собираем данные с основной формы
                     formData.append('infrastructure', $("select[name=infrastructure]").val());
@@ -464,6 +560,7 @@
                             selectedColor: $("#selectedColor_" + i).val(),
                             materials: $("#materialsTextArea_" + i).val(), // Добавляем данные о расходных материалах
                             types_of_work: typesOfWorkValues,
+                            checked: $('#disableInTable_' + i).is(':checked') // Добавляем значение чекбокса "не выводить"
                         };
                         // Добавляем данные в массив servicesData
                         servicesData.push(serviceData);

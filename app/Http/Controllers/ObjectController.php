@@ -124,7 +124,7 @@ class ObjectController extends Controller
         }
 
 
-        /// Обработка сохранения данных об обслуживаниях
+        // Обработка сохранения данных об обслуживаниях
         if ($request->has('services')) {
             $services = json_decode($request->services, true); // Преобразуем JSON в массив
             foreach ($services as $service) {
@@ -139,6 +139,7 @@ class ObjectController extends Controller
                 $newService->planned_maintenance_date = $service['planned_maintenance_date'];
                 $newService->calendar_color = $service['selectedColor'];
                 $newService->consumable_materials = $service['materials'];
+                $newService->checked = $service['checked'];
                 $newService->card_object_main_id = $cardId;
                 $newService->save();
                 $serviceId = $newService->id;
@@ -199,10 +200,19 @@ class ObjectController extends Controller
             }
         }
 
+
+        // удаляем документы
+        if ($request->has('files_delete')) {
+            // Получаем список файлов для удаления
+            $filesToDelete = $request->input('files_delete');
+
+            // Удаляем документы, если есть файлы для удаления
+            if (!empty($filesToDelete)) {
+                CardObjectMainDoc::whereIn('file_name', $filesToDelete)->delete();
+            }
+        }
         // Обновляем документы (если есть новые документы)
         if ($request->hasFile('files')) {
-            // Удаляем старые файлы документов для данной карточки объекта
-            CardObjectMainDoc::where('card_object_main_id', $id)->delete();
             foreach ($request->file('files') as $file) {
                 $content = file_get_contents($file->getRealPath()); // Получение содержимого файла
                 $binaryData = new Binary($content, Binary::TYPE_GENERIC); // Создание объекта Binary с двоичными данными
@@ -239,6 +249,7 @@ class ObjectController extends Controller
                 $newService->planned_maintenance_date = $service['planned_maintenance_date'];
                 $newService->calendar_color = $service['selectedColor'];
                 $newService->consumable_materials = $service['materials'];
+                $newService->checked = $service['checked'];
                 $newService->card_object_main_id = $id; // Используем $id для привязки к карточке объекта
                 $newService->save();
 
@@ -254,9 +265,53 @@ class ObjectController extends Controller
             }
         }
 
+        // удаляем типы работ
+        if ($request->has('types_of_work_delete')) {
+            // Получаем список типов работ для удаления
+            $typesOfWorkToDelete = $request->input('types_of_work_delete');
+
+            // Удаляем типы работ из базы данных
+            if (!empty($typesOfWorkToDelete)) {
+                // Например, используя Eloquent
+                CardObjectServicesTypes::whereIn('type_work', $typesOfWorkToDelete)->delete();
+            }
+        }
+
         // Возвращаем успешный ответ или редирект на страницу карточки объекта
         return response()->json(['success' => 'Данные карточки объекта успешно обновлены'], 200);
     }
 
+    //------------------ УДАЛЕНИЕ ОБСЛУЖИВАНИЯ У КАРТЧОЧКИ ------------------
+    public function deleteService($cardId, $serviceId)
+    {
+        // Находим обслуживание по идентификатору
+        $service = CardObjectServices::find($serviceId);
+        // Проверяем, найдено ли обслуживание
+        if (!$service) {
+            return response()->json(['error' => 'Обслуживание не найдено'], 404);
+        }
+        // Удаляем обслуживание
+        $service->delete();
+        // Удаление связанных записей из card_object_service_types
+        CardObjectServicesTypes::where('card_services_id', $serviceId)->delete();
+        // Возвращаем успешный ответ
+        return response()->json(['success' => 'Обслуживание успешно удалено'], 200);
+    }
+
+    public function updateChecked(Request $request)
+    {
+        $typeId = $request->type_id;
+        $checked = $request->checked;
+
+        $type = CardObjectServicesTypes::find($typeId);
+        if (!$type) {
+            return response()->json(['error' => 'Вид работы не найден'], 404);
+        }
+
+        $type->checked = $checked;
+        $type->save();
+
+        return response()->json(['success' => 'Поле checked успешно обновлено'], 200);
+    }
 
 }

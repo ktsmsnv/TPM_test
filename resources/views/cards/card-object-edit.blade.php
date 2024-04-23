@@ -152,6 +152,7 @@
                                 @if ($data_CardObjectMain)
                                     <img src="{{ route('getImage', ['id' => $data_CardObjectMain->id]) }}"
                                          alt="Image">
+                                    <div class="objectImage__delete mt-4"><button class="btn btn-danger imageDelete">Удалить</button></div>
                                 @else
                                     <p>Нет доступных изображений</p>
                                 @endif
@@ -165,6 +166,7 @@
             @foreach ($data_CardObjectMain->services as $key => $service)
                 <div class="tab-pane fade @if ($key === 0) @endif" id="service_{{ $key + 1 }}" role="tabpanel"
                      aria-labelledby="service_{{ $key + 1 }}-tab">
+                    <button class="btn btn-danger mt-3 delete_service">Удалить</button>
                     <div id="service__blocks" class="d-grid">
                         {{-- ОБСЛУЖИВАНИЕ ТРМ --}}
                         <div class="member_card_style services">
@@ -173,8 +175,9 @@
                                     <h4>Обслуживание ТРМ {{ $key + 1 }}</h4>
                                     <button class="btn btn-primary">Обновить даты</button>
                                     <div>
-                                        <input type="checkbox" class="form-check-input me-1" id="disableInTable">
-                                        <label class="form-check-label disableInTable" for="disableInTable">Не
+                                        <input type="checkbox" class="form-check-input me-1" id="disableInTable_{{ $key + 1 }}"
+                                               @if ($service->checked) checked @endif>
+                                        <label class="form-check-label disableInTable" for="disableInTable_{{ $key + 1 }}">Не
                                             выводить
                                             на основной
                                             экран, в график TPM и не отправлять уведомления</label>
@@ -220,11 +223,11 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата предыдущего обслуживания</label>
-                                            <input id="prev_maintenance_date_{{ $key + 1 }}" class="form-control w-100" name="prev_maintenance_date" value="{{ date('d-m-Y', strtotime($service->prev_maintenance_date)) }}" >
+                                            <input id="prev_maintenance_date_{{ $key + 1 }}" type="date" class="form-control w-100" name="prev_maintenance_date" value="{{ $service->prev_maintenance_date }}" >
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Плановая дата обслуживания</label>
-                                            <input id="planned_maintenance_date_{{ $key + 1 }}" class="form-control w-100" name="planned_maintenance_date" value="{{ date('d-m-Y', strtotime($service->planned_maintenance_date)) }}" >
+                                            <input id="planned_maintenance_date_{{ $key + 1 }}" type="date" class="form-control w-100" name="planned_maintenance_date" value="{{ $service->planned_maintenance_date }}" >
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Цвет в календаре</label>
@@ -258,6 +261,7 @@
                                                 <div class="form-check d-flex align-items-center gap-2">
                                                     <input class="form-control" name="types_of_work[service_{{ $key + 1 }}][]"
                                                            value="{{ $type->type_work }}">
+                                                    <i class="bi bi-x-circle typesOfWork_Delete ms-3"></i>
                                                 </div>
                                             </div>
                                         @endforeach
@@ -288,6 +292,7 @@
                                     @if ($data_CardObjectMain)
                                         <img src="{{ route('getImage', ['id' => $data_CardObjectMain->id]) }}"
                                              alt="Image">
+                                        <div class="objectImage__delete mt-4"><button class="btn btn-danger imageDelete">Удалить</button></div>
                                     @else
                                         <p>Нет доступных изображений</p>
                                     @endif
@@ -297,6 +302,34 @@
                     </div>
                 </div>
             @endforeach
+            @if ($data_CardObjectMain->services->isNotEmpty())
+                <script>
+                    //------------  обработчик удаления данных об обслуживании ------------
+                    $(".delete_service").click(function () {
+                        let serviceIndex = $(this).closest('.tab-pane').index() + 1; // Индекс вкладки обслуживания
+                        let serviceId = "{{ $data_CardObjectMain->services[$key]->id }}"; // Идентификатор обслуживания
+                        // Отправляем запрос на удаление обслуживания на сервер
+                        $.ajax({
+                            type: "DELETE",
+                            url: "/delete-service/{{ $data_CardObjectMain->id }}/" + serviceId,
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function (response) {
+                                // Обновляем страницу или выполняем другие действия после успешного удаления обслуживания
+                                alert("Обслуживание успешно удалено");
+                                // Перезагрузка страницы
+                                location.reload();
+                            },
+                            error: function (error) {
+                                // Обработка ошибки удаления обслуживания
+                                alert("Ошибка при удалении обслуживания");
+                                console.error(error);
+                            }
+                        });
+                    });
+                </script>
+            @endif
         </div>
     </div>
 
@@ -330,6 +363,7 @@
         let uploadedImageSrc = '{{ $imageSrc }}'; // Переменная для хранения пути к загруженному изображению
 
         document.addEventListener('DOMContentLoaded', function () {
+            let formData = new FormData();
             // Обработчик загрузки документов
             $('#docUpload').change(function () {
                 let fileList = this.files;
@@ -343,16 +377,18 @@
                     let deleteButton = $('<i class="bi bi-x-circle docDelete ms-3"></i>');
                     let documentItem = $('<div class="documentItem">').append(listItem, deleteButton);
                     documentList.append(documentItem);
+                    // Добавляем файл к formData
+                    formData.append('files[]', file);
                 }
             });
-
             $(document).on('click', '.docDelete', function () {
-                // Находим родительский элемент строки документации, содержащий нажатую кнопку "Удалить документ"
                 let parent = $(this).closest('.documentItem');
-                // Удаляем эту строку документации
+                let fileName = parent.find('a').text();
                 parent.remove();
+                formData.append('files_delete[]', fileName); // Добавляем имя файла к formData
+                // При удалении файла из списка, удаляем его из formData
+                formData.delete('files[]', fileName);
             });
-
 
             // Обработчик загрузки изображений
             $('#imageUpload').change(function () {
@@ -363,11 +399,11 @@
                         uploadedImageSrc = e.target.result; // Сохраняем путь к загруженному изображению
                         $('.objectImage img').attr('src', uploadedImageSrc); // Отображаем изображение на вкладке "Основная"
                         $('.member_card_style.image .objectImage img').attr('src', uploadedImageSrc); // Отображаем изображение на других вкладках
-                        $('.member_card_style.image .member-info').append(
-                            '<div class="objectImage__delete mt-4"><button class="btn btn-danger imageDelete">Удалить</button></div>'
-                        );
                     }
                     reader.readAsDataURL(fileList[0]);
+
+                    // Добавляем изображение к formData
+                    formData.append('images[]', fileList[0]);
                 }
             });
             $(document).on('click', '.imageDelete', function () {
@@ -568,17 +604,21 @@
             // Вызываем функцию для обновления обработчика событий для выбора цвета
             updateColorPicker();
 
-// Инициализируем объект typesOfWorkByService
+            // Инициализируем объект typesOfWorkByService
             let typesOfWorkByService = {};
-            let formData = new FormData();
             // Обработка клика по кнопке "Добавить вид работы"
             $("#addTypeOfWork").click(function() {
                 let typeOfWork = $("#typeOfWorkInput").val().trim();
                 console.log("Добавлен вид работы:", typeOfWork);
                 if (typeOfWork !== '') {
                     let currentServiceId = $('.tab-pane.active').attr('id');
-                    let listItem = '<input class="form-control" ' +
-                        'name="types_of_work[' + currentServiceId + '][]" value="' + typeOfWork + '">';
+                    let listItem = '<div class="grid-item">' +
+                        '<div class="form-check d-flex align-items-center gap-2">' +
+                        '<input class="form-control" ' +
+                        'name="types_of_work[' + currentServiceId + '][]" value="' + typeOfWork + '">' +
+                        '<i class="bi bi-x-circle typesOfWork_Delete ms-3"></i>' +
+                        '</div>' +
+                        '</div>';
 
                     // Добавляем вид работы в typesOfWorkByService
                     if (!typesOfWorkByService[currentServiceId]) {
@@ -586,19 +626,74 @@
                     }
                     typesOfWorkByService[currentServiceId].push(typeOfWork);
 
-                    $("#" + currentServiceId + " .typesOfWork").append(listItem);
+                    $("#" + currentServiceId + " .grid-container").append(listItem);
 
                     // Выводим данные о типах работ в консоль для проверки
                     console.log("typesOfWorkByService:", typesOfWorkByService);
                 }
             });
+            $(document).on('click', '.typesOfWork_Delete', function () {
+                // Находим родительский элемент блока типа работы
+                let parent = $(this).closest('.grid-item');
+                // Находим ввод с типом работы
+                let typeOfWorkInput = parent.find('.form-control');
+                // Получаем значение типа работы
+                let typeOfWork = typeOfWorkInput.val().trim();
+                // Скрываем родительский элемент блока типа работы
+                parent.hide();
+                // Добавляем имя типа работы к formData
+                formData.append('types_of_work_delete[]', typeOfWork);
+            });
+
+
+            // Обработчик изменения значения даты предыдущего обслуживания или периодичности
+            $(document).on('change', '[id^="prev_maintenance_date_"], [id^="frequency_"]', function () {
+                // Обновляем плановую дату обслуживания при изменении периодичности или даты предыдущего обслуживания
+                updatePlannedMaintenanceDate();
+            });
+            // Функция для обновления плановой даты обслуживания
+            function updatePlannedMaintenanceDate() {
+                $('[id^="prev_maintenance_date_"]').each(function () {
+                    let index = $(this).attr('id').split('_')[3];
+                    let prevDateInput = $('#prev_maintenance_date_' + index);
+                    let plannedDateInput = $('#planned_maintenance_date_' + index);
+                    let frequency = $('#frequency_' + index).val();
+                    let dateUsageInput = $('input[name="date_usage"]');
+
+                    // Если дата предыдущего обслуживания не указана и дата ввода в эксплуатацию отсутствует, выходим из функции
+                    if (!prevDateInput.val() && !dateUsageInput.val()) return;
+
+                    // Если дата предыдущего обслуживания не указана, используем дату ввода в эксплуатацию
+                    let prevMaintenanceDate = prevDateInput.val() ? new Date(prevDateInput.val()) : new Date(dateUsageInput.val());
+                    let plannedMaintenanceDate = new Date(prevMaintenanceDate);
+
+                    // Выполняем соответствующие расчеты в зависимости от выбранной периодичности
+                    switch (frequency) {
+                        case 'Ежемесячное':
+                            plannedMaintenanceDate.setMonth(plannedMaintenanceDate.getMonth() + 1);
+                            break;
+                        case 'Ежеквартальное':
+                            plannedMaintenanceDate.setMonth(plannedMaintenanceDate.getMonth() + 3);
+                            break;
+                        case 'Полугодовое':
+                            plannedMaintenanceDate.setMonth(plannedMaintenanceDate.getMonth() + 6);
+                            break;
+                        case 'Ежегодное':
+                            plannedMaintenanceDate.setFullYear(plannedMaintenanceDate.getFullYear() + 1);
+                            break;
+                        default:
+                            // Если выбрана периодичность "Сменное" или что-то другое, выходим из функции
+                            return;
+                    }
+
+                    // Устанавливаем новую плановую дату обслуживания
+                    plannedDateInput.val(plannedMaintenanceDate.toISOString().slice(0, 10));
+                });
+            }
+
 
             //------------  обработчик сохранения данных  ------------
-
             $(".saveEditObject").click(function () {
-                // Создаем объект FormData для отправки данных на сервер, включая файлы
-                // let formData = new FormData();
-
                 // Собираем данные с основной формы
                 formData.append('infrastructure', $("select[name=infrastructure]").val());
                 formData.append('name', $("input[name=name]").val());
@@ -608,18 +703,6 @@
                 formData.append('date_usage', $("input[name=date_usage]").val());
                 formData.append('date_cert_end', $("input[name=date_cert_end]").val());
                 formData.append('date_usage_end', $("input[name=date_usage_end]").val());
-
-                // Собираем данные о загруженных изображениях
-                let imageFiles = $("#imageUpload")[0].files;
-                for (let i = 0; i < imageFiles.length; i++) {
-                    formData.append('images[]', imageFiles[i]);
-                }
-
-                // Собираем данные о загруженных файлах
-                let docFiles = $("#docUpload")[0].files;
-                for (let j = 0; j < docFiles.length; j++) {
-                    formData.append('files[]', docFiles[j]);
-                }
 
                 let servicesData = [];
                 // Собираем данные с каждой вкладки обслуживания
@@ -642,6 +725,7 @@
                         selectedColor: $("#selectedColor_" + i).val(),
                         materials: $("#materialsTextArea_" + i).val(),
                         types_of_work: typesOfWorkValues,
+                        checked: $('#disableInTable_' + i).is(':checked') // Добавляем значение чекбокса "не выводить"
                     };
                     // Добавляем данные в массив servicesData
                     servicesData.push(serviceData);
@@ -672,6 +756,8 @@
                     }
                 });
             });
+
         });
+
     </script>
 @endsection
