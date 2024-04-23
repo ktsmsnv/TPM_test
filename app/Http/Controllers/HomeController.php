@@ -75,17 +75,17 @@ class HomeController extends Controller
         return redirect()->back()->with('success', 'Пароль успешно изменен.');
     }
 
-    public function reestrGraphView(Request $request)
+    public function reestrGraphView( Request $request)
     {
         // Генерация хлебных крошек
 //        $breadcrumbs = Breadcrumbs::generate('reestr-graphs');
         $objects = CardGraph::all();
         $selectedObjectMain = CardObjectMain::all();
         $selectedObjectServices = CardObjectServices::all();
-//        dd($objects);
+//        dd($selectedObjectMain);
 
         // Возвращение представления с передачей хлебных крошек
-        return view('reestrs/reestrGraph', compact('selectedObjectMain','selectedObjectServices','objects'));
+        return view('reestrs/reestrGraph', compact('objects','selectedObjectMain','selectedObjectServices'));
     }
 
     public function reestrWorkOrdersView()
