@@ -14,7 +14,7 @@
                     <button type="button" class="btn btn-secondary me-5">Закрыть</button>
 
                     <button type="button" class="btn btn-success">Выгрузить PDF</button>
-                    <a href="/home/card-object" target="_blank" type="button" class="btn btn-primary me-5">Открыть карточку объекта</a>
+                    <a href="/home/card-object/{{$cardObjectMain->id}}" target="_blank" type="button" class="btn btn-primary me-5">Открыть карточку объекта</a>
 
                     {{-- <button type="button" class="btn btn-outline-danger">Редактировать</button>--}}
                 </div>
@@ -44,54 +44,54 @@
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид инфраструктуры</label>
-                                            <input name="" class="form-control w-100" readonly>
+                                            <input name="infrastructure" class="form-control w-100" value="{{ $cardObjectMain->infrastructure }}" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Наименование объекта</label>
-                                            <input name="" class="form-control w-100" readonly>
+                                            <input name="name" class="form-control w-100" value="{{ $cardObjectMain->name }}" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Инв./заводской №</label>
-                                            <input class="form-control w-100" name="" readonly>
+                                            <input name="number" class="form-control w-100" value="{{ $cardObjectMain->number }}" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Место установки</label>
-                                            <input class="form-control  w-100" name="" readonly>
+                                            <input name="location" class="form-control w-100" value="{{ $cardObjectMain->location }}" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид обслуживания</label>
-                                            <input class="form-control  w-100" name="" readonly>
+                                            <input name="service_type" class="form-control w-100" value="{{ $cardObjectServices->service_type }}" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Плановая дата обслуживания</label>
-                                            <input class="form-control w-100" name="" readonly>
+                                            <input name="planned_maintenance_date" class="form-control w-100" value="{{ $cardObjectServices->planned_maintenance_date }}" readonly>
                                         </div>
                                     </div>
 
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата создания</label>
-                                            <input class="form-control w-100" name="" readonly>
+                                            <input name="date_create" class="form-control w-100" value="{{ $workOrder->date_create }}" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата последнего сохранения</label>
-                                            <input class="form-control w-100" name="" readonly>
+                                            <input name="date_last_save" class="form-control w-100" value="{{ $workOrder->date_last_save }}" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Фактическая дата</label>
-                                            <input class="form-control  w-100" name="" readonly>
+                                            <input name="date_fact" class="form-control w-100" value="{{ $workOrder->date_fact }}" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Исполнитель</label>
-                                            <input class="form-control  w-100" name="" readonly>
+                                            <input name="performer" class="form-control w-100" value="{{ $cardObjectServices->performer }}" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Ответственный</label>
-                                            <input class="form-control  w-100" name="" readonly>
+                                            <input name="responsible" class="form-control w-100" value="{{ $cardObjectServices->responsible }}" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Статус</label>
-                                            <input class="form-control  w-100" name="" readonly>
+                                            <input name="status" class="form-control w-100" value="{{ $workOrder->status }}" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -107,34 +107,18 @@
                                     <!-- Используем класс row для создания строки -->
                                     <div class="grid-container">
                                         <!-- Используем класс col-md-6 для создания двух столбцов на широких экранах -->
-                                        <div class="grid-item">
-                                            <div class="form-check d-flex align-items-center gap-2">
-                                                <label class="form-check-label form-control" for=" ">
-                                                    работа 1
-                                                </label>
+                                        @foreach ($serviceTypes as $type)
+                                            <div class="grid-item">
+                                                <div class="form-check d-flex align-items-center gap-2">
+                                                    <input type="checkbox" class="form-check-input type-checkbox"
+                                                           id="type_{{ $type->id }}" data-id="{{ $type->id }}"
+                                                        {{ $type->checked ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="type_{{ $type->id }}">
+                                                        {{ $type->type_work }}
+                                                    </label>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="grid-item">
-                                            <div class="form-check d-flex align-items-center gap-2">
-                                                <label class="form-check-label form-control" for=" ">
-                                                    работа 2
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="grid-item">
-                                            <div class="form-check d-flex align-items-center gap-2">
-                                                <label class="form-check-label form-control" for=" ">
-                                                    работа 3
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="grid-item">
-                                            <div class="form-check d-flex align-items-center gap-2">
-                                                <label class="form-check-label form-control" for=" ">
-                                                    работа 4
-                                                </label>
-                                            </div>
-                                        </div>
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
@@ -146,8 +130,8 @@
                                     <h4>Расходные материалы и ЗИП</h4>
                                 </div>
                                 <div class="material_text w-100">
-                                    <!-- Добавляем textarea с атрибутом placeholder -->
-                                    <textarea class="form-control" readonly></textarea>
+                                    <!-- Используем значение $cardObjectServices->consumable_materials для отображения данных о расходных материалах -->
+                                    <textarea class="form-control" readonly>{{ $cardObjectServices->consumable_materials }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -158,7 +142,13 @@
                                     <h4>Изображение объекта</h4>
                                 </div>
                                 <div class="objectImage">
-                                    <img src="http://placehold.it/350x450"/>
+                                    @if ($cardObjectMain && $cardObjectMain->image)
+                                        <!-- Если у объекта есть изображение, отобразите его -->
+                                        <img src="{{ route('getImage', ['id' => $cardObjectMain->id]) }}" alt="Image">
+                                    @else
+                                        <!-- Если у объекта нет изображения, отобразите сообщение -->
+                                        <p>Нет доступных изображений</p>
+                                    @endif
                                 </div>
                             </div>
                         </div>

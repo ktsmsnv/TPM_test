@@ -169,6 +169,7 @@
                     <button class="btn btn-danger mt-3 delete_service">Удалить</button>
                     <div id="service__blocks" class="d-grid">
                         {{-- ОБСЛУЖИВАНИЕ ТРМ --}}
+                        <input type="hidden" id="service_id_{{ $key + 1 }}" name="service_id_{{ $key + 1 }}" value="{{ $service->id }}">
                         <div class="member_card_style services">
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
@@ -707,6 +708,8 @@
                 let servicesData = [];
                 // Собираем данные с каждой вкладки обслуживания
                 for (let i = 1; i < serviceTabsCount; i++) {
+                    let serviceId = $("#service_id_" + i).val();
+                    console.log(serviceId);
                     // let typesOfWorkValues = typesOfWorkByService['service_' + i] || [];
                     let currentServiceId = 'service_' + i;
                     let typesOfWorkValues = [];
@@ -715,6 +718,7 @@
                         typesOfWorkValues.push($(this).val());
                     });
                     let serviceData = {
+                        id: serviceId,// Добавляем идентификатор услуги в данные
                         service_type: $("#service_type_" + i).val(),
                         short_name: $("#short_name_" + i).val(),
                         performer: $("#performer_" + i).val(),
@@ -727,8 +731,10 @@
                         types_of_work: typesOfWorkValues,
                         checked: $('#disableInTable_' + i).is(':checked') // Добавляем значение чекбокса "не выводить"
                     };
+
                     // Добавляем данные в массив servicesData
                     servicesData.push(serviceData);
+                    console.log(serviceData);
                 }
 
                 // Добавляем массив servicesData в formData

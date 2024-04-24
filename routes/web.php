@@ -64,7 +64,11 @@ Route::middleware(['auth'])->group(function () {
     // ----------------------------------------------------------------------------------------------------------------
 
     // ---------------------------- КАРТОЧКА ЗАКАЗ-НАРЯДА -------------------------------------------------------------
-        Route::get('/reestr-work-orders/card-work-order', [App\Http\Controllers\workOrderController::class, 'index'])->name('workOrder');
+    Route::get('/reestr-work-orders/card-work-order', [App\Http\Controllers\workOrderController::class, 'index'])->name('workOrder');
+    Route::get('/reestr-work-orders/card-work-order/{id}', [App\Http\Controllers\WorkOrderController::class, 'show'])->name('workOrder.show');
+
+    Route::post('/create-work-order', [App\Http\Controllers\WorkOrderController::class, 'create'])->name('create-work-order');
+
     // ----------------------------------------------------------------------------------------------------------------
 
     // ---------------------------- КАРТОЧКА ГРАФИКА ------------------------------------------------------------------
