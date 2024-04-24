@@ -18,4 +18,8 @@ class CardObjectMain extends Eloquent
     {
         return $this->hasMany(CardObjectMainDoc::class, 'card_object_main_id', '_id');
     }
+    public function workOrders()
+    {
+        return $this->hasMany(CardWorkOrder::class, 'card_id', '_id');
+    }
 }

@@ -97,7 +97,8 @@ class HomeController extends Controller
             $copiedDocument->save();
         }
 
-        return response()->json(['success' => 'Карточка объекта успешно скопирована'], 200);
+//        return response()->json(['success' => 'Карточка объекта успешно скопирована'], 200);
+        return response()->json(['url' => route('cardObject', ['id' => $copiedObject->id])], 200);
     }
 
 
