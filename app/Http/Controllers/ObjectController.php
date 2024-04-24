@@ -231,6 +231,7 @@ class ObjectController extends Controller
 
 // Обновляем данные об обслуживаниях (обновляем существующие и добавляем новые)
         if ($request->has('services')) {
+            //dd($request->services);
             $servicesData = json_decode($request->services, true);
 
             foreach ($servicesData as $service) {
@@ -254,35 +255,45 @@ class ObjectController extends Controller
                             'checked' => $service['checked'],
                         ]);
 
-                        // Создаем или обновляем типы работ для текущей услуги
-                        $typesOfWork = $service['types_of_work'];
-                        foreach ($typesOfWork as $typeOfWork) {
-                            $existingTypeOfWork = CardObjectServicesTypes::where('card_services_id', $existingService->id)
-                                ->first();
-                            if ($existingTypeOfWork) {
-                                // Обновляем существующий тип работ
-                                $existingTypeOfWork->update(['card_id' => $id]);
-                            } else {
-                                // Создаем новый тип работ
-                                CardObjectServicesTypes::create(['card_id' => $id, 'card_services_id' => $existingService->id, 'type_work' => $typeOfWork]);
+// Обновляем или создаем виды работ для текущей услуги
+                        if (isset($service['types_of_work'])) {
+                            foreach ($service['types_of_work'] as $typeOfWork) {
+                                // Находим существующий тип работы по комбинации card_services_id и type_work
+                                $existingTypeOfWork = CardObjectServicesTypes::where('card_services_id', $existingService->id)->first();
+                               // dd($existingTypeOfWork);
+                                if ($existingTypeOfWork) {
+                                    // Если существует, обновляем существующий тип работы
+                                    $existingTypeOfWork->update(['type_work' => $typeOfWork]);
+                                } else {
+                                    // Если не существует, создаем новый вид работы
+                                    CardObjectServicesTypes::create([
+                                        'card_id' => $id,
+                                        'card_services_id' => $existingService->id,
+                                        'type_work' => $typeOfWork
+                                    ]);
+                                }
                             }
                         }
                     }
                 } else {
-                    // Создаем новое обслуживание
+                    // Создаем новую услугу
                     $newService = new CardObjectServices();
                     $newService->fill($service); // Заполняем модель данными из массива
                     $newService->card_object_main_id = $id;
                     $newService->save();
 
-                    // Создаем типы работ для новой услуги
-                    $typesOfWork = $service['types_of_work'];
-                    foreach ($typesOfWork as $typeOfWork) {
-                        CardObjectServicesTypes::create(['card_id' => $id, 'card_services_id' => $newService->id, 'type_work' => $typeOfWork]);
+                    // Создаем виды работ для новой услуги
+                    if (isset($service['types_of_work'])) {
+                        foreach ($service['types_of_work'] as $typeOfWork) {
+                            CardObjectServicesTypes::create([
+                                'card_id' => $id,
+                                'card_services_id' => $newService->id,
+                                'type_work' => $typeOfWork
+                            ]);
+                        }
                     }
                 }
             }
-
         }
         // удаляем типы работ
         if ($request->has('types_of_work_delete')) {
