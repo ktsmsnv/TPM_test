@@ -228,55 +228,62 @@ class ObjectController extends Controller
             }
         }
 
-        // Обновляем данные об обслуживаниях (удаляем старые и добавляем новые)
-        // Получаем все существующие услуги для данного объекта
-        $existingServices = CardObjectServices::where('card_object_main_id', $id)->get();
 
 // Обновляем данные об обслуживаниях (обновляем существующие и добавляем новые)
         if ($request->has('services')) {
             $servicesData = json_decode($request->services, true);
 
             foreach ($servicesData as $service) {
-                // Находим соответствующую существующую услугу, если она существует
-                $existingService = CardObjectServices::where('_id', $service['id'])->first();
+                // Проверяем, существует ли ключ 'id' в массиве $service
+                if (array_key_exists('id', $service)) {
+                    // Находим соответствующую существующую услугу, если она существует
+                    $existingService = CardObjectServices::where('_id', $service['id'])->first();
 
-                if ($existingService) {
-                    // Обновляем существующую услугу
-                    $existingService->update([
-                        'service_type' => $service['service_type'],
-                        'short_name' => $service['short_name'],
-                        'performer' => $service['performer'],
-                        'responsible' => $service['responsible'],
-                        'frequency' => $service['frequency'],
-                        'prev_maintenance_date' => $service['prev_maintenance_date'],
-                        'planned_maintenance_date' => $service['planned_maintenance_date'],
-                        'calendar_color' => $service['selectedColor'],
-                        'consumable_materials' => $service['materials'],
-                        'checked' => $service['checked'],
-                    ]);
+                    if ($existingService) {
+                        // Обновляем существующую услугу
+                        $existingService->update([
+                            'service_type' => $service['service_type'],
+                            'short_name' => $service['short_name'],
+                            'performer' => $service['performer'],
+                            'responsible' => $service['responsible'],
+                            'frequency' => $service['frequency'],
+                            'prev_maintenance_date' => $service['prev_maintenance_date'],
+                            'planned_maintenance_date' => $service['planned_maintenance_date'],
+                            'calendar_color' => $service['selectedColor'],
+                            'consumable_materials' => $service['materials'],
+                            'checked' => $service['checked'],
+                        ]);
+
+                        // Создаем или обновляем типы работ для текущей услуги
+                        $typesOfWork = $service['types_of_work'];
+                        foreach ($typesOfWork as $typeOfWork) {
+                            $existingTypeOfWork = CardObjectServicesTypes::where('card_services_id', $existingService->id)
+                                ->first();
+                            if ($existingTypeOfWork) {
+                                // Обновляем существующий тип работ
+                                $existingTypeOfWork->update(['card_id' => $id]);
+                            } else {
+                                // Создаем новый тип работ
+                                CardObjectServicesTypes::create(['card_id' => $id, 'card_services_id' => $existingService->id, 'type_work' => $typeOfWork]);
+                            }
+                        }
+                    }
                 } else {
-                    // Создаем новую услугу
+                    // Создаем новое обслуживание
                     $newService = new CardObjectServices();
                     $newService->fill($service); // Заполняем модель данными из массива
                     $newService->card_object_main_id = $id;
                     $newService->save();
-                }
 
-                // Обновляем или создаем новые типы работ для текущей услуги
-                $typesOfWork = $service['types_of_work'];
-                foreach ($typesOfWork as $typeOfWork) {
-                    $existingTypeOfWork = CardObjectServicesTypes::where('card_services_id', $existingService->id)->where('type_work', $typeOfWork)->first();
-                    if ($existingTypeOfWork) {
-                        // Обновляем существующий тип работ
-                        $existingTypeOfWork->update(['card_id' => $id]);
-                    } else {
-                        // Создаем новый тип работ
-                        CardObjectServicesTypes::create(['card_id' => $id, 'card_services_id' => $existingService->id, 'type_work' => $typeOfWork]);
+                    // Создаем типы работ для новой услуги
+                    $typesOfWork = $service['types_of_work'];
+                    foreach ($typesOfWork as $typeOfWork) {
+                        CardObjectServicesTypes::create(['card_id' => $id, 'card_services_id' => $newService->id, 'type_work' => $typeOfWork]);
                     }
                 }
             }
-        }
 
+        }
         // удаляем типы работ
         if ($request->has('types_of_work_delete')) {
             // Получаем список типов работ для удаления
