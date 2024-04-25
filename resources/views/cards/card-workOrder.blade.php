@@ -6,7 +6,7 @@
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
-                <h2 class="mb-4"><strong>Карточка заказ-наряда</strong></h2>
+                <h2 class="mb-4"><strong>Карточка заказ-наряда объекта "{{$cardObjectMain->name}}"</strong></h2>
             </div>
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
@@ -73,13 +73,18 @@
                                             <label class="w-100">Дата создания</label>
                                             <input name="date_create" class="form-control w-100" value="{{ $workOrder->date_create }}" readonly>
                                         </div>
-                                        <div class="d-flex justify-content-between align-items-center gap-3">
-                                            <label class="w-100">Дата последнего сохранения</label>
-                                            <input name="date_last_save" class="form-control w-100" value="{{ $workOrder->date_last_save }}" readonly>
-                                        </div>
+{{--                                        <div class="d-flex justify-content-between align-items-center gap-3">--}}
+{{--                                            <label class="w-100">Дата последнего сохранения</label>--}}
+{{--                                            <input name="date_last_save" class="form-control w-100" value="{{ $workOrder->date_last_save }}" readonly>--}}
+{{--                                        </div>--}}
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Фактическая дата</label>
+                                            @if ($workOrder && $workOrder->date_fact)
                                             <input name="date_fact" class="form-control w-100" value="{{ $workOrder->date_fact }}" readonly>
+                                            @else
+                                                <input name="date_fact" class="form-control w-100" value="дата завершения заказа"
+                                                  readonly style="opacity: 0.5;" data-toggle="tooltip" title="дата появится после завершения заказ-наряда">
+                                            @endif
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Исполнитель</label>

@@ -32,7 +32,7 @@
                             </button>
                         </div>
                         <table id="reestrObject" data-url="/get-objects"
-                               data-toolbar="#toolbar" data-search=""
+                               data-toolbar="#toolbar"  data-search="true"
                                data-show-refresh="true" data-show-toggle="true" data-show-fullscreen="true"
                                data-show-columns="true" data-show-columns-toggle-all="true"
                                data-show-export="true" data-click-to-select="true" data-minimum-count-columns="12"

@@ -12,11 +12,40 @@ use Carbon\Carbon;
 class workOrderController extends Controller
 {
 
-    public function index()
-    {
-        $breadcrumbs = Breadcrumbs::generate('card-work-order');
-        return view(' cards/card-workOrder', compact('breadcrumbs'));
+    public function index() {
+        // Получаем все заказы-наряды с отношениями к объектам обслуживания и главным объектам
+        $workOrders = CardWorkOrder::with('cardObjectServices.cardObjectMain')->get();
+
+        // Создаем массив для хранения всех данных
+        $formattedWorkOrders = [];
+
+        // Проходимся по каждому заказу-наряду и выбираем все поля
+        foreach ($workOrders as $workOrder) {
+            $formattedWorkOrder = [
+                'id' => $workOrder->id,
+                'infrastructure' => $workOrder->cardObjectServices->cardObjectMain->infrastructure,
+                'name' => $workOrder->cardObjectServices->cardObjectMain->name,
+                'number' => $workOrder->cardObjectServices->cardObjectMain->number,
+                'location' => $workOrder->cardObjectServices->cardObjectMain->location,
+                'service_type' => $workOrder->cardObjectServices->service_type,
+                'planned_maintenance_date' => $workOrder->cardObjectServices->planned_maintenance_date,
+                'prev_maintenance_date' => $workOrder->cardObjectServices->prev_maintenance_date,
+                'status' => $workOrder->status,
+                'date_create' => $workOrder->date_create,
+//                'date_last_save' => $workOrder->date_last_save,
+                'performer' => $workOrder->cardObjectServices->performer,
+                'responsible' => $workOrder->cardObjectServices->responsible,
+                // Добавьте другие поля, если необходимо
+            ];
+
+            // Добавляем заказ-наряд к массиву с отформатированными данными
+            $formattedWorkOrders[] = $formattedWorkOrder;
+        }
+
+        // Возвращаем все данные в формате JSON с правильным заголовком Content-Type
+        return response()->json($formattedWorkOrders);
     }
+
 
     public function show($id)
     {
@@ -61,7 +90,7 @@ class workOrderController extends Controller
                 $newWorkOrder->card_id = $selectedId; // Связываем заказ-наряд с выбранной карточкой объекта
                 $newWorkOrder->card_object_services_id = $nearestService->id; // Связываем заказ-наряд с ближайшей услугой
                 $newWorkOrder->date_create = $now->format('d-m-Y');
-                $newWorkOrder->date_last_save = $now->format('d-m-Y');
+//                $newWorkOrder->date_last_save = $now->format('d-m-Y');
                 $newWorkOrder->status = 'В работе'; // Устанавливаем статус
                 $newWorkOrder->save();
             }

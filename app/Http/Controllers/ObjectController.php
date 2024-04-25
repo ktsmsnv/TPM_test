@@ -255,28 +255,27 @@ class ObjectController extends Controller
                             'checked' => $service['checked'],
                         ]);
 
-// Обновляем или создаем виды работ для текущей услуги
+                        // Обновляем или создаем виды работ для текущего обслуживания
                         if (isset($service['types_of_work'])) {
                             foreach ($service['types_of_work'] as $typeOfWork) {
-                                // Находим существующий тип работы по комбинации card_services_id и type_work
-                                $existingTypeOfWork = CardObjectServicesTypes::where('card_services_id', $existingService->id)->first();
-                               // dd($existingTypeOfWork);
-                                if ($existingTypeOfWork) {
-                                    // Если существует, обновляем существующий тип работы
-                                    $existingTypeOfWork->update(['type_work' => $typeOfWork]);
+                                if (isset($typeOfWork['id'])) {
+                                    $existingTypeOfWork = CardObjectServicesTypes::find($typeOfWork['id']);
+                                    if ($existingTypeOfWork) {
+                                        $existingTypeOfWork->update(['type_work' => $typeOfWork['value']]);
+                                    }
                                 } else {
-                                    // Если не существует, создаем новый вид работы
+                                    // Создаем новый вид работы
                                     CardObjectServicesTypes::create([
                                         'card_id' => $id,
                                         'card_services_id' => $existingService->id,
-                                        'type_work' => $typeOfWork
+                                        'type_work' => $typeOfWork['value']
                                     ]);
                                 }
                             }
                         }
                     }
                 } else {
-                    // Создаем новую услугу
+                    // Создаем новую запись об обслуживании
                     $newService = new CardObjectServices();
                     $newService->fill($service); // Заполняем модель данными из массива
                     $newService->card_object_main_id = $id;

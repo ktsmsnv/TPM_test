@@ -260,6 +260,7 @@
                                         @foreach ($service->services_types as $type)
                                             <div class="grid-item">
                                                 <div class="form-check d-flex align-items-center gap-2">
+                                                    <input type="hidden" name="services[{{ $key }}][id]" value="{{ $type->id }}">
                                                     <input class="form-control" name="types_of_work[service_{{ $key + 1 }}][]"
                                                            value="{{ $type->type_work }}">
                                                     <i class="bi bi-x-circle typesOfWork_Delete ms-3"></i>
@@ -713,10 +714,12 @@
                     // let typesOfWorkValues = typesOfWorkByService['service_' + i] || [];
                     let currentServiceId = 'service_' + i;
                     let typesOfWorkValues = [];
-                    // Собираем данные о видах работ из формы для текущей вкладки
                     $("#" + currentServiceId + " .typesOfWork input[name='types_of_work[" + currentServiceId + "][]']").each(function () {
-                        typesOfWorkValues.push($(this).val());
+                        let typeOfWorkId = $(this).siblings("input[name^='services']").val(); // Получаем id услуги
+                        let typeOfWorkValue = $(this).val();
+                        typesOfWorkValues.push({ id: typeOfWorkId, value: typeOfWorkValue }); // Добавляем id и значение в массив
                     });
+
                     let serviceData = {
                         id: serviceId,// Добавляем идентификатор услуги в данные
                         service_type: $("#service_type_" + i).val(),
@@ -731,6 +734,8 @@
                         types_of_work: typesOfWorkValues,
                         checked: $('#disableInTable_' + i).is(':checked') // Добавляем значение чекбокса "не выводить"
                     };
+
+                    serviceData.types_of_work = typesOfWorkValues;
 
                     // Добавляем данные в массив servicesData
                     servicesData.push(serviceData);

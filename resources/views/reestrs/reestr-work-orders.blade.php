@@ -39,68 +39,13 @@
                                 <i class="fa fa-trash"></i> Удалить
                             </button>
                         </div>
-                        <table id="reestrWorkOrder"
-                               data-toolbar="#toolbar"
-                               data-search="true"
-                               data-show-refresh="true"
-                               data-show-toggle="true"
-                               data-show-fullscreen="true"
-                               data-show-columns="true"
-                               data-show-columns-toggle-all="true"
-                               data-detail-view="true"
-                               data-show-export="true"
-                               data-click-to-select="true"
-                               data-detail-formatter="detailFormatter"
-                               data-minimum-count-columns="2"
-                               data-show-pagination-switch="true"
-                               data-pagination="true"
-                               data-id-field="id"
-                               data-show-footer="true"
-                               data-side-pagination="server"
-                               data-response-handler="responseHandler">
-                            <thead>
-                            <tr>
-                                <th></th>
-                                <th colspan="8">Заказ-наряды TPM</th>
-                                <th></th>
-                                <th></th>
-                                <th colspan="3">Ответственные</th>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <th>Вид инфраструктуры</th>
-                                <th>Наименование объекта</th>
-                                <th>Инв./заводской номер</th>
-                                <th>Место установки</th>
-                                <th>Вид обслуживания</th>
-                                <th>Плановая дата</th>
-                                <th>Фактическая дата</th>
-                                <th>Статус</th>
-                                <th>Дата сорздания</th>
-                                <th>Дата последнего сохранения</th>
-                                <th>Исполнитель</th>
-                                <th>Ответственный</th>
-                                <th>Куратор</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr data-id="1">
-                                <td></td>
-                                <th>из карточки заказа</th>
-                                <td><a href="/reestr-work-orders/card-work-order" target="_blank" class="tool-tip" title="открыть карточку графика">Сварочное оборудование JASIC MIG 3500 TECH N222</a></td>
-                                <th>из карточки заказа</th>
-                                <th>из карточки заказа</th>
-                                <th>из карточки заказа</th>
-                                <th>из карточки заказа</th>
-                                <th>из карточки заказа</th>
-                                <th>из карточки заказа</th>
-                                <th>из карточки заказа</th>
-                                <th>из карточки заказа</th>
-                                <th>из карточки заказа</th>
-                                <th>из карточки заказа</th>
-                                <th>из карточки заказа</th>
-                            </tr>
-                            </tbody>
+                        <table id="reestrWorkOrder" data-url="/get-work-orders"
+                               data-toolbar="#toolbar"  data-search="true"
+                               data-show-refresh="true" data-show-toggle="true" data-show-fullscreen="true"
+                               data-show-columns="true" data-show-columns-toggle-all="true"
+                               data-show-export="true" data-click-to-select="true" data-minimum-count-columns="12"
+                               data-show-pagination-switch="true" data-pagination="true"
+                               data-id-field="id" data-response-handler="responseHandler">
                         </table>
                     </div>
                 </div>
@@ -142,7 +87,9 @@
                     return row.id;
                 });
             }
-
+            function getObjectsFromServer() {
+                return $.get('/get-work-orders'); // Возвращаем Promise
+            }
             function responseHandler(res) {
                 $.each(res.rows, function (i, row) {
                     row.state = $.inArray(row.id, selections) !== -1;
@@ -158,22 +105,55 @@
                 return html.join('');
             }
 
-            function initTable() {
+            function initTable(data) {
+                console.log('Данные:', data);
                 $table.bootstrapTable('destroy').bootstrapTable({
                     locale: $('#locale').val(),
+                    pagination: true,
+                    pageNumber: 1,
+                    pageSize: 10,
+                    pageList: [10, 25, 50, 'all'],
                     columns: [
-                        {
-                            field: 'state',
-                            checkbox: true,
-                            rowspan: 2,
-                            align: 'center',
-                            valign: 'middle'
+                        [
+                            {colspan: 10, title: 'Заказ наряды', align: 'center'},
+                            {colspan: 3, title: 'Ответственные', align: 'center'},
+                        ],
+                        [
+                            {field: 'state', checkbox: true, align: 'center', valign: 'middle'},
+                            {title: 'Item ID', field: 'id', align: 'center', valign: 'middle',  visible: false },
+                            {title: 'Вид инфраструктуры', field: 'infrastructure', align: 'center'},
+                            {
+                                title: 'Наименование объекта',
+                                field: 'name',
+                                align: 'center',
+                                formatter: function(value, row) {
+                                    // Создаем ссылку с помощью значения поля "name"
+                                    return '<a href="/reestr-work-orders/card-work-order/' + row.id + '" target="_blank">' + value + '</a>';
+                                }
+                            },
+                            {title: 'Инв./заводской номер', field: 'number', align: 'center'},
+                            {title: 'Место установки', field: 'location', align: 'center'},
+                            {title: 'Вид ближайшего обслуживания', field: 'service_type', align: 'center'},
+                            {title: 'Плановая дата обслуживания',  field: 'planned_maintenance_date', align: 'center' },
+                            {title: 'Фактическая дата предыдущего обслуживания', field: 'prev_maintenance_date', align: 'center'},
+                            {title: 'Статус', field: 'status', align: 'center'},
+
+                            {title: 'Дата создания', field: 'date_create', align: 'center'},
+                            // {title: 'Дата последнего сохранения', field: 'date_last_save', align: 'center'},
+                            {title: 'Исполнитель', field: 'performer', align: 'center'},
+                            {title: 'Ответственный', field: 'responsible', align: 'center'},
+                        ],
+
+                    ],
+                    data: data,
+                    ajaxOptions: {
+                        success: function (data) {
+                            $table.bootstrapTable('load', data);
                         },
-                        {field: 'type', title: 'Заказ-наряды ТРМ', align: 'center'},
-                        {field: 'name1', title: '', align: 'center'},
-                        {field: 'name2', title: '', align: 'center'},
-                        {field: 'name', title: 'Ответственные', align: 'center'},
-                    ]
+                        error: function (xhr, status, error) {
+                            console.error(xhr.responseText);
+                        }
+                    }
                 });
 
                 $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
@@ -202,7 +182,10 @@
                     $confirmDelete.modal('hide');
                 });
             }
-
+            //Вызов функции для получения данных с сервера
+            getObjectsFromServer().done(function(data) {
+                initTable(data); // Инициализируем таблицу с новыми данными
+            });
             $(function () {
                 initTable();
                 $('#locale').change(initTable);
