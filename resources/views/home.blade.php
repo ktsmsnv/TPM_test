@@ -13,12 +13,11 @@
                        title="без даты вывода объекта из эксплуатации">Показать активные объекты</a>
                     <a href="/home/card-object-create" target="_blank" type="button" class="btn btn-primary">Создать карточку объекта</a>
                     <a type="button" class="btn btn-primary btn-primary--2 copy_cardObject" disabled="true">Скопировать карточку объекта</a>
-                    <a type="button" class="btn btn-light">Сформировать график TPM</a>
+                    <button id="generateGraphTPM" class="btn btn-light" disabled>Сформировать график TPM</button>
                     <a type="button" class="btn btn-light">Сформировать календарь TPM</a>
                     <a type="button" class="btn btn-light create_workOrder">Сформировать заказ-наряд TPM</a>
                 </div>
             </div>
-            <label for="locale"></label>
             <select class="form-control d-none" id="locale">
                 <option value="ru-RU">ru-RU</option>
             </select>
@@ -70,6 +69,7 @@
             let $table = $('#reestrObject');
             let $remove = $('#remove');
             let selections = [];
+            var $generateGraphTPM = $('#generateGraphTPM');
             let $confirmDelete = $('#confirmDeleteModal'); // Ссылка на модальное окно
             let $confirmDeleteButton = $('#confirmDeleteButton'); // Кнопка "Удалить" в модальном окне
 
@@ -270,10 +270,10 @@
             $table.on('check.bs.table uncheck.bs.table ' + 'check-all.bs.table uncheck-all.bs.table',
                 function () {
                     $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
-                    selections = getIdSelections();
+                    $generateGraphTPM.prop('disabled', !$table.bootstrapTable('getSelections').length)
+                        selections = getIdSelections();
                     updateCopyButtonState();
                 });
-
 
 
 
@@ -326,6 +326,25 @@
                 let data = $table.bootstrapTable('getData');
                 let activeObjects = data.filter(function (row) {
                     return !row.date_usage_end;
+                });
+
+                $generateGraphTPM.click(function (){
+                    let ids = getIdSelections();
+                    console.log(ids);
+                    if (ids.length > 0) {
+                        // Сформируйте URL с ID выбранных записей и перенаправьте пользователя на страницу формирования графика TPM
+                        window.location.href = "/pageReestrGraph/card-graph-create?ids=" + ids.join(',');
+                    }
+                });
+
+                // Функция для отображения модального окна удаления
+                function showConfirmDeleteModal() {
+                    $confirmDelete.modal('show');
+                }
+                // Обработчик события нажатия на кнопку "Удалить" в модальном окне
+                $confirmDeleteButton.click(function () {
+                    // добавить логику для удаления элементов
+                    $confirmDelete.modal('hide');
                 });
                 $table.bootstrapTable('load', activeObjects);
                 isActiveFilter = true; // Устанавливаем флаг фильтрации в активное состояние
