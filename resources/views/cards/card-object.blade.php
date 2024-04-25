@@ -229,9 +229,13 @@
                                         @foreach ($service->services_types as $type)
                                             <div class="grid-item">
                                                 <div class="form-check d-flex align-items-center gap-2">
+                                                    @php
+                                                        $title = $type->checked ? 'снять отметку выполненное' : 'отметить как выполненное';
+                                                    @endphp
                                                     <input type="checkbox" class="form-check-input type-checkbox"
                                                            id="type_{{ $type->id }}" data-id="{{ $type->id }}"
-                                                        {{ $type->checked ? 'checked' : '' }}>
+                                                           {{ $type->checked ? 'checked' : '' }}
+                                                           data-toggle="tooltip" title="{{ $title }}">
                                                     <label class="form-check-label" for="type_{{ $type->id }}">
                                                         {{ $type->type_work }}
                                                     </label>

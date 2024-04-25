@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::connection('mongodb')->create('card_work_order', function (Blueprint $collection) {
             $collection->index('card_id');
             $collection->date('date_create');
-            $collection->date('date_last_save');
+//            $collection->date('date_last_save');
             $collection->date('date_fact')->nullable();
             $collection->string('status');
         });
