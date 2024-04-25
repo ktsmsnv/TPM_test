@@ -121,7 +121,8 @@
                                 align: 'center',
                                 formatter: function(value, row) {
                                     // Создаем ссылку с помощью значения поля "name"
-                                    return '<a href="/home/card-object/' + row.id + '" target="_blank">' + value + '</a>';
+                                    return '<a href="/home/card-object/' + row.id + '" target="_blank"' +
+                                        'data-toggle="tooltip" title="открыть карточку объекта">' + value + '</a>';
                                 }
                             },
 
@@ -226,9 +227,17 @@
                                 field: 'work_order',
                                 align: 'center',
                                 formatter: function(value, row) {
-                                    return '<a href="/reestr-work-orders/card-work-order" class="tool-tip" title="открыть карточку заказ-наряда">' + value + '</a>';
+                                    // Проверяем, есть ли значение work_order в строке
+                                    if (row.work_order) {
+                                        // Если есть, возвращаем значение work_order, которое уже содержит HTML-код ссылок на карточки заказов-нарядов
+                                        return row.work_order;
+                                    } else {
+                                        // Если нет, возвращаем пустую строку
+                                        return '';
+                                    }
                                 }
                             },
+
                             {
                                 title: 'Календарь TPM',
                                 field: 'tpm_calendar',
