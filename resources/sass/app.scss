@@ -209,6 +209,14 @@ main {
     background-color: #6c757d!important; /* Цвет кнопки при деактивации */
     cursor: default;
 }
+//----------------- REESTR WORK ORDER TABLE ---------------
+.status-in-progress {
+    color: green;
+}
+
+.status-completed {
+    color: red;
+}
 
 //----------------- CARD OBJECT -----------------------
 .member_card_style {
