@@ -73,7 +73,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/pageReestrGraph/card-graph-create', [App\Http\Controllers\GraphController::class, 'create'])->name('cardGraph-create');
         Route::post('/save-cardGraph-data/{id}', [App\Http\Controllers\GraphController::class, 'saveData'])->name('cardGraph-create-save');
         // РЕДАКТИРОВАНИЕ существующей карточки графика TPM
-        Route::get('/home/card-graph/edit', [App\Http\Controllers\ObjectController::class, 'edit'])->name('cardGraph-edit');
+        Route::get('/pageReestrGraph/card-graph-edit/{id}', [App\Http\Controllers\GraphController::class, 'edit'])->name('cardGraph-edit');
+    Route::post('/edit-card-graph-save/{id}', [App\Http\Controllers\GraphController::class, 'editSave'])->name('cardGraph-editSave');
     // ----------------------------------------------------------------------------------------------------------------
 
     // ---------------------------- КАРТОЧКА КАЛЕНДАРЯ ----------------------------------------------------------------

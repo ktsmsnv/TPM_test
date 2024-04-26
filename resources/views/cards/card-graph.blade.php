@@ -17,6 +17,7 @@
                     <a href="/pageReestrGraph" type="button" class="btn btn-secondary me-5">Закрыть</a>
                     <button type="button" class="btn btn-success">Выгрузить PDF</button>
                     <a href="{{ route('cardGraph-edit', ['id' => $data_CardObjectMain->_id]) }}" target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
+                    <a href="/home/card-object/{{$data_CardObjectMain->id}}" target="_blank" type="button" class="btn btn-primary me-5">Открыть карточку объекта</a>
                 </div>
             </div>
 
@@ -84,24 +85,18 @@
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>График ТРМ</h4>
                                 </div>
-                                <div class="objectDocs">
+                                <div class="objects">
                                     <table id="reestrCardGraph"
                                            data-toolbar="#toolbar"
                                            data-search="true"
                                            data-show-refresh="true"
-{{--                                           data-show-toggle="true"--}}
-{{--                                           data-show-fullscreen="true"--}}
                                            data-show-columns="true"
                                            data-show-columns-toggle-all="true"
-{{--                                           data-detail-view="true"--}}
                                            data-show-export="true"
                                            data-click-to-select="true"
                                            data-detail-formatter="detailFormatter"
                                            data-minimum-count-columns="2"
-{{--                                           data-show-pagination-switch="true"--}}
-{{--                                           data-pagination="true"--}}
                                            data-id-field="id"
-{{--                                           data-show-footer="true"--}}
                                            data-side-pagination="server"
                                            data-response-handler="responseHandler">
                                         <thead>

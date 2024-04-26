@@ -36,7 +36,6 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    <button class="btn btn-primary">Заархивировать</button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
@@ -89,7 +88,7 @@
                                            data-search="true"
                                            data-show-refresh="true"
                                            data-show-toggle="true"
-                                           data-show-fullscreen="true"
+{{--                                           data-show-fullscreen="true"--}}
                                            data-show-columns="true"
                                            data-show-columns-toggle-all="true"
                                            data-detail-view="true"
@@ -97,10 +96,10 @@
                                            data-click-to-select="true"
                                            data-detail-formatter="detailFormatter"
                                            data-minimum-count-columns="2"
-                                           data-show-pagination-switch="true"
-                                           data-pagination="true"
+{{--                                           data-show-pagination-switch="true"--}}
+{{--                                           data-pagination="true"--}}
                                            data-id-field="id"
-                                           data-show-footer="true"
+{{--                                           data-show-footer="true"--}}
                                            data-side-pagination="server"
                                            data-response-handler="responseHandler">
                                         <thead>

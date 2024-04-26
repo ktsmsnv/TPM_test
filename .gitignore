@@ -17,3 +17,4 @@ yarn-error.log
 /.vscode
 /storage/app/public/files/
 /storage/app/public/images/
+.env

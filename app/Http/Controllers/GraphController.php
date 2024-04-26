@@ -20,7 +20,6 @@ class GraphController extends Controller
         $data_CardGraph = CardGraph::all();
         $data_CardObjectMain = CardObjectMain::with(['graph'])->find($id);
 
-
         $selectedObjectMain = CardObjectMain::where('_id', $id)->get();
         $selectedObjectServices = CardObjectServices::where('card_object_main_id', $id)->get();
         $maintenance = [
@@ -42,6 +41,7 @@ class GraphController extends Controller
         $selectedIds = explode(',', $request->input('ids'));
         $selectedObjectMain = CardObjectMain::whereIn('_id', $selectedIds)->get();
         $selectedObjectServices = CardObjectServices::whereIn('card_object_main_id', $selectedIds)->get();
+//        dd($selectedIds);
         $maintenance = [
             ['id' => 1, 'service_type' => 'Регламентные работы', 'short_name' => 'РР'],
             ['id' => 2, 'service_type' => 'Техническое обслуживание', 'short_name' => 'ТО'],
@@ -56,11 +56,56 @@ class GraphController extends Controller
     }
 
     // ------------------  РЕДАКТИРОВАНИЕ карточки графика TPM (переход на страницу) ------------------
-    public function edit()
+    public function edit($id)
     {
-        $breadcrumbs = Breadcrumbs::generate('/card-graph/edit');
-        return view('cards/card-graph-edit', compact('breadcrumbs'));
+//        $cardGraph_id = CardGraph::all('_id', 'card_id');
+//        $data_CardGraph = CardGraph::where('card_id', $id)->get() and CardGraph::where('_id', $id)->get();
+        $selectedObjectMain = CardObjectMain::where('_id', $id)->get();
+//        dd($selectedObjectMain);
+        $data_CardObjectMain = CardObjectMain::with(['graph'])->find($id);
+
+        $data_CardGraph = CardGraph::with(['object'])->find('_id');
+        dd($data_CardGraph);
+
+        $maintenance = [
+            ['id' => 1, 'service_type' => 'Регламентные работы', 'short_name' => 'РР'],
+            ['id' => 2, 'service_type' => 'Техническое обслуживание', 'short_name' => 'ТО'],
+            ['id' => 3, 'service_type' => 'Сервисное техническое обслуживание', 'short_name' => 'СТО'],
+            ['id' => 4, 'service_type' => 'Капитальный ремонт', 'short_name' => 'КР'],
+            ['id' => 5, 'service_type' => 'Аварийный ремонт', 'short_name' => 'АР'],
+        ];
+//        dd($selectedObjectMain);
+//        $breadcrumbs = Breadcrumbs::generate('/card-graph-edit');
+        return view('cards/card-graph-edit', compact('data_CardObjectMain', 'selectedObjectMain', 'maintenance', 'data_CardGraph'));
     }
+
+    public function editSave(Request $request, $id)
+    {
+        // Находим карточку объекта по переданному идентификатору
+        $card = CardGraph::where('_id', $id)->get();
+        // Проверяем, найдена ли карточка
+        if (!$card) {
+            // Если карточка не найдена, возвращаем ошибку или редирект на страницу ошибки
+            return response()->json(['error' => 'Карточка объекта не найдена'], 404);
+        }
+
+        // Обновляем основные данные карточки объекта
+//        $card->infrastructure = $request->infrastructure;
+        $card->curator = $request->curator;
+        $card->year_action = $request->year_action;
+        $card->date_create = $request->date_create;
+        $card->date_last_save = $request->date_last_save;
+        $card->date_archive = $request->date_archive;
+
+        // Сохраняем изменения
+        $card->save();
+
+
+
+        // Возвращаем успешный ответ или редирект на страницу карточки объекта
+        return response()->json(['success' => 'Данные карточки объекта успешно обновлены'], 200);
+    }
+
 
     //------------------ СОХРАНЕНИЕ НОВОЙ карточки объекта (СОЗДАНИЕ) ------------------
     public function saveData(Request $request, $id)
