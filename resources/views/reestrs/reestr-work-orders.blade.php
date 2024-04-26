@@ -115,13 +115,12 @@
                     pageList: [10, 25, 50, 'all'],
                     columns: [
                         [
-                            {colspan: 11, title: 'Заказ наряды', align: 'center'},
+                            {colspan: 10, title: 'Заказ наряды', align: 'center'},
                             {colspan: 3, title: 'Ответственные', align: 'center'},
                         ],
                         [
                             {field: 'state', checkbox: true, align: 'center', valign: 'middle'},
                             {title: 'Item ID', field: 'id', align: 'center', valign: 'middle',  visible: false },
-                            {title: 'поряд.номер', field: 'number', align: 'center', valign: 'middle',  visible: true },
                             {title: 'Вид инфраструктуры', field: 'infrastructure', align: 'center'},
                             {
                                 title: 'Наименование объекта',
@@ -137,7 +136,20 @@
                             {title: 'Вид ближайшего обслуживания', field: 'service_type', align: 'center'},
                             {title: 'Плановая дата обслуживания',  field: 'planned_maintenance_date', align: 'center' },
                             {title: 'Фактическая дата предыдущего обслуживания', field: 'prev_maintenance_date', align: 'center'},
-                            {title: 'Статус', field: 'status', align: 'center'},
+                            {
+                                title: 'Статус',
+                                field: 'status',
+                                align: 'center',
+                                formatter: function(value, row) {
+                                    if (value === 'В работе') {
+                                        return '<span class="status-in-progress">' + value + '</span>';
+                                    } else if (value === 'Завершен') {
+                                        return '<span class="status-completed">' + value + '</span>';
+                                    } else {
+                                        return value;
+                                    }
+                                }
+                            },
 
                             {title: 'Дата создания', field: 'date_create', align: 'center'},
                             // {title: 'Дата последнего сохранения', field: 'date_last_save', align: 'center'},
