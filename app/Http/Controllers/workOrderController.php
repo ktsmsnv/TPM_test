@@ -81,6 +81,9 @@ class workOrderController extends Controller
             // Находим карточку объекта по ID
             $cardObjectMain = CardObjectMain::findOrFail($selectedId);
 
+            // Находим количество заказов-нарядов для данной карточки объекта
+            $existingOrdersCount = CardWorkOrder::where('card_id', $selectedId)->count();
+
             // Находим ближайшее обслуживание для карточки объекта
             $nearestService = $cardObjectMain->services->sortBy('planned_maintenance_date')->first();
 
@@ -92,6 +95,10 @@ class workOrderController extends Controller
                 $newWorkOrder->date_create = $now->format('d-m-Y');
 //                $newWorkOrder->date_last_save = $now->format('d-m-Y');
                 $newWorkOrder->status = 'В работе'; // Устанавливаем статус
+
+                // Присваиваем номер заказа-наряда
+                $newWorkOrder->number = $existingOrdersCount + 1;
+
                 $newWorkOrder->save();
             }
         }

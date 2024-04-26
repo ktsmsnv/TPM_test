@@ -41,9 +41,11 @@ class HomeController extends Controller
             if ($object->workOrders->isNotEmpty()) {
                 // Проходимся по каждому заказу-наряду и создаем ссылки
                 foreach ($object->workOrders as $workOrder) {
-                    $workOrderLink .= '<a href="' . route('workOrder.show', ['id' => $workOrder->_id]) . '" target="_blank" class="tool-tip" title="открыть карточку заказ-наряда">' . 'открыть' . '</a>';
+                    $workOrderLink .= '<a href="' . route('workOrder.show', ['id' => $workOrder->_id]) .
+                        '" target="_blank" class="tool-tip" title="открыть карточку заказ-наряда">' . 'открыть' . '</a>';
                 }
             }
+
             $formattedObject = [
                 'id' => $object->id,
                 'infrastructure' => $object->infrastructure,
@@ -64,6 +66,7 @@ class HomeController extends Controller
                         'planned_maintenance_date' => $service->planned_maintenance_date,
                         'calendar_color' => $service->calendar_color,
                         'consumable_materials' => $service->consumable_materials,
+                        'work_order' => $service->cardWorkOrders()->first() ? route('workOrder.show', ['id' => $service->cardWorkOrders()->first()->_id]) : null,
                     ];
                 })->toArray(),
                 'work_order' => $workOrderLink, // Добавляем ссылку на заказ-наряд

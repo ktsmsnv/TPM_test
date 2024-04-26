@@ -26,6 +26,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/home/profile/change-password', [App\Http\Controllers\HomeController::class, 'changePassword'])->name('profile.change-password');
     // ----------------------------------------------------------------------------------------------------------------
 
+
     // ---------------------------- РЕЕСТРЫ ----------------------------------------------------------------------------
         //Реестр объектов
         Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -74,6 +75,11 @@ Route::middleware(['auth'])->group(function () {
 
     // ---------------------------- КАРТОЧКА ГРАФИКА ------------------------------------------------------------------
         Route::get('/pageReestrGraph/card-graph', [App\Http\Controllers\GraphController::class, 'index'])->name('cardGraph');
+        //СОЗДАНИЕ новой карточки графика TPM
+        Route::get('/pageReestrGraph/card-graph-create', [App\Http\Controllers\GraphController::class, 'create'])->name('cardGraph-create');
+        Route::post('/save-cardGraph-data', [App\Http\Controllers\ObjectController::class, 'saveData'])->name('cardGraph-create-save');
+        // РЕДАКТИРОВАНИЕ существующей карточки графика TPM
+        Route::get('/home/card-graph/edit', [App\Http\Controllers\ObjectController::class, 'edit'])->name('cardGraph-edit');
     // ----------------------------------------------------------------------------------------------------------------
 
     // ---------------------------- КАРТОЧКА КАЛЕНДАРЯ ----------------------------------------------------------------
