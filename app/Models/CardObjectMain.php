@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use MongoDB\Laravel\Eloquent\Model as Eloquent;
-
 class CardObjectMain extends Eloquent
 {
     protected $connection = 'mongodb';
@@ -17,6 +16,10 @@ class CardObjectMain extends Eloquent
     public function documents()
     {
         return $this->hasMany(CardObjectMainDoc::class, 'card_object_main_id', '_id');
+    }
+    public function workOrders()
+    {
+        return $this->hasMany(CardWorkOrder::class, 'card_id', '_id');
     }
     public function graph()
     {

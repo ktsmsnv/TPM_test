@@ -12,7 +12,7 @@
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
                     <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
-                    <a href="" type="button" class="btn btn-primary">Скопировать карточку объекта</a>
+                    <a type="button" class="btn btn-primary btn-primary--2 copy_cardObject">Скопировать карточку объекта</a>
                     <a href="{{ route('cardObject-edit', ['id' => $data_CardObjectMain->_id]) }}" target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
                 </div>
             </div>
@@ -229,9 +229,13 @@
                                         @foreach ($service->services_types as $type)
                                             <div class="grid-item">
                                                 <div class="form-check d-flex align-items-center gap-2">
+                                                    @php
+                                                        $title = $type->checked ? 'снять отметку выполненное' : 'отметить как выполненное';
+                                                    @endphp
                                                     <input type="checkbox" class="form-check-input type-checkbox"
                                                            id="type_{{ $type->id }}" data-id="{{ $type->id }}"
-                                                        {{ $type->checked ? 'checked' : '' }}>
+                                                           {{ $type->checked ? 'checked' : '' }}
+                                                           data-toggle="tooltip" title="{{ $title }}">
                                                     <label class="form-check-label" for="type_{{ $type->id }}">
                                                         {{ $type->type_work }}
                                                     </label>
@@ -307,4 +311,27 @@
             </div>
         </div>
     </div>
+    <script>
+        $(document).ready(function () {
+            // Обработчик клика на кнопку "Скопировать карточку объекта"
+            $('.copy_cardObject').click(function () {
+                // Отправляем AJAX-запрос на сервер для создания копии карточки объекта
+                $.ajax({
+                    type: "POST",
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: "{{ route('copy-cardObject') }}",
+                    data: {id: "{{ $data_CardObjectMain->_id }}"},
+                    success: function (response) {
+                        window.open(response.url, '_blank');
+                    },
+                    error: function (error) {
+                        // В случае ошибки можно вывести сообщение об ошибке или выполнить другие действия
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
 @endsection

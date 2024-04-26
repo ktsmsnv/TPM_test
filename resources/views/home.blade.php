@@ -12,13 +12,12 @@
                     <a id="showActiveBtn" type="button" class="btn btn-success" data-toggle="tooltip"
                        title="без даты вывода объекта из эксплуатации">Показать активные объекты</a>
                     <a href="/home/card-object-create" target="_blank" type="button" class="btn btn-primary">Создать карточку объекта</a>
-                    <a type="button" class="btn btn-primary btn-primary--2 copy_cardObject">Скопировать карточку объекта</a>
+                    <a type="button" class="btn btn-primary btn-primary--2 copy_cardObject" disabled="true">Скопировать карточку объекта</a>
                     <button id="generateGraphTPM" class="btn btn-light" disabled>Сформировать график TPM</button>
                     <a type="button" class="btn btn-light">Сформировать календарь TPM</a>
-                    <a type="button" class="btn btn-light">Сформировать заказ-наряд TPM</a>
+                    <a type="button" class="btn btn-light create_workOrder">Сформировать заказ-наряд TPM</a>
                 </div>
             </div>
-            <label for="locale"></label>
             <select class="form-control d-none" id="locale">
                 <option value="ru-RU">ru-RU</option>
             </select>
@@ -32,7 +31,7 @@
                             </button>
                         </div>
                         <table id="reestrObject" data-url="/get-objects"
-                               data-toolbar="#toolbar" data-search=""
+                               data-toolbar="#toolbar"  data-search="true"
                                data-show-refresh="true" data-show-toggle="true" data-show-fullscreen="true"
                                data-show-columns="true" data-show-columns-toggle-all="true"
                                data-show-export="true" data-click-to-select="true" data-minimum-count-columns="12"
@@ -45,7 +44,7 @@
         </div>
     </div>
 
-    <!-- Модальное окно подтверждения удаления -->
+    <!------- Модальное окно подтверждения удаления ------->
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteKPLabel"
          aria-hidden="true">
         <div class="modal-dialog">
@@ -75,7 +74,7 @@
             let $confirmDelete = $('#confirmDeleteModal'); // Ссылка на модальное окно
             let $confirmDeleteButton = $('#confirmDeleteButton'); // Кнопка "Удалить" в модальном окне
 
-            // выбор полей checked
+            // ------------------------------------ выбор полей checked ------------------------------------
             function getIdSelections() {
                 return $.map($table.bootstrapTable('getSelections'), function (row) {
                     return row.id
@@ -83,12 +82,12 @@
             }
 
 
-            // Функция для получения данных с сервера
+            // ------------------------------------ Функция для получения данных с сервера ------------------------------------
             function getObjectsFromServer() {
                 return $.get('/get-objects'); // Возвращаем Promise
             }
 
-            // Функция для обновления таблицы
+            // ------------------------------------ Функция для обновления таблицы ------------------------------------
             function refreshTable() {
                 getObjectsFromServer().done(function(data) {
                     initTable(data); // Инициализируем таблицу с новыми данными
@@ -98,7 +97,7 @@
             $('.refreshTable').click(function () {
                 refreshTable();
             });
-            // Функция для инициализации таблицы
+            // ------------------------------------ Функция для инициализации таблицы ------------------------------------
             function initTable(data) {
                 console.log('Данные:', data);
                 // Инициализация таблицы с данными
@@ -123,7 +122,8 @@
                                 align: 'center',
                                 formatter: function(value, row) {
                                     // Создаем ссылку с помощью значения поля "name"
-                                    return '<a href="/home/card-object/' + row.id + '" target="_blank">' + value + '</a>';
+                                    return '<a href="/home/card-object/' + row.id + '" target="_blank"' +
+                                        'data-toggle="tooltip" title="открыть карточку объекта">' + value + '</a>';
                                 }
                             },
 
@@ -228,9 +228,21 @@
                                 field: 'work_order',
                                 align: 'center',
                                 formatter: function(value, row) {
-                                    return '<a href="/reestr-work-orders/card-work-order" class="tool-tip" title="открыть карточку заказ-наряда">' + value + '</a>';
+                                    if (row.services && row.services.length > 0) {
+                                        let nearestService = row.services.reduce((nearest, current) => {
+                                            return (!nearest || new Date(current.planned_maintenance_date) < new Date(nearest.planned_maintenance_date)) ? current : nearest;
+                                        });
+                                        if (nearestService.work_order) {
+                                            return '<a href="' + nearestService.work_order + '" target="_blank" class="tool-tip" title="открыть карточку заказ-наряда">открыть</a>';
+                                        } else {
+                                            return 'Нет связанного заказа-наряда';
+                                        }
+                                    } else {
+                                        return 'Нет запланированных обслуживаний';
+                                    }
                                 }
                             },
+
                             {
                                 title: 'Календарь TPM',
                                 field: 'tpm_calendar',
@@ -258,18 +270,19 @@
                 initTable(data); // Инициализируем таблицу с новыми данными
             });
 
+            // Вызов функции для обновления состояния кнопки при загрузке страницы
+            updateCopyButtonState();
             $table.on('check.bs.table uncheck.bs.table ' + 'check-all.bs.table uncheck-all.bs.table',
                 function () {
                     $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
                     $generateGraphTPM.prop('disabled', !$table.bootstrapTable('getSelections').length)
-                    selections = getIdSelections();
+                        selections = getIdSelections();
+                    updateCopyButtonState();
                 });
 
 
 
-
-
-            // обработчик нажатия по кнопке удаления
+            // ------------------------------------ обработчик нажатия по кнопке удаления ------------------------------------
             $remove.click(function () {
                 let ids = getIdSelections();
                 if (ids.length > 0) {
@@ -313,7 +326,7 @@
 
 
 
-
+            // ------------------------------------ Показать активные объекты ------------------------------------
             let isActiveFilter = false; // Флаг, указывающий на текущее состояние фильтрации активных объектов
             // Обработчик события нажатия на кнопку "Показать активные объекты"
             $('#showActiveBtn').click(function () {
@@ -329,6 +342,16 @@
                 let activeObjects = data.filter(function (row) {
                     return !row.date_usage_end;
                 });
+
+                // Функция для отображения модального окна удаления
+                function showConfirmDeleteModal() {
+                    $confirmDelete.modal('show');
+                }
+                // Обработчик события нажатия на кнопку "Удалить" в модальном окне
+                $confirmDeleteButton.click(function () {
+                    // добавить логику для удаления элементов
+                    $confirmDelete.modal('hide');
+                });
                 $table.bootstrapTable('load', activeObjects);
                 isActiveFilter = true; // Устанавливаем флаг фильтрации в активное состояние
             }
@@ -339,11 +362,24 @@
             }
 
 
+            // ------------------------------------ Копирование карточки объекта ------------------------------------
+            // Функция для обновления состояния кнопки "Скопировать карточку объекта"
+            function updateCopyButtonState() {
+                let selectedRows = $table.bootstrapTable('getSelections');
+                let ids = selectedRows.map(row => row.id);
+                if (ids.length > 0) {
+                    $('.copy_cardObject').prop('disabled', false).removeAttr('data-toggle').attr('title', ''); // Активировать кнопку
+                } else {
+                    $('.copy_cardObject').prop('disabled', true).attr('data-toggle', 'tooltip').attr('title', 'Выберите объекты'); // Деактивировать кнопку
+                }
+            }
+
             // создание копии карточки объекта
             $('.copy_cardObject').click(function () {
                 let selectedRows = $table.bootstrapTable('getSelections');
                 let ids = selectedRows.map(row => row.id);
                 if (ids.length > 0) {
+                    let newTabs = []; // Массив для ссылок на новые вкладки
                     ids.forEach(function(id) {
                         $.ajax({
                             type: "POST",
@@ -353,15 +389,47 @@
                             url: "{{ route('copy-cardObject') }}",
                             data: {id: id},
                             success: function (response) {
-                                // Обновить таблицу после успешного создания копии карточки объекта
-                                refreshTable();
+                                // Создать ссылку на новую вкладку
+                                let newTab = window.open(response.url, '_blank');
+                                newTabs.push(newTab); // Добавить ссылку в массив
                             },
                             error: function (error) {
-                                  console.log(error);
+                                console.log(error);
                             }
                         });
                     });
+                    // После того как все запросы выполнены, активировать каждую вкладку
+                    setTimeout(function() {
+                        newTabs.forEach(function(tab) {
+                            tab.focus(); // Переключить фокус на каждую вкладку
+                        });
+                    }, 1000); // Задержка, чтобы дождаться завершения всех запросов
                 }
+            });
+
+
+
+            $('.create_workOrder').click(function () {
+                // Получаем ID выбранных записей
+                var selectedRows = $table.bootstrapTable('getSelections');
+                var selectedIds = selectedRows.map(row => row.id);
+
+                // Отправляем AJAX-запрос на создание заказ-наряда с передачей выбранных ID
+                $.ajax({
+                    type: "POST",
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: "{{ route('create-work-order') }}",
+                    data: { selected_ids: selectedIds }, // Передаем выбранные ID как данные для создания заказ-наряда
+                    success: function (response) {
+                        // Открываем страницу нового заказ-наряда в новой вкладке
+                        window.open(response.url, '_blank');
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
             });
 
 

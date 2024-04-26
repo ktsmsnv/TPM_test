@@ -31,11 +31,22 @@ class HomeController extends Controller
     }
     public function getObjects() {
         // Получаем объекты инфраструктуры с их сервисами
-        $objects = CardObjectMain::with('services')->get();
+        $objects = CardObjectMain::with(['services', 'workOrders'])->get();
         // Создаем массив для хранения всех данных
         $formattedObjects = [];
         // Проходимся по каждому объекту и выбираем все поля
         foreach ($objects as $object) {
+            $workOrderLink = '';
+            //dd($object->workOrders);
+            // Если у объекта есть связанный заказ-наряд, создаем ссылку
+            if ($object->workOrders->isNotEmpty()) {
+                // Проходимся по каждому заказу-наряду и создаем ссылки
+                foreach ($object->workOrders as $workOrder) {
+                    $workOrderLink .= '<a href="' . route('workOrder.show', ['id' => $workOrder->_id]) .
+                        '" target="_blank" class="tool-tip" title="открыть карточку заказ-наряда">' . 'открыть' . '</a>';
+                }
+            }
+
             $formattedObject = [
                 'id' => $object->id,
                 'infrastructure' => $object->infrastructure,
@@ -56,8 +67,10 @@ class HomeController extends Controller
                         'planned_maintenance_date' => $service->planned_maintenance_date,
                         'calendar_color' => $service->calendar_color,
                         'consumable_materials' => $service->consumable_materials,
+                        'work_order' => $service->cardWorkOrders()->first() ? route('workOrder.show', ['id' => $service->cardWorkOrders()->first()->_id]) : null,
                     ];
                 })->toArray(),
+                'work_order' => $workOrderLink, // Добавляем ссылку на заказ-наряд
             ];
 
             // Добавляем объект к массиву с отформатированными данными
@@ -98,7 +111,8 @@ class HomeController extends Controller
             $copiedDocument->save();
         }
 
-        return response()->json(['success' => 'Карточка объекта успешно скопирована'], 200);
+//        return response()->json(['success' => 'Карточка объекта успешно скопирована'], 200);
+        return response()->json(['url' => route('cardObject', ['id' => $copiedObject->id])], 200);
     }
 
 

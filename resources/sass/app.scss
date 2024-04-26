@@ -199,6 +199,16 @@ main {
 .card-body {
     box-shadow: var(--bs-box-shadow-lg);
 }
+/* Стиль для активной кнопки */
+.copy_cardObject {
+    background-color: #007bff!important; /* Цвет кнопки при активации */
+}
+
+/* Стиль для неактивной кнопки */
+.copy_cardObject[disabled] {
+    background-color: #6c757d!important; /* Цвет кнопки при деактивации */
+    cursor: default;
+}
 
 //----------------- CARD OBJECT -----------------------
 .member_card_style {
