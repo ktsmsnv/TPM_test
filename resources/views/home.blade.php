@@ -227,16 +227,21 @@
                                 field: 'work_order',
                                 align: 'center',
                                 formatter: function(value, row) {
-                                    // Проверяем, есть ли значение work_order в строке
-                                    if (row.work_order) {
-                                        // Если есть, возвращаем значение work_order, которое уже содержит HTML-код ссылок на карточки заказов-нарядов
-                                        return row.work_order;
+                                    if (row.services && row.services.length > 0) {
+                                        let nearestService = row.services.reduce((nearest, current) => {
+                                            return (!nearest || new Date(current.planned_maintenance_date) < new Date(nearest.planned_maintenance_date)) ? current : nearest;
+                                        });
+                                        if (nearestService.work_order) {
+                                            return '<a href="' + nearestService.work_order + '" target="_blank" class="tool-tip" title="открыть карточку заказ-наряда">открыть</a>';
+                                        } else {
+                                            return 'Нет связанного заказа-наряда';
+                                        }
                                     } else {
-                                        // Если нет, возвращаем пустую строку
-                                        return '';
+                                        return 'Нет запланированных обслуживаний';
                                     }
                                 }
                             },
+
 
                             {
                                 title: 'Календарь TPM',
