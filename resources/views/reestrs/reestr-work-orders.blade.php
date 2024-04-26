@@ -115,12 +115,13 @@
                     pageList: [10, 25, 50, 'all'],
                     columns: [
                         [
-                            {colspan: 10, title: 'Заказ наряды', align: 'center'},
+                            {colspan: 11, title: 'Заказ наряды', align: 'center'},
                             {colspan: 3, title: 'Ответственные', align: 'center'},
                         ],
                         [
                             {field: 'state', checkbox: true, align: 'center', valign: 'middle'},
                             {title: 'Item ID', field: 'id', align: 'center', valign: 'middle',  visible: false },
+                            {title: 'поряд.номер', field: 'number', align: 'center', valign: 'middle',  visible: true },
                             {title: 'Вид инфраструктуры', field: 'infrastructure', align: 'center'},
                             {
                                 title: 'Наименование объекта',
