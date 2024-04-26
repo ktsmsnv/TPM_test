@@ -274,6 +274,7 @@ class ObjectController extends Controller
                             }
                         }
                     }
+
                 } else {
                     // Создаем новую запись об обслуживании
                     $newService = new CardObjectServices();

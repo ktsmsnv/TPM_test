@@ -26,6 +26,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/home/profile/change-password', [App\Http\Controllers\HomeController::class, 'changePassword'])->name('profile.change-password');
     // ----------------------------------------------------------------------------------------------------------------
 
+
     // ---------------------------- РЕЕСТРЫ ----------------------------------------------------------------------------
         //Реестр объектов
         Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

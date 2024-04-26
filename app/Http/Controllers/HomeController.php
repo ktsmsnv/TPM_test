@@ -45,6 +45,7 @@ class HomeController extends Controller
                         '" target="_blank" class="tool-tip" title="открыть карточку заказ-наряда">' . 'открыть' . '</a>';
                 }
             }
+
             $formattedObject = [
                 'id' => $object->id,
                 'infrastructure' => $object->infrastructure,
