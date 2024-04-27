@@ -90,6 +90,7 @@ class ObjectController extends Controller
         $card->date_usage = $request->date_usage;
         $card->date_cert_end = $request->date_cert_end;
         $card->date_usage_end = $request->date_usage_end;
+        $card->deleted = 0;
         // Сохранение основных данных карточки
         $card->save();
         $cardId = $card->id;
@@ -157,8 +158,9 @@ class ObjectController extends Controller
             }
         }
 
-        // Возвращаем ответ об успешном сохранении данных
-        return redirect()->route('cardObject', ['id' => $cardId]);
+        // Возвращаем идентификатор созданной карточки в формате JSON
+        return response()->json(['id' => $cardId]);
+
     }
 
     //------------------ СОХРАНЕНИЕ ИЗМЕНЕНИЙ карточки объекта (РЕДАКТИРОВАНИЕ) ------------------

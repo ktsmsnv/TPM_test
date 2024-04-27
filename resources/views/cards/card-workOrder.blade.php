@@ -38,7 +38,8 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    <button class="btn btn-primary" >Завершить заказ</button>
+                                    <button class="btn btn-primary end_workOrder{{ $workOrder->status === 'Выполнен' ? ' disabled' : '' }}">
+                                        Завершить заказ</button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
@@ -94,6 +95,7 @@
                                                   readonly style="opacity: 0.5;" data-toggle="tooltip" title="дата появится после завершения заказ-наряда">
                                             @endif
                                         </div>
+
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Исполнитель</label>
                                             <input name="performer" class="form-control w-100" value="{{ $cardObjectServices->performer }}" readonly
@@ -201,6 +203,65 @@
             </div>
 
         </div>
+
+        <!-- Модальное окно подтверждения завершения заказа-наряда -->
+        <div class="modal fade" id="confirmEndWorkOrderModal" tabindex="-1" aria-labelledby="confirmEndWorkOrderModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmEndWorkOrderModalLabel">Подтверждение завершения заказа-наряда</h5>
+                        <button type="button" class="btn-close" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Вы уверены, что хотите завершить данный заказ-наряд?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="button" class="btn btn-danger" id="confirmEndWorkOrderButton">Завершить</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Обработчик события нажатия на кнопку "Завершить заказ"
+            $('.end_workOrder').click(function () {
+                // Открываем модальное окно с вопросом о завершении заказа-наряда
+                $('#confirmEndWorkOrderModal').modal('show');
+            });
+            // Обработчик события нажатия на кнопку "Да" в модальном окне подтверждения
+            $('#confirmEndWorkOrderButton').click(function () {
+                // Устанавливаем текущую дату в поле "Фактическая дата"
+                const currentDate = new Date();
+                const formattedDate = currentDate.toLocaleDateString('ru-RU').split('.').reverse().join('-'); // Форматируем дату в формат dd-mm-yyyy
+                $('input[name="date_fact"]').val(formattedDate);
+                // Меняем статус на "Выполнен"
+                $('input[name="status"]').val('Выполнен');
+                // Отправляем данные в контроллер для сохранения изменений в базе данных
+                $.ajax({
+                    type: "POST",
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: "{{ route('endWorkOrder') }}",
+                    data: {
+                        id: "{{ $workOrder->_id }}", // Здесь нужно передать ID текущего заказа-наряда
+                        date_fact: formattedDate, // Передаем текущую дату
+                        status: 'Выполнен' // Устанавливаем статус "Выполнен"
+                    },
+                    success: function (response) {
+                        // Обработка успешного завершения запроса
+                        console.log(response);
+                    },
+                    error: function (error) {
+                        // Обработка ошибки
+                        console.log(error);
+                    }
+                });
+                // Закрываем модальное окно подтверждения
+                $('#confirmEndWorkOrderModal').modal('hide');
+            });
+        </script>
 
         <script>
             $(document).ready(function () {

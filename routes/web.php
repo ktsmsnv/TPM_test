@@ -40,7 +40,7 @@ Route::middleware(['auth'])->group(function () {
         //Реестр заказов
         Route::get('/reestr-work-orders', [App\Http\Controllers\HomeController::class, 'reestrWorkOrdersView'])->name('reestr-workOrders');
         Route::get('/get-work-orders',  [App\Http\Controllers\workOrderController::class, 'index'])->name('get-work-orders');
-
+        Route::post('/delete-cardWorkOrder', [App\Http\Controllers\workOrderController::class,'deleteWorkOrder'])->name('delete-cardWorkOrder');
         //Реестр графиков
         Route::get('/pageReestrGraph', [App\Http\Controllers\pageReestrGraphController::class, 'reestrGraphView'])->name('reestr-Graph');
         //Route::get('/get-reestrGraph-details/{id}', 'App\Http\Controllers\pageReestrGraphController@getReestrGraphDetails')->name('get-reestrGraph-details');
@@ -70,6 +70,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reestr-work-orders/card-work-order/{id}', [App\Http\Controllers\WorkOrderController::class, 'show'])->name('workOrder.show');
 
     Route::post('/create-work-order', [App\Http\Controllers\WorkOrderController::class, 'create'])->name('create-work-order');
+    Route::post('/endWorkOrder',  [App\Http\Controllers\WorkOrderController::class, 'endWorkOrder'])->name('endWorkOrder');
+
 
     // ----------------------------------------------------------------------------------------------------------------
 

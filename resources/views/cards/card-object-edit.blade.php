@@ -757,8 +757,9 @@
                     contentType: false, // Не устанавливать тип содержимого
                     success: function (response) {
                         // Обработка успешного ответа от сервера (например, отображение сообщения об успешном сохранении)
-                        alert("Данные для карточки объекта успешно обновлены!");
-                        console.log(formData);
+                        // alert("Данные для карточки объекта успешно обновлены!");
+                        window.location.href = "{{ route('cardObject', ['id' => $data_CardObjectMain->id]) }}";
+                        //console.log(formData);
                     },
                     error: function (error) {
                         // Обработка ошибки при сохранении данных
