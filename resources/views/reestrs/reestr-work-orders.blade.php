@@ -6,9 +6,11 @@
         <div class="reestrObject">
             <div class="reestrObject__btns d-flex mb-5">
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-secondary me-5" data-toggle="tooltip" title="показать последние данные">Обновить реестр</button>
+                    <button type="button" class="btn btn-secondary refreshTable" data-toggle="tooltip"
+                            title="показать последние данные">Обновить реестр
+                    </button>
                     <button type="button" class="btn btn-primary" id="togglePeriodSelection" data-toggle="tooltip" title="показать записи за период">Выбрать период</button>
-                    <button type="button" class="btn btn-success" data-toggle="tooltip" title="статус 'в работе'">Показать активные заказ-наряды</button>
+                    <button id="showActiveBtn" type="button" class="btn btn-success" data-toggle="tooltip" title="статус 'в работе'">Показать активные заказ-наряды</button>
                 </div>
             </div>
             <div class="collapse" id="periodSelection">
@@ -75,7 +77,7 @@
 
     {{-- настройка таблицы и модалка удаления --}}
     <script>
-        $(document).ready(function () {
+        document.addEventListener('DOMContentLoaded', function () {
             let $table = $('#reestrWorkOrder');
             let $remove = $('#remove');
             let selections = [];
@@ -96,6 +98,21 @@
                 });
                 return res;
             }
+            // ------------------------------------ Функция для обновления таблицы ------------------------------------
+            // Функция для обновления данных в таблице с учетом фильтрации по столбцу "deleted"
+            function refreshTable() {
+                getObjectsFromServer().done(function(data) {
+                    // Фильтруем записи с deleted = 0
+                    let filteredData = data.filter(function(item) {
+                        return item.deleted !== 1;
+                    });
+                    initTable(filteredData); // Инициализируем таблицу с новыми данными
+                });
+            }
+
+            $('.refreshTable').click(function () {
+                refreshTable();
+            });
 
             function detailFormatter(index, row) {
                 let html = [];
@@ -134,16 +151,25 @@
                             {title: 'Инв./заводской номер', field: 'number', align: 'center'},
                             {title: 'Место установки', field: 'location', align: 'center'},
                             {title: 'Вид ближайшего обслуживания', field: 'service_type', align: 'center'},
-                            {title: 'Плановая дата обслуживания',  field: 'planned_maintenance_date', align: 'center' },
-                            {title: 'Фактическая дата предыдущего обслуживания', field: 'prev_maintenance_date', align: 'center'},
+                            {title: 'Плановая дата обслуживания',  field: 'planned_maintenance_date', align: 'center',
+                                formatter: function(value, row) {
+                                    // Преобразование даты в нужный формат (день-месяц-год)
+                                    return new Date(value).toLocaleDateString('ru-RU');
+                                }
+                            },
+                            {title: 'Фактическая дата предыдущего обслуживания', field: 'prev_maintenance_date', align: 'center',
+                                formatter: function(value, row) {
+                                    // Преобразование даты в нужный формат (день-месяц-год)
+                                    return new Date(value).toLocaleDateString('ru-RU');
+                                }},
                             {
-                                title: 'Статус',
+                                title: 'Статус заказ-наряда',
                                 field: 'status',
                                 align: 'center',
                                 formatter: function(value, row) {
                                     if (value === 'В работе') {
                                         return '<span class="status-in-progress">' + value + '</span>';
-                                    } else if (value === 'Завершен') {
+                                    } else if (value === 'Выполнен') {
                                         return '<span class="status-completed">' + value + '</span>';
                                     } else {
                                         return value;
@@ -151,7 +177,12 @@
                                 }
                             },
 
-                            {title: 'Дата создания', field: 'date_create', align: 'center'},
+                            {title: 'Дата создания', field: 'date_create', align: 'center',
+                                formatter: function(value, row) {
+                                    // Преобразование даты в нужный формат (день-месяц-год)
+                                    return new Date(value).toLocaleDateString('ru-RU');
+                                }
+                            },
                             // {title: 'Дата последнего сохранения', field: 'date_last_save', align: 'center'},
                             {title: 'Исполнитель', field: 'performer', align: 'center'},
                             {title: 'Ответственный', field: 'responsible', align: 'center'},
@@ -176,52 +207,85 @@
 
                 $remove.click(function () {
                     let ids = getIdSelections();
-                    $table.bootstrapTable('remove', {
-                        field: 'id',
-                        values: ids
-                    });
-                    $remove.prop('disabled', true);
-                    showConfirmDeleteModal();
+                    if (ids.length > 0) {
+                        showConfirmDeleteModal();
+                    }
                 });
 
-                // Функция для отображения модального окна удаления
+                //  ------------------------------------ Функция для отображения модального окна удаления ------------------------------------
                 function showConfirmDeleteModal() {
                     $confirmDelete.modal('show');
                 }
 
                 // Обработчик события нажатия на кнопку "Удалить" в модальном окне
                 $confirmDeleteButton.click(function () {
-                    // добавить логику для удаления элементов
+                    let ids = getIdSelections();
+                    $.ajax({
+                        type: "POST",
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        url: "{{ route('delete-cardWorkOrder') }}",
+                        data: {ids: ids},
+                        success: function (response) {
+                            // Обновить таблицу после успешного удаления
+                            refreshTable();
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
                     $confirmDelete.modal('hide');
                 });
+
             }
             //Вызов функции для получения данных с сервера
             getObjectsFromServer().done(function(data) {
                 initTable(data); // Инициализируем таблицу с новыми данными
             });
+
             $(function () {
                 initTable();
                 $('#locale').change(initTable);
             });
-        });
 
-    </script>
+            // ------------------------------------ Показать активные объекты ------------------------------------
+            let isActiveFilter = false; // Флаг, указывающий на текущее состояние фильтрации активных объектов
+            // Обработчик события нажатия на кнопку "Показать активные объекты"
+            $('#showActiveBtn').click(function () {
+                if (isActiveFilter) {
+                    resetFilter(); // Если фильтрация активна, сбрасываем её
+                } else {
+                    showActiveObjects(); // Если фильтрация неактивна, применяем фильтр
+                }
+            });
+            // Функция для отображения только активных объектов
+            function showActiveObjects() {
+                let data = $table.bootstrapTable('getData');
+                let activeObjects = data.filter(function (row) {
+                    return row.status === 'В работе';
+                });
+                $table.bootstrapTable('load', activeObjects);
+                isActiveFilter = true; // Устанавливаем флаг фильтрации в активное состояние
+            }
+            // Функция для сброса фильтрации и отображения всех объектов
+            function resetFilter() {
+                refreshTable(); // Перезагружаем таблицу, чтобы сбросить фильтр
+                isActiveFilter = false; // Устанавливаем флаг фильтрации в неактивное состояние
+            }
 
-    {{-- выбрать период--}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
+
+            // ------------------------------------ Показать за выбранный период ------------------------------------
             const periodSelection = document.getElementById('periodSelection');
             const togglePeriodSelection = document.getElementById('togglePeriodSelection');
             const applyButton = document.getElementById('applyButton');
             const selectedPeriod = document.getElementById('selectedPeriod');
-
             // Скрыть блок выбора периода при нажатии вне его области
             document.addEventListener('click', function (event) {
                 if (!periodSelection.contains(event.target) && event.target !== togglePeriodSelection) {
                     periodSelection.classList.remove('show');
                 }
             });
-
             // Переключение видимости блока выбора периода при нажатии на кнопку
             togglePeriodSelection.addEventListener('click', function () {
                 if (periodSelection.classList.contains('show')) {
@@ -230,24 +294,39 @@
                     periodSelection.classList.add('show');
                 }
             });
-
             // Обработка нажатия на кнопку "Применить"
             applyButton.addEventListener('click', function () {
                 const startDate = document.getElementById('startDate').value;
                 const endDate = document.getElementById('endDate').value;
 
+                // Преобразуем даты в объекты Date
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                // Фильтруем записи по выбранному периоду
+                let data = $table.bootstrapTable('getData');
+                let filteredData = data.filter(function (row) {
+                    // Преобразуем плановую дату обслуживания в объект Date
+                    const plannedDate = new Date(row.planned_maintenance_date);
+                    // Проверяем, попадает ли плановая дата в выбранный период
+                    return plannedDate >= start && plannedDate <= end;
+                });
+                // Обновляем таблицу, отображая только записи из отфильтрованных данных
+                $table.bootstrapTable('load', filteredData);
+
                 // Отобразить выбранный период под блоком с кнопками
                 selectedPeriod.innerHTML = `
                 <div class="alert alert-info" role="alert">
-                    Выбранный период: с ${endDate.split('-').reverse().join('-')}  по ${startDate.split('-').reverse().join('-')}
+                    Выбранный период: с ${endDate.split('-').reverse().join('-')} по ${startDate.split('-').reverse().join('-')}
                     <button type="button" class="btn btn-danger ms-3" id="resetPeriodButton">Сбросить период</button>
                 </div>`;
-
                 // Добавляем обработчик клика на кнопку "Сбросить период"
-                document.getElementById('resetPeriodButton').addEventListener('click', function() {
+                document.getElementById('resetPeriodButton').addEventListener('click', function () {
                     selectedPeriod.innerHTML = '';
+                    refreshTable(); // После сброса периода обновляем таблицу, чтобы отобразить все записи
                 });
             });
+
         });
+
     </script>
 @endsection

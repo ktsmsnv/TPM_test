@@ -15,7 +15,7 @@
                     <a type="button" class="btn btn-primary btn-primary--2 copy_cardObject" disabled="true">Скопировать карточку объекта</a>
                     <button id="generateGraphTPM" class="btn btn-light" disabled>Сформировать график TPM</button>
                     <a type="button" class="btn btn-light">Сформировать календарь TPM</a>
-                    <a type="button" class="btn btn-light create_workOrder">Сформировать заказ-наряд TPM</a>
+                    <button class="btn btn-light create_workOrder" disabled>Сформировать заказ-наряд TPM</button>
                 </div>
             </div>
             <select class="form-control d-none" id="locale">
@@ -126,9 +126,22 @@
                                 }
                             },
 
-                            {title: 'Дата ввода в эксплуатацию', field: 'date_arrival', align: 'center'},
-                            {title: 'Дата вывода из эксплуатации', field: 'date_usage_end', align: 'center'},
-                            {title: 'Дата окончания аттестации/гарантии', field: 'date_cert_end', align: 'center'},
+                            {title: 'Дата ввода в эксплуатацию', field: 'date_usage', align: 'center',
+                                formatter: function(value, row) {
+                                    // Преобразование даты в нужный формат (день-месяц-год)
+                                    return new Date(value).toLocaleDateString('ru-RU');
+                                }
+                            },
+                            {title: 'Дата вывода из эксплуатации', field: 'date_usage_end', align: 'center',
+                                formatter: function(value, row) {
+                                    // Преобразование даты в нужный формат (день-месяц-год)
+                                    return new Date(value).toLocaleDateString('ru-RU');
+                                }},
+                            {title: 'Дата окончания аттестации/гарантии', field: 'date_cert_end', align: 'center',
+                                formatter: function(value, row) {
+                                    // Преобразование даты в нужный формат (день-месяц-год)
+                                    return new Date(value).toLocaleDateString('ru-RU');
+                                }},
                             {title: 'Инв./заводской номер', field: 'number', align: 'center'},
 
                             {title: 'Место установки', field: 'location', align: 'center'},
@@ -144,7 +157,7 @@
                                                 nearestMaintenanceDate = service.planned_maintenance_date;
                                             }
                                         });
-                                        return nearestMaintenanceDate ? nearestMaintenanceDate : 'Нет запланированных обслуживаний';
+                                        return nearestMaintenanceDate ? new Date(nearestMaintenanceDate).toLocaleDateString('ru-RU') : 'Нет запланированных обслуживаний';
                                     } else {
                                         return 'Нет запланированных обслуживаний';
                                     }
@@ -162,7 +175,7 @@
                                                 nearestService = service;
                                             }
                                         });
-                                        return nearestService ? nearestService.prev_maintenance_date : 'Нет даты предыдущего обслуживания';
+                                        return nearestService ? new Date(nearestService.prev_maintenance_date).toLocaleDateString('ru-RU') : 'Нет даты предыдущего обслуживания';
                                     } else {
                                         return 'Нет даты предыдущего обслуживания';
                                     }
@@ -234,7 +247,7 @@
                                         if (nearestService.work_order) {
                                             return '<a href="' + nearestService.work_order + '" target="_blank" class="tool-tip" title="открыть карточку заказ-наряда">открыть</a>';
                                         } else {
-                                            return 'Нет связанного заказа-наряда';
+                                            return 'Нет заказа-наряда';
                                         }
                                     } else {
                                         return 'Нет запланированных обслуживаний';
@@ -275,6 +288,7 @@
                 function () {
                     $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
                     $generateGraphTPM.prop('disabled', !$table.bootstrapTable('getSelections').length)
+                    $('.create_workOrder').prop('disabled', !$table.bootstrapTable('getSelections').length)
                         selections = getIdSelections();
                     updateCopyButtonState();
                 });
@@ -314,6 +328,14 @@
             });
 
 
+            $generateGraphTPM.click(function (){
+                let ids = getIdSelections();
+                console.log(ids);
+                if (ids.length > 0) {
+                    // Сформируйте URL с ID выбранных записей и перенаправьте пользователя на страницу формирования графика TPM
+                    window.location.href = "/pageReestrGraph/card-graph-create?ids=" + ids.join(',');
+                }
+            });
 
             // ------------------------------------ Показать активные объекты ------------------------------------
             let isActiveFilter = false; // Флаг, указывающий на текущее состояние фильтрации активных объектов
@@ -330,15 +352,6 @@
                 let data = $table.bootstrapTable('getData');
                 let activeObjects = data.filter(function (row) {
                     return !row.date_usage_end;
-                });
-
-                $generateGraphTPM.click(function (){
-                    let ids = getIdSelections();
-                    console.log(ids);
-                    if (ids.length > 0) {
-                        // Сформируйте URL с ID выбранных записей и перенаправьте пользователя на страницу формирования графика TPM
-                        window.location.href = "/pageReestrGraph/card-graph-create?ids=" + ids.join(',');
-                    }
                 });
 
                 // Функция для отображения модального окна удаления
@@ -406,7 +419,7 @@
             });
 
 
-
+            // ------------------------------------ создание заказ-наряда ------------------------------------
             $('.create_workOrder').click(function () {
                 // Получаем ID выбранных записей
                 var selectedRows = $table.bootstrapTable('getSelections');
@@ -421,11 +434,18 @@
                     url: "{{ route('create-work-order') }}",
                     data: { selected_ids: selectedIds }, // Передаем выбранные ID как данные для создания заказ-наряда
                     success: function (response) {
-                        // Открываем страницу нового заказ-наряда в новой вкладке
-                        window.open(response.url, '_blank');
+                        // Проверяем наличие сообщения в ответе
+                        if (response.message) {
+                            // Выводим уведомление о существующем заказе-наряде
+                            alert(response.message);
+                        } else {
+                            // Открываем страницу нового заказ-наряда в новой вкладке
+                            window.open(response.url, '_blank');
+                        }
                     },
-                    error: function (error) {
-                        console.log(error);
+                    error: function (xhr, status, error) {
+                        // Показываем всплывающее окно с текстом ошибки
+                        alert("Произошла ошибка при выполнении запроса: " + xhr.responseText);
                     }
                 });
             });

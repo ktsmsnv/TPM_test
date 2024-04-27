@@ -584,8 +584,9 @@
                         contentType: false, // Не устанавливать тип содержимого
                         success: function (response) {
                             // Обработка успешного ответа от сервера (например, отображение сообщения об успешном сохранении)
-                            alert("Данные успешно сохранены!");
-                            console.log(formData);
+                            // alert("Данные успешно сохранены!");
+                            // console.log(formData);
+                            window.location.href = "/home/card-object/" + response.id;
                         },
                         error: function (error) {
                             // Обработка ошибки при сохранении данных

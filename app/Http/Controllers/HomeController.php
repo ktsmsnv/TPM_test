@@ -52,7 +52,7 @@ class HomeController extends Controller
                 'name' => $object->name,
                 'number' => $object->number,
                 'location' => $object->location,
-                'date_arrival' => $object->date_arrival,
+                'date_usage' => $object->date_usage,
                 'date_usage_end' => $object->date_usage_end,
                 'date_cert_end' => $object->date_cert_end,
                 'services' => $object->services->map(function($service) {
