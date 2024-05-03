@@ -66,7 +66,7 @@
                                     <td>{{ $object->cardObjectMain->infrastructure }}</td>
                                     <td class="tool-tip" title="открыть карточку графика">
                                         <a href="{{ route('cardGraph', ['id' => $object->card_id]) }}" target="_blank">
-                                            {{ $object->cardObjectMain->name }}
+                                            {{ $object->cardObjectMain->infrastructure }}
                                         </a>
                                     </td>
                                     <td>{{ date('Y', strtotime($object->year_action)) }}</td>

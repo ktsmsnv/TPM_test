@@ -9,7 +9,7 @@
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
-                <h2 class="mb-4"><strong>Карточка графика</strong></h2>
+                <h2 class="mb-4"><strong>Создание карточки графика: "{{ is_string($nameGraphString) ? htmlspecialchars($nameGraphString) : 'Название объекта не найдено' }}"</strong></h2>
             </div>
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
@@ -36,9 +36,15 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
+                                    <button class="btn btn-primary">Заархивировать</button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Наименование объекта</label>
+                                            <input name="nameGraph" value="{{ is_string($nameGraphString) ? $nameGraphString : 'Название объекта не найдено' }}" class="form-control w-100" readonly>
+                                        </div>
+
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид инфраструктуры</label>
                                             <input name="infrastructure" value="{{ $selectedObjectMain->first()->infrastructure }}"

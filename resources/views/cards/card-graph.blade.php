@@ -9,8 +9,7 @@
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
-                <h1 class="mb-4"><strong>Карточка
-                        графика: "{{ $data_CardObjectMain->name ?? 'Название объекта не найдено' }}"</strong></h1>
+                <h1 class="mb-4"><strong>Карточка графика: "{{ $data_CardObjectMain->name ?? 'Название объекта не найдено' }}"</strong></h1>
             </div>
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
@@ -38,14 +37,14 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    <button class="btn btn-primary">Заархивировать</button>
+{{--                                    <button class="btn btn-primary">Заархивировать</button>--}}
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид инфраструктуры</label>
                                             <input name="" placeholder="Введите вид инфраструктуры" class="form-control w-100"
-                                                   readonly value="{{ $data_CardObjectMain->infrastructure ?? 'нет данных' }}">
+                                                   readonly value="{{ $data_CardObjectMain->graph->first()->infrastructure ?? 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Куратор</label>
