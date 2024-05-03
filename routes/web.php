@@ -42,7 +42,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/get-work-orders',  [App\Http\Controllers\workOrderController::class, 'index'])->name('get-work-orders');
         Route::post('/delete-cardWorkOrder', [App\Http\Controllers\workOrderController::class,'deleteWorkOrder'])->name('delete-cardWorkOrder');
         //Реестр графиков
-        Route::get('/pageReestrGraph', [App\Http\Controllers\pageReestrGraphController::class, 'reestrGraphView'])->name('reestr-Graph');
+        Route::get('/pageReestrGraph', [App\Http\Controllers\HomeController::class, 'reestrGraphView'])->name('reestr-Graph');
         //Route::get('/get-reestrGraph-details/{id}', 'App\Http\Controllers\pageReestrGraphController@getReestrGraphDetails')->name('get-reestrGraph-details');
         //Реестр календарей
         Route::get('/pageReestrCalendar', [App\Http\Controllers\pageReestrCalendarController::class, 'reestrCalendarView'])->name('reestr-Calendar');
@@ -76,12 +76,13 @@ Route::middleware(['auth'])->group(function () {
     // ----------------------------------------------------------------------------------------------------------------
 
     // ---------------------------- КАРТОЧКА ГРАФИКА ------------------------------------------------------------------
-        Route::get('/pageReestrGraph/card-graph', [App\Http\Controllers\GraphController::class, 'index'])->name('cardGraph');
+        Route::get('/pageReestrGraph/card-graph/{id}', [App\Http\Controllers\GraphController::class, 'index'])->name('cardGraph');
         //СОЗДАНИЕ новой карточки графика TPM
         Route::get('/pageReestrGraph/card-graph-create', [App\Http\Controllers\GraphController::class, 'create'])->name('cardGraph-create');
-        Route::post('/save-cardGraph-data', [App\Http\Controllers\ObjectController::class, 'saveData'])->name('cardGraph-create-save');
+        Route::post('/save-cardGraph-data/{id}', [App\Http\Controllers\GraphController::class, 'saveData'])->name('cardGraph-create-save');
         // РЕДАКТИРОВАНИЕ существующей карточки графика TPM
-        Route::get('/home/card-graph/edit', [App\Http\Controllers\ObjectController::class, 'edit'])->name('cardGraph-edit');
+        Route::get('/pageReestrGraph/card-graph-edit/{id}', [App\Http\Controllers\GraphController::class, 'edit'])->name('cardGraph-edit');
+    Route::post('/edit-card-graph-save/{id}', [App\Http\Controllers\GraphController::class, 'editSave'])->name('cardGraph-editSave');
     // ----------------------------------------------------------------------------------------------------------------
 
     // ---------------------------- КАРТОЧКА КАЛЕНДАРЯ ----------------------------------------------------------------

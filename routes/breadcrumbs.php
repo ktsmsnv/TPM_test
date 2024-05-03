@@ -53,6 +53,7 @@ Breadcrumbs::for('card-work-order', function ($trail) {
 //00000000000000000000000000000000000000000000000000000
 // Хлебные крошки для страницы Карточка графика
 Breadcrumbs::for('card-graph', function ($trail) {
+
     $trail->parent('pageReestrGraph');
     $trail->push('Карточка графика', route('cardGraph'));
 });
@@ -62,7 +63,7 @@ Breadcrumbs::for('card-graph-create', function ($trail) {
     $trail->push('Создание карточки графика', route('cardGraph-create'));
 });
 // Хлебные крошки для страницы РЕДАКТИРОВАНИЕ Карточка графика
-Breadcrumbs::for('/card-graph/edit', function ($trail) {
+Breadcrumbs::for('/card-graph-edit', function ($trail) {
     $trail->parent('card-graph');
     $trail->push('Редактирование карточки графика', route('cardGraph-edit'));
 });

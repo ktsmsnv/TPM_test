@@ -6,8 +6,13 @@ use MongoDB\Laravel\Eloquent\Model as Eloquent;
 
 class CardGraphMainGraphTPM extends Eloquent
 {
-protected $connection = 'mongodb';
-protected $collection = 'card_graph_main_graphtpm';
-protected $fillable = ['card_id', 'name_object', 'factory_num', 'january', 'february', 'march', 'april',
-    'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+    protected $connection = 'mongodb';
+    protected $collection = 'card_graph_main_graphtpm';
+    protected $fillable = ['card_id', 'name_object', 'factory_num', 'january', 'february', 'march', 'april',
+        'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
+
+    public function cardGraphMain()
+    {
+        return $this->belongsTo(CardGraphMain::class, 'card_graph_main_collection_id', '_id');
+    }
 }

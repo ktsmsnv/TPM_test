@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CardGraph;
 use Illuminate\Http\Request;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use Illuminate\Support\Facades\Log;
@@ -180,6 +181,18 @@ class HomeController extends Controller
         return redirect()->back()->with('success', 'Пароль успешно изменен.');
     }
 
+    public function reestrGraphView( Request $request)
+    {
+        // Генерация хлебных крошек
+//        $breadcrumbs = Breadcrumbs::generate('reestr-graphs');
+        $objects = CardGraph::all();
+        $selectedObjectMain = CardObjectMain::all();
+        $selectedObjectServices = CardObjectServices::all();
+//        dd($selectedObjectMain);
+
+        // Возвращение представления с передачей хлебных крошек
+        return view('reestrs/reestrGraph', compact('objects','selectedObjectMain','selectedObjectServices'));
+    }
 
     public function reestrWorkOrdersView()
     {
