@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CardObjectMain;
 use App\Models\CardObjectServices;
 use App\Models\CardWorkOrder;
+use App\Models\HistoryCardWorkOrder;
 use Illuminate\Http\Request;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use Carbon\Carbon;
@@ -103,11 +104,18 @@ class workOrderController extends Controller
                 $newWorkOrder->date_create = $now->format('d-m-Y');
                 // $newWorkOrder->date_last_save = $now->format('d-m-Y');
                 $newWorkOrder->status = 'В работе'; // Устанавливаем статус
-
                 // Присваиваем номер заказа-наряда
                 $newWorkOrder->number = $existingOrdersCount + 1;
-
                 $newWorkOrder->save();
+
+                $newWorkOrder_history = new HistoryCardWorkOrder();
+                $newWorkOrder_history->card_id = $selectedId; // Связываем заказ-наряд с выбранной карточкой объекта
+                $newWorkOrder_history->card_object_services_id = $nearestService->id; // Связываем заказ-наряд с ближайшей услугой
+                $newWorkOrder_history->date_create = $now->format('d-m-Y');
+                $newWorkOrder_history->status = 'В работе'; // Устанавливаем статус
+                // Присваиваем номер заказа-наряда
+                $newWorkOrder_history->number = $existingOrdersCount + 1;
+                $newWorkOrder_history->save();
             }
         }
 
@@ -148,6 +156,17 @@ class workOrderController extends Controller
         $cardObjectServices = CardObjectServices::findOrFail($cardObjectServicesId);
         $cardObjectServices->prev_maintenance_date = $dateFact;
         $cardObjectServices->save();
+
+        $newWorkOrder_history = new HistoryCardWorkOrder();
+        $newWorkOrder_history->card_id = $workOrder->card_id; // Связываем заказ-наряд с выбранной карточкой объекта
+        $newWorkOrder_history->card_object_services_id = $workOrder->card_object_services_id; // Связываем заказ-наряд с ближайшей услугой
+        $newWorkOrder_history->date_create =  $workOrder->date_create;
+        $newWorkOrder_history->status =  $request->status; // Устанавливаем статус
+        $newWorkOrder_history->date_fact = $dateFact;
+        // Присваиваем номер заказа-наряда
+        $newWorkOrder_history->number = $workOrder->number;
+        $newWorkOrder_history->save();
+
 
         return response()->json(['message' => 'Заказ-наряд успешно завершен'], 200);
     }
