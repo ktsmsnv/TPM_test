@@ -43,7 +43,7 @@ class Kernel extends ConsoleKernel
                     }
                 }
             }
-            Log::info('Планировщик Laravel выполняется каждую секунду');
+           // Log::info('Планировщик Laravel выполняется каждую секунду');
         })->everySecond();
 
     }

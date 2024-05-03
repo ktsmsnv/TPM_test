@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\HistoryCardObjectMain;
+use App\Models\HistoryCardObjectMainDoc;
+use App\Models\HistoryCardObjectServices;
+use App\Models\HistoryCardObjectServicesTypes;
 use Illuminate\Http\Request;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use App\Models\CardObjectMain;
@@ -90,7 +94,7 @@ class ObjectController extends Controller
         $card->date_usage = $request->date_usage;
         $card->date_cert_end = $request->date_cert_end;
         $card->date_usage_end = $request->date_usage_end;
-        $card->deleted = 0;
+//        $card->deleted = 0;
         // Сохранение основных данных карточки
         $card->save();
         $cardId = $card->id;
@@ -123,7 +127,6 @@ class ObjectController extends Controller
                 $path = $file->storeAs('public/files', $file->getClientOriginalName());
             }
         }
-
 
         // Обработка сохранения данных об обслуживаниях
         if ($request->has('services')) {
@@ -158,9 +161,81 @@ class ObjectController extends Controller
             }
         }
 
+
+        // ------------ ИСТОРИЯ ------------
+        $history_card = new HistoryCardObjectMain();
+        $history_card->infrastructure = $request->infrastructure;
+        $history_card->name = $request->name;
+        $history_card->number = $request->number;
+        $history_card->location = $request->location;
+        $history_card->date_arrival = $request->date_arrival;
+        $history_card->date_usage = $request->date_usage;
+        $history_card->date_cert_end = $request->date_cert_end;
+        $history_card->date_usage_end = $request->date_usage_end;
+        $history_card->card_id = $card->id;
+        // Сохранение основных данных карточки
+        $history_card->save();
+        $history_cardId = $history_card->id;
+        // Обработка сохранения изображений
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $content = file_get_contents($image->getRealPath()); // Получение содержимого файа
+                $binaryData = new Binary($content, Binary::TYPE_GENERIC); // Создание объекта Binary с двоичными данными
+
+                // Присваиваем двоичные данные к полю image модели CardObjectMain
+                $history_card->image = $binaryData;
+                $history_card->save();
+            }
+        }
+        // Обработка сохранения файлов документов
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $content = file_get_contents($file->getRealPath()); // Получение содержимого файла
+                $binaryData = new Binary($content, Binary::TYPE_GENERIC); // Создание объекта Binary с двоичными данными
+
+                // Создаем новую запись для файла в модели CardObjectMainDoc
+                $history_doc = new HistoryCardObjectMainDoc();
+                $history_doc->file_content = $binaryData; // Присваиваем двоичные данные к полю file_content модели CardObjectMainDoc
+                $history_doc->file_name = $file->getClientOriginalName();
+                $history_doc->card_object_main_id = $history_card->id;
+                $history_doc->save();
+            }
+        }
+
+        // Обработка сохранения данных об обслуживаниях
+        if ($request->has('services')) {
+            $services = json_decode($request->services, true); // Преобразуем JSON в массив
+            foreach ($services as $service) {
+                // Создаем новую запись для обслуживания в модели CardObjectServices
+                $history_newService = new HistoryCardObjectServices();
+                $history_newService->service_type = $service['service_type'];
+                $history_newService->short_name = $service['short_name'];
+                $history_newService->performer = $service['performer'];
+                $history_newService->responsible = $service['responsible'];
+                $history_newService->frequency = $service['frequency'];
+                $history_newService->prev_maintenance_date = $service['prev_maintenance_date'];
+                $history_newService->planned_maintenance_date = $service['planned_maintenance_date'];
+                $history_newService->calendar_color = $service['selectedColor'];
+                $history_newService->consumable_materials = $service['materials'];
+                $history_newService->checked = $service['checked'];
+                $history_newService->card_object_main_id = $history_card->id;
+                $history_newService->save();
+                $history_serviceId = $history_newService->id;
+
+                // Получаем данные о виде работ для текущего обслуживания
+                $history_typesOfWork = $service['types_of_work'];
+//                dd($typesOfWork);
+                foreach ($history_typesOfWork as $history_typeOfWork) {
+                    HistoryCardObjectServicesTypes::create([
+                        'card_id' => $history_cardId,
+                        'card_services_id' => $history_serviceId,
+                        'type_work' => $history_typeOfWork,
+                    ]);
+                }
+            }
+        }
         // Возвращаем идентификатор созданной карточки в формате JSON
         return response()->json(['id' => $cardId]);
-
     }
 
     //------------------ СОХРАНЕНИЕ ИЗМЕНЕНИЙ карточки объекта (РЕДАКТИРОВАНИЕ) ------------------
@@ -202,7 +277,6 @@ class ObjectController extends Controller
             }
         }
 
-
         // удаляем документы
         if ($request->has('files_delete')) {
             // Получаем список файлов для удаления
@@ -229,7 +303,6 @@ class ObjectController extends Controller
                 $path = $file->storeAs('public/files', $file->getClientOriginalName());
             }
         }
-
 
 // Обновляем данные об обслуживаниях (обновляем существующие и добавляем новые)
         if ($request->has('services')) {
@@ -308,6 +381,50 @@ class ObjectController extends Controller
                 CardObjectServicesTypes::whereIn('type_work', $typesOfWorkToDelete)->delete();
             }
         }
+
+
+        // --------Создаем новую запись в таблице истории---------------
+        $history_card = new HistoryCardObjectMain();
+        $history_card->fill($request->all());
+        $history_card->card_id = $card->id;
+        $history_card->save();
+        // Сохранение файлов документов в таблице истории
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $content = file_get_contents($file->getRealPath()); // Получение содержимого файла
+                $binaryData = new Binary($content, Binary::TYPE_GENERIC); // Создание объекта Binary с двоичными данными
+
+                // Создаем новую запись для файла в модели HistoryCardObjectMainDoc
+                $history_doc = new HistoryCardObjectMainDoc();
+                $history_doc->file_content = $binaryData; // Присваиваем двоичные данные к полю file_content модели HistoryCardObjectMainDoc
+                $history_doc->file_name = $file->getClientOriginalName();
+                $history_doc->card_object_main_id = $history_card->id; // Связываем с исторической записью
+                $history_doc->save();
+            }
+        }
+        // Сохранение данных об обслуживаниях в таблице истории
+        if ($request->has('services')) {
+            $services = json_decode($request->services, true); // Преобразуем JSON в массив
+            foreach ($services as $service) {
+                // Создаем новую запись для обслуживания в модели HistoryCardObjectServices
+                $history_newService = new HistoryCardObjectServices();
+                $history_newService->fill($service); // Заполняем модель данными из массива
+                $history_newService->card_object_main_id = $history_card->id;
+                $history_newService->save();
+                $history_serviceId = $history_newService->id;
+
+                // Получаем данные о виде работ для текущего обслуживания
+                $history_typesOfWork = $service['types_of_work'];
+                foreach ($history_typesOfWork as $history_typeOfWork) {
+                    HistoryCardObjectServicesTypes::create([
+                        'card_id' => $history_card->id, // Связываем с исторической записью
+                        'card_services_id' => $history_serviceId,
+                        'type_work' => $history_typeOfWork,
+                    ]);
+                }
+            }
+        }
+
 
         // Возвращаем успешный ответ или редирект на страницу карточки объекта
         return response()->json(['success' => 'Данные карточки объекта успешно обновлены'], 200);

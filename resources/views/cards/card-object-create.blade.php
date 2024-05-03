@@ -458,6 +458,9 @@
 
                         // Выполняем соответствующие расчеты в зависимости от выбранной периодичности
                         switch (frequency) {
+                            case 'Сменное':
+                                plannedMaintenanceDate.setDate(plannedMaintenanceDate.getDate() + 1);
+                                break;
                             case 'Ежемесячное':
                                 plannedMaintenanceDate.setMonth(plannedMaintenanceDate.getMonth() + 1);
                                 break;
