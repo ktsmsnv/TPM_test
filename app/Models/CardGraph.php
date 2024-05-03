@@ -6,18 +6,22 @@ use MongoDB\Laravel\Eloquent\Model as Eloquent;
 
 class CardGraph extends Eloquent
 {
-    protected $connection = 'mongodb';
-    protected $collection = 'card_graph';
+    protected $table = 'card_graph_table';
 
     protected $fillable = [
-        'card_id',
+        'name',
+        'infrastructure_type',
         'curator',
         'year_action',
         'date_create',
         'date_last_save',
         'date_archive',
+        'cards_ids',
     ];
 
+    protected $casts = [
+        'cards_ids' => 'array',
+    ];
     // Если в вашей коллекции не используется автоинкрементный id, вы можете отключить его
     public $incrementing = false;
 

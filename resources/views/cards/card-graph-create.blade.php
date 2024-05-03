@@ -9,7 +9,7 @@
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
-                <h2 class="mb-4"><strong>Создание карточки графика: "{{ is_string($nameGraphString) ? htmlspecialchars($nameGraphString) : 'Название объекта не найдено' }}"</strong></h2>
+                <h2 class="mb-4"><strong>Создание карточки графика: "{{ $nameGraph }}"</strong></h2>
             </div>
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
@@ -36,13 +36,14 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
+                                    <input type="" name="cards_ids" value="{{ implode(',', $selectedIds) }}">
                                     <button class="btn btn-primary">Заархивировать</button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Наименование объекта</label>
-                                            <input name="nameGraph" value="{{ is_string($nameGraphString) ? $nameGraphString : 'Название объекта не найдено' }}" class="form-control w-100" readonly>
+                                            <input name="name" value="{{ $nameGraph }}" class="form-control w-100" readonly>
                                         </div>
 
                                         <div class="d-flex justify-content-between align-items-center gap-3">
@@ -248,6 +249,11 @@
 
                 $(".saveCardGraph").click(function () {
                     // Собираем данные с основной формы
+                    // Получаем данные с элементов формы
+                    formData.append('name', $("input[name=name]").val());
+                    formData.append('infrastructure_type', $("input[name=infrastructure]").val());
+                    formData.append('cards_ids', $("input[name=cards_ids]").val());
+
                     formData.append('curator', $("input[name=curator]").val());
                     formData.append('year_action', $("input[name=year_action]").val());
                     formData.append('date_create', $("input[name=date_create]").val());
@@ -276,112 +282,6 @@
                         }
                     });
                 });
-
-                // // СКРИПТ ТАБЛИЦЫ
-                // var $table = $('#cardGraphTable');
-                // initTable($table);
-                // // инициализация таблицы и ее настроек
-                // function initTable($table) {
-                //     $table.bootstrapTable({
-                //         locale: $('#locale').val(),
-                //         pagination: true,
-                //         pageNumber: 1,
-                //         pageSize: 5,
-                //         pageList: [5, 15, 50, 'all'],
-                //         columns: [
-                //             {
-                //                 field: 'id',
-                //                 title: '№ п/п',
-                //                 valign: 'middle',
-                //                 sortable: true,
-                //             },
-                //             {
-                //                 field: 'a',
-                //                 title: 'Наименование объекта',
-                //                 valign: 'middle',
-                //                 sortable: true,
-                //             },
-                //             {
-                //                 field: 's',
-                //                 title: 'Инв./заводской №',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'd',
-                //                 title: 'Янв.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'f',
-                //                 title: 'Фев.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'g',
-                //                 title: 'Мар.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'h',
-                //                 title: 'Апр.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'j',
-                //                 title: 'Май',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'k',
-                //                 title: 'Июн.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'l',
-                //                 title: 'Июл.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'z',
-                //                 title: 'Авг.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'x',
-                //                 title: 'Сен.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'c',
-                //                 title: 'Окт.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'v',
-                //                 title: 'Ноя.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'b',
-                //                 title: 'Дек.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             }
-                //         ]
-                //     });
-                // }
             });
         </script>
 @endsection

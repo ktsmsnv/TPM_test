@@ -78,8 +78,8 @@ Route::middleware(['auth'])->group(function () {
     // ---------------------------- КАРТОЧКА ГРАФИКА ------------------------------------------------------------------
         Route::get('/pageReestrGraph/card-graph/{id}', [App\Http\Controllers\GraphController::class, 'index'])->name('cardGraph');
         //СОЗДАНИЕ новой карточки графика TPM
-        Route::get('/pageReestrGraph/card-graph-create', [App\Http\Controllers\GraphController::class, 'create'])->name('cardGraph-create');
-        Route::post('/save-cardGraph-data/{id}', [App\Http\Controllers\GraphController::class, 'saveData'])->name('cardGraph-create-save');
+        Route::get('/pageReestrGraph/card-graph-create', [App\Http\Controllers\GraphController::class, 'createGraphPage'])->name('cardGraph-create');
+        Route::post('/save-cardGraph-data/{id}', [App\Http\Controllers\GraphController::class, 'saveCardGraph'])->name('cardGraph-create-save');
         // РЕДАКТИРОВАНИЕ существующей карточки графика TPM
         Route::get('/pageReestrGraph/card-graph-edit/{id}', [App\Http\Controllers\GraphController::class, 'edit'])->name('cardGraph-edit');
     Route::post('/edit-card-graph-save/{id}', [App\Http\Controllers\GraphController::class, 'editSave'])->name('cardGraph-editSave');
