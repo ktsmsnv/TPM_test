@@ -47,8 +47,7 @@ class GraphController extends Controller
         $selectedObjectMain = CardObjectMain::whereIn('_id', $selectedIds)->get();
 
         // Получаем тип инфраструктуры для первого выбранного объекта
-        $infrastructureName = strtoupper($selectedObjectMain->first()->infrastructure);
-
+        $infrastructureName = mb_strtoupper($selectedObjectMain->first()->infrastructure);
         // Получаем количество уже существующих карточек графика для данного типа инфраструктуры
         $count = CardGraph::where('infrastructure_type', $infrastructureName)->count();
 

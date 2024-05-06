@@ -21,7 +21,7 @@ class CardObjectMainObserver
      */
     public function updated(CardObjectMain $cardObjectMain): void
     {
-        CardGraph::where('card_id', $cardObjectMain->_id)
+        CardGraph::where('cards_ids', $cardObjectMain->_id)
             ->update(['infrastructure_type' => $cardObjectMain->infrastructure]);
     }
 

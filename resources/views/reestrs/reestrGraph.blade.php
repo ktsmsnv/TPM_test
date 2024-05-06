@@ -62,10 +62,10 @@
                             <tbody>
                             @foreach ($objects as $object)
                                 <tr data-id="{{ $object->id }}">
-                                    <td>{{ $object->card_id }}</td>
+                                    <td>{{ $object->card_ids }}</td>
                                     <td>{{ $object->cardObjectMain->infrastructure }}</td>
                                     <td class="tool-tip" title="открыть карточку графика">
-                                        <a href="{{ route('cardGraph', ['id' => $object->card_id]) }}" target="_blank">
+                                        <a href="{{ route('cardGraph', ['id' => $object->cards_ids]) }}" target="_blank">
                                             {{ $object->cardObjectMain->infrastructure }}
                                         </a>
                                     </td>
