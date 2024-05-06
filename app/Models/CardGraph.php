@@ -32,15 +32,15 @@ class CardGraph extends Eloquent
     // Связь с другими моделями, если это необходимо
     public function cardObjectMain()
     {
-        return $this->belongsTo(CardObjectMain::class, 'card_id', '_id');
+        return $this->belongsTo(CardObjectMain::class, 'cards_ids', '_id');
     }
     public function cardObjectServices()
     {
-        return $this->belongsTo(CardObjectServices::class, 'card_id', 'card_object_main_id');
+        return $this->belongsTo(CardObjectServices::class, 'cards_ids', 'card_object_main_id');
     }
 
     public function object()
     {
-        return $this->hasMany(CardObjectMain::class, 'card_id', '_id');
+        return $this->hasMany(CardObjectMain::class, 'cards_ids', '_id');
     }
 }

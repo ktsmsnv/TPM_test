@@ -23,6 +23,6 @@ class CardObjectMain extends Eloquent
     }
     public function graph()
     {
-        return $this->hasMany(CardGraph::class, 'card_id', '_id');
+        return $this->hasMany(CardGraph::class, 'cards_ids', '_id');
     }
 }

@@ -336,14 +336,14 @@ class ObjectController extends Controller
                                 if (isset($typeOfWork['id'])) {
                                     $existingTypeOfWork = CardObjectServicesTypes::find($typeOfWork['id']);
                                     if ($existingTypeOfWork) {
-                                        $existingTypeOfWork->update(['type_work' => $typeOfWork['value']]);
+                                        $existingTypeOfWork->update(['type_work' =>  $typeOfWork['value']]);
                                     }
                                 } else {
                                     // Создаем новый вид работы
                                     CardObjectServicesTypes::create([
                                         'card_id' => $id,
                                         'card_services_id' => $existingService->id,
-                                        'type_work' => $typeOfWork['value']
+                                        'type_work' =>  $typeOfWork['value']
                                     ]);
                                 }
                             }
@@ -363,7 +363,7 @@ class ObjectController extends Controller
                             CardObjectServicesTypes::create([
                                 'card_id' => $id,
                                 'card_services_id' => $newService->id,
-                                'type_work' => $typeOfWork
+                                'type_work' =>  $typeOfWork['value']
                             ]);
                         }
                     }
