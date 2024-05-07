@@ -8,13 +8,15 @@
         "php": "^8.1",
         "ext-mongodb": "*",
         "davejamesmiller/laravel-breadcrumbs": "^5.3",
+        "dompdf/dompdf": "*",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "laravel/ui": "^4.5",
         "mongodb/laravel-mongodb": "^4.2",
-        "mongodb/mongodb": "^1.15"
+        "mongodb/mongodb": "^1.15",
+        "phpoffice/phpword": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
@@ -58,6 +60,7 @@
         }
     },
     "config": {
+        "disable-tls": true,
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,

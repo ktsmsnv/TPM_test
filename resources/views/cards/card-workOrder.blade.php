@@ -13,7 +13,8 @@
                     {{-- <button type="button" class="btn btn-success">Сохранить</button>--}}
                     <button type="button" class="btn btn-secondary me-5">Закрыть</button>
 
-                    <button type="button" class="btn btn-success">Выгрузить PDF</button>
+                    <a href="{{ route('downloadPDF', ['id' => $workOrder->id]) }}" target="_blank" class="btn btn-success">Выгрузить PDF</a>
+
                     <a href="/home/card-object/{{$cardObjectMain->id}}" target="_blank" type="button" class="btn btn-primary me-5">Открыть карточку объекта</a>
 
                     {{-- <button type="button" class="btn btn-outline-danger">Редактировать</button>--}}

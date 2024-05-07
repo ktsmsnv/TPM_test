@@ -10,6 +10,12 @@ use Illuminate\Http\Request;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use Carbon\Carbon;
 
+use PhpOffice\PhpWord\Exception\CopyFileException;
+use PhpOffice\PhpWord\Exception\CreateTemporaryFileException;
+use PhpOffice\PhpWord\TemplateProcessor;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
 // --------------- контроллер для отображения данных на страницы ---------------
 class workOrderController extends Controller
 {
@@ -170,5 +176,95 @@ class workOrderController extends Controller
 
         return response()->json(['message' => 'Заказ-наряд успешно завершен'], 200);
     }
+
+
+    /**
+     * @throws CopyFileException
+     * @throws CreateTemporaryFileException
+     */
+    public function downloadPDF_create($id)
+    {
+        // Находим заказ-наряд по его ID
+        $workOrder = CardWorkOrder::findOrFail($id);
+
+        // Получаем данные о связанных записях с предварительной загрузкой связанных услуг и их типов работ
+        $cardObjectMain = CardObjectMain::with(['services' => function ($query) use ($workOrder) {
+            $query->with(['services_types'])->where('_id', $workOrder->card_object_services_id);
+        }])->find($workOrder->card_id);
+
+        // Получаем все данные о связанных услугах из card_object_services
+        $cardObjectServices = $cardObjectMain->services->first();
+
+        // Извлекаем типы работ из первой услуги
+        $serviceTypes = $cardObjectServices->services_types;
+
+        // Получаем данные для вставки в шаблон
+        $data = [
+            'infrastructure' => $cardObjectMain->infrastructure,
+            'performer' => $cardObjectServices->performer,
+            'responsible' => $cardObjectServices->responsible,
+            'location' => $cardObjectMain->location,
+            'number' => $cardObjectMain->number,
+            'planned_maintenance_date' => $cardObjectServices->planned_maintenance_date,
+            'consumable_materials' => $cardObjectServices->consumable_materials,
+            'type_works' => $serviceTypes->pluck('type_work')->toArray(),
+        ];
+
+        // Путь к вашему шаблону Word
+        $templatePath = storage_path('app/templates/workOrderTemplate.docx');
+
+        // Загружаем шаблон Word
+        $templateProcessor = new TemplateProcessor($templatePath);
+
+        // Заменяем заполнители в шаблоне данными
+        foreach ($data as $key => $value) {
+            $templateProcessor->setValue($key, $value);
+        }
+
+        // Путь к новому документу Word
+        $docxFilePath = public_path('generated/workOrderProcessed.docx');
+
+        // Сохраняем изменения в новом документе Word
+        $templateProcessor->saveAs($docxFilePath);
+
+        return $docxFilePath;
+    }
+
+    public function convertToPDF($docxFilePath)
+    {
+        // Создаем экземпляр Dompdf
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $dompdf = new Dompdf($options);
+
+        // Загружаем содержимое документа Word
+        $docxContent = file_get_contents($docxFilePath);
+
+        // Загружаем содержимое в Dompdf
+        $dompdf->loadHtml($docxContent);
+
+        // Рендерим PDF (по умолчанию настраивается формат A4)
+        $dompdf->render();
+
+        // Путь к PDF-файлу
+        $pdfFilePath = public_path('generated/workOrderConverted.pdf');
+
+        // Сохраняем PDF
+        file_put_contents($pdfFilePath, $dompdf->output());
+
+        return $pdfFilePath;
+    }
+
+    public function downloadPDF($id)
+    {
+        // Создаем и загружаем PDF из документа Word
+        $docxFilePath = $this->downloadPDF_create($id);
+        $pdfFilePath = $this->convertToPDF($docxFilePath);
+
+        // Возвращаем PDF-файл как ответ на запрос
+        return response()->file($pdfFilePath);
+    }
+
+
 
 }
