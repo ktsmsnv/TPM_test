@@ -30,17 +30,35 @@ class CardGraph extends Eloquent
     protected $keyType = 'string';
 
     // Связь с другими моделями, если это необходимо
+
+    // ЭТА ЧАСТЬ НЕОБХОДИМА ДЛЯ PageReestrGraph
+    //---------------------------------------------------------------------------------
     public function cardObjectMain()
     {
-        return $this->belongsTo(CardObjectMain::class, 'cards_ids', '_id');
+        return $this->hasMany(CardObjectMain::class, 'cards_ids', '_id');
     }
+//    public function cardObjectServices()
+//    {
+//        return $this->belongsTo(CardObjectServices::class, 'cards_ids', 'card_object_main_id');
+//    }
     public function cardObjectServices()
     {
-        return $this->belongsTo(CardObjectServices::class, 'cards_ids', 'card_object_main_id');
+        return $this->hasMany(CardObjectServices::class, 'cards_ids', 'card_object_main_id');
+    }
+    //---------------------------------------------------------------------------------
+
+    public function graph()
+    {
+        return $this->hasMany(CardGraph::class, '_id', 'cards_ids');
     }
 
     public function object()
     {
-        return $this->hasMany(CardObjectMain::class, 'cards_ids', '_id');
+        return $this->hasMany(CardObjectMain::class, '_id', 'cards_ids');
+    }
+
+    public function services()
+    {
+        return $this->hasMany(CardObjectServices::class, 'card_object_main_id', 'cards_ids');
     }
 }

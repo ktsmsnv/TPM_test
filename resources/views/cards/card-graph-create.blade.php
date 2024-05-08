@@ -36,7 +36,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-{{--                                    <input type="" name="cards_ids" value="{{ implode(',', $selectedIds) }}">ectedIds) }}">--}}
+                                    <input type="" name="cards_ids" value="{{ implode(',', $selectedIds) }}">
                                     <button class="btn btn-primary">Заархивировать</button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">

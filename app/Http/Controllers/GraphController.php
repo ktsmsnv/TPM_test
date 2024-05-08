@@ -16,16 +16,9 @@ use MongoDB\BSON\Binary;
 class GraphController extends Controller
 {
 
-    public function index($id)
+    public function index($id, Request $request)
     {
-        $data_CardGraph = CardGraph::all();
-        $data_CardObjectMain = CardObjectMain::with(['graph'])->find($id);
-//        $data_CardGraph = CardGraph::find('card_id');
-//dd($data_CardGraph);
-//        dd($data_CardObjectMain);
-        $selectedObjectMain = CardObjectMain::where('_id', $id)->get();
-
-        $selectedObjectServices = CardObjectServices::where('card_object_main_id', $id)->get();
+        $data_CardGraph = CardGraph::with('object.services')->findOrFail($id);
         $maintenance = [
             ['id' => 1, 'service_type' => 'Регламентные работы', 'short_name' => 'РР'],
             ['id' => 2, 'service_type' => 'Техническое обслуживание', 'short_name' => 'ТО'],
@@ -34,9 +27,28 @@ class GraphController extends Controller
             ['id' => 5, 'service_type' => 'Аварийный ремонт', 'short_name' => 'АР'],
         ];
 
-        return view('cards/card-graph', compact( 'data_CardObjectMain', 'data_CardGraph',
-            'selectedObjectMain', 'selectedObjectServices', 'maintenance'));
+        // Преобразуем строку cards_ids в массив
+        $objectIds = explode(',', $data_CardGraph->cards_ids);
+
+        // Создаем массив для хранения данных объектов
+        $allObjectsData = [];
+
+        // Перебираем все идентификаторы объектов
+        foreach($objectIds as $objectId) {
+            // Удаляем лишние пробелы
+            $objectId = trim($objectId);
+
+            // Получаем объект по идентификатору
+            $cardObject = CardObjectMain::with('services')->findOrFail($objectId);
+
+            // Добавляем данные объекта в массив
+            $allObjectsData[] = $cardObject;
+        }
+
+        // Передаем данные в представление
+        return view('cards/card-graph', compact('data_CardGraph','allObjectsData', 'maintenance'));
     }
+
 
 
     // ------------------  СОЗДАНИЕ карточки графика TPM (переход на страницу)  ------------------
@@ -47,13 +59,15 @@ class GraphController extends Controller
         $selectedObjectMain = CardObjectMain::whereIn('_id', $selectedIds)->get();
 
         // Получаем тип инфраструктуры для первого выбранного объекта
-        $infrastructureName = mb_strtoupper($selectedObjectMain->first()->infrastructure);
+        $infrastructureName = $selectedObjectMain->first()->infrastructure;
         // Получаем количество уже существующих карточек графика для данного типа инфраструктуры
         $count = CardGraph::where('infrastructure_type', $infrastructureName)->count();
 
+        $infrastructureName = mb_strtoupper($infrastructureName);
+
         // Формируем название карточки графика
         $nameGraph = "ГОДОВОЙ ГРАФИК TPM ОБЪЕКТОВ $infrastructureName ИНФРАСТРУКТУРЫ #" . ($count + 1);
-
+//dd($selectedIds);
         $maintenance = [
             ['id' => 1, 'service_type' => 'Регламентные работы', 'short_name' => 'РР'],
             ['id' => 2, 'service_type' => 'Техническое обслуживание', 'short_name' => 'ТО'],
@@ -61,7 +75,7 @@ class GraphController extends Controller
             ['id' => 4, 'service_type' => 'Капитальный ремонт', 'short_name' => 'КР'],
             ['id' => 5, 'service_type' => 'Аварийный ремонт', 'short_name' => 'АР'],
         ];
-
+//        dd($selectedObjectMain);
         return view('cards.card-graph-create', compact('selectedObjectMain', 'nameGraph', 'maintenance', 'selectedIds'));
     }
 

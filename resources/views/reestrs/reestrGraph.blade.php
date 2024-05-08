@@ -60,25 +60,43 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach ($objects as $object)
+                            @foreach ($cardGraphs as $object)
                                 <tr data-id="{{ $object->id }}">
-                                    <td>{{ $object->card_ids }}</td>
-                                    <td>{{ $object->cardObjectMain->infrastructure }}</td>
+                                    <td>{{ $object->_id }}</td>
+                                    <td>{{ $object->infrastructure_type }}</td>
                                     <td class="tool-tip" title="открыть карточку графика">
-                                        <a href="{{ route('cardGraph', ['id' => $object->cards_ids]) }}" target="_blank">
-                                            {{ $object->cardObjectMain->infrastructure }}
+                                        <a href="{{ route('cardGraph', ['id' => $object->_id]) }}" target="_blank">
+                                            {{ $object->name }}
                                         </a>
                                     </td>
                                     <td>{{ date('Y', strtotime($object->year_action)) }}</td>
                                     <td>{{ date('d.m.Y', strtotime($object->date_create)) }}</td>
                                     <td>{{ date('d.m.Y', strtotime($object->date_last_save)) }}</td>
                                     <td>{{ date('d.m.Y', strtotime($object->date_archive)) }}</td>
-                                    <td>{{ $object->cardObjectServices->performer }}</td>
-                                    <td>{{ $object->cardObjectServices->responsible }}</td>
+                                    {{-- Проверка на существование записи в cardObjectServices --}}
+                                    <td>
+                                        @if ($object->cardObjectServices->isNotEmpty())
+                                            @foreach ($object->cardObjectServices as $service)
+                                                {{ $service->performer }}<br>
+                                            @endforeach
+                                        @else
+                                            Нет данных
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($object->cardObjectServices->isNotEmpty())
+                                            @foreach ($object->cardObjectServices as $service)
+                                                {{ $service->responsible }}<br>
+                                            @endforeach
+                                        @else
+                                            Нет данных
+                                        @endif
+                                    </td>
                                     <td>{{ $object->curator }}</td>
                                 </tr>
                             @endforeach
                             </tbody>
+
                         </table>
                     </div>
                 </div>

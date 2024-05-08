@@ -181,18 +181,32 @@ class HomeController extends Controller
         return redirect()->back()->with('success', 'Пароль успешно изменен.');
     }
 
-    public function reestrGraphView( Request $request)
+    public function reestrGraphView(Request $request)
     {
-        // Генерация хлебных крошек
-//        $breadcrumbs = Breadcrumbs::generate('reestr-graphs');
-        $objects = CardGraph::all();
-        $selectedObjectMain = CardObjectMain::all();
-        $selectedObjectServices = CardObjectServices::all();
-//        dd($selectedObjectMain);
+        // Получаем все карточки графика
+        $cardGraphs = CardGraph::all();
 
-        // Возвращение представления с передачей хлебных крошек
-        return view('reestrs/reestrGraph', compact('objects','selectedObjectMain','selectedObjectServices'));
+        // Создаем пустые массивы для хранения данных performer и responsible
+        $allPerformers = [];
+        $allResponsibles = [];
+
+        // Перебираем все карточки графика
+        foreach ($cardGraphs as $object) {
+            // Проверяем наличие связанных записей в cardObjectServices
+            if ($object->cardObjectServices->isNotEmpty()) {
+                // Если есть связанные записи, перебираем их
+                foreach ($object->cardObjectServices as $service) {
+                    // Добавляем данные performer и responsible в соответствующие массивы
+                    $allPerformers[] = $service->performer;
+                    $allResponsibles[] = $service->responsible;
+                }
+            }
+        }
+
+        // Возвращаем представление с передачей данных
+        return view('reestrs/reestrGraph', compact('cardGraphs', 'allPerformers', 'allResponsibles'));
     }
+
 
     public function reestrWorkOrdersView()
     {
