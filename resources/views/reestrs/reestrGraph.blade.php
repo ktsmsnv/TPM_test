@@ -25,24 +25,12 @@
                             </button>
                         </div>
                         <table id="reestrGraph" data-url="/get-cardGraph"
-                               data-toolbar="#toolbar"
-                               data-search="true"
-                               data-show-refresh="true"
-                               data-show-toggle="true"
-                               data-show-fullscreen="true"
-                               data-show-columns="true"
-                               data-show-columns-toggle-all="true"
-{{--                               data-detail-view="true"--}}
-                               data-show-export="true"
-                               data-click-to-select="true"
-                               data-detail-formatter="detailFormatter"
-                               data-minimum-count-columns="2"
-                               data-show-pagination-switch="true"
-                               data-pagination="true"
-                               data-id-field="id"
-                               data-show-footer="true"
-                               data-side-pagination="server"
-                               data-response-handler="responseHandler">
+                               data-toolbar="#toolbar" data-search="true"
+                               data-show-refresh="true" data-show-toggle="true" data-show-fullscreen="true"
+                               data-show-columns="true" data-show-columns-toggle-all="true"
+                               data-show-export="true" data-click-to-select="true" data-minimum-count-columns="11"
+                               data-show-pagination-switch="true" data-pagination="true"
+                               data-id-field="id" data-response-handler="responseHandler">
 {{--                            <thead>--}}
 {{--                            <tr>--}}
 {{--                                <th></th>--}}
@@ -145,21 +133,6 @@
                 return $.get('/get-cardGraph'); // Возвращаем Promise
             }
 
-            // function responseHandler(res) {
-            //     $.each(res.rows, function (i, row) {
-            //         row.state = $.inArray(row.id, selections) !== -1;
-            //     });
-            //     return res;
-            // }
-            //
-            // function detailFormatter(index, row) {
-            //     var html = [];
-            //     $.each(row, function (key, value) {
-            //         html.push('<p><b>' + key + ':</b> ' + value + '</p>');
-            //     });
-            //     return html.join('');
-            // }
-
             // ------------------------------------ Функция для обновления таблицы ------------------------------------
             function refreshTable() {
                 getObjectsFromServer().done(function(data) {
@@ -220,8 +193,36 @@
                                     return new Date(value).toLocaleDateString('ru-RU');
                                 }
                             },
-                            {title: 'Исполнитель', field: 'performer', align: 'center'},
-                            {title: 'Ответственный', field: 'responsible', align: 'center'},
+                            {title: 'Исполнитель', field: 'performer', align: 'center',
+                                formatter: function(value, row) {
+                                    let nearestService = null;
+                                    if (row.services && Array.isArray(row.services) && row.services.length > 0) {
+                                        row.services.forEach(function(service) {
+                                            if (!nearestService || new Date(service.planned_maintenance_date) < new Date(nearestService.planned_maintenance_date)) {
+                                                nearestService = service;
+                                            }
+                                        });
+                                        return nearestService ? nearestService.performer : 'Нет исполнителя';
+                                    } else {
+                                        return 'Нет исполнителя';
+                                    }
+                                }
+                            },
+                            {title: 'Ответственный', field: 'responsible', align: 'center',
+                                formatter: function(value, row) {
+                                    let nearestService = null;
+                                    if (row.services && Array.isArray(row.services) && row.services.length > 0) {
+                                        row.services.forEach(function(service) {
+                                            if (!nearestService || new Date(service.planned_maintenance_date) < new Date(nearestService.planned_maintenance_date)) {
+                                                nearestService = service;
+                                            }
+                                        });
+                                        return nearestService ? nearestService.responsible : 'Нет ответственного';
+                                    } else {
+                                        return 'Нет ответственного';
+                                    }
+                                }
+                            },
                             {title: 'Куратор', field: 'curator', align: 'center'},
                         ],
                     ],
