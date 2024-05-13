@@ -18,7 +18,8 @@ class GraphController extends Controller
 
     public function index($id, Request $request)
     {
-        $data_CardGraph = CardGraph::with('object.services')->findOrFail($id);
+//        $data_CardGraph = CardGraph::with('object.services')->findOrFail($id);
+        $data_CardGraph =  CardGraph::findOrFail($id);
         $maintenance = [
             ['id' => 1, 'service_type' => 'Регламентные работы', 'short_name' => 'РР'],
             ['id' => 2, 'service_type' => 'Техническое обслуживание', 'short_name' => 'ТО'],
@@ -44,7 +45,7 @@ class GraphController extends Controller
             // Добавляем данные объекта в массив
             $allObjectsData[] = $cardObject;
         }
-
+//dd($data_CardGraph);
         // Передаем данные в представление
         return view('cards/card-graph', compact('data_CardGraph','allObjectsData', 'maintenance'));
     }

@@ -9,14 +9,14 @@
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
-                <h1 class="mb-4"><strong>Карточка графика: "{{ $data_CardGraph->first()->name ?? 'Название объекта не найдено' }}"</strong></h1>
+                <h1 class="mb-4"><strong>Карточка графика: "{{ $data_CardGraph->name ?? 'Название объекта не найдено' }}"</strong></h1>
             </div>
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
                     <a href="/pageReestrGraph" type="button" class="btn btn-secondary me-5">Закрыть</a>
                     <button type="button" class="btn btn-success">Выгрузить PDF</button>
-                    <a href="{{ route('cardGraph-edit', ['id' => $data_CardGraph->first()->id]) }}" target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
-                    <a href="/home/card-object/{{$data_CardGraph->first()->id}}" target="_blank" type="button" class="btn btn-primary me-5">Открыть карточку объекта</a>
+                    <a href="{{ route('cardGraph-edit', ['id' => $data_CardGraph->id]) }}" target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
+                    <a href="/home/card-object/{{$data_CardGraph->id}}" target="_blank" type="button" class="btn btn-primary me-5">Открыть карточку объекта</a>
                 </div>
             </div>
 
@@ -44,17 +44,17 @@
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид инфраструктуры</label>
                                             <input name="" placeholder="Введите вид инфраструктуры" class="form-control w-100"
-                                                   readonly value="{{ $data_CardGraph->first()->infrastructure_type ?? 'нет данных' }}">
+                                                   readonly value="{{ $data_CardGraph->infrastructure_type ?? 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Куратор</label>
                                             <input name="" placeholder="Введите куратора" class="form-control w-100"
-                                                   readonly value="{{$data_CardGraph->first()->curator ?? 'нет данных' }}">
+                                                   readonly value="{{$data_CardGraph->curator ?? 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Год действия</label>
                                             <input name="" placeholder="Введите год действия" class="form-control w-100"
-                                                   readonly value="{{$data_CardGraph->first()->year_action ?? 'нет данных' }}">
+                                                   readonly value="{{$data_CardGraph->year_action ?? 'нет данных' }}">
                                         </div>
                                     </div>
 
@@ -62,17 +62,17 @@
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата создания</label>
                                             <input name="" placeholder="Введите дату создания" class="form-control w-100"
-                                                   readonly value="{{ date('d.m.Y', strtotime($data_CardGraph->first()->date_create)) ?? 'нет данных'  }}">
+                                                   readonly value="{{ date('d.m.Y', strtotime($data_CardGraph->date_create)) ?? 'нет данных'  }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата последнего сохранения</label>
                                             <input name="" placeholder="Введите дату последнего сохранения" class="form-control w-100"
-                                                   readonly value="{{ date('d.m.Y', strtotime($data_CardGraph->first()->date_last_save)) ?? 'нет данных'  }}">
+                                                   readonly value="{{ date('d.m.Y', strtotime($data_CardGraph->date_last_save)) ?? 'нет данных'  }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата архивации</label>
                                             <input name="" placeholder="Введите дату архивации" class="form-control w-100"
-                                                   readonly value="{{ date('d.m.Y', strtotime($data_CardGraph->first()->date_archive)) ?? 'нет данных'  }}">
+                                                   readonly value="{{ date('d.m.Y', strtotime($data_CardGraph->date_archive)) ?? 'нет данных'  }}">
                                         </div>
                                     </div>
                                 </div>
