@@ -189,6 +189,7 @@ class workOrderController extends Controller
     /**
      * @throws CopyFileException
      * @throws CreateTemporaryFileException
+     * @throws Exception
      */
     public function downloadPDF_create($id)
     {
@@ -225,15 +226,23 @@ class workOrderController extends Controller
         // Загружаем шаблон Word
         $templateProcessor = new TemplateProcessor($templatePath);
 
-        // Заменяем заполнители в шаблоне данными
+        // Клонируем блок с маркером "type_work" в шаблоне для каждого типа работ
+        foreach ($data['type_works'] as $type_work) {
+            $templateProcessor->cloneBlock('type_work', 1, true, false, ['type_work' => $type_work]);
+        }
+
+
+// Заменяем остальные заполнители в шаблоне данными
+        unset($data['type_works']); // Удаляем типы работ из данных, так как они уже вставлены в шаблон
         foreach ($data as $key => $value) {
-            // Преобразовываем массив строк в одну строку
+            // Преобразуем массив строк в одну строку
             if (is_array($value)) {
-                $value = implode("\n", $value); // или join("\n", $value)
+                $value = implode("\n", $value);
             }
             // Преобразуем $value в строку перед вставкой в шаблон
             $templateProcessor->setValue($key, (string) $value);
         }
+
 
         // Путь к новому документу Word
         $docxFilePath = storage_path('app/generated/workOrderProcessed.docx');
