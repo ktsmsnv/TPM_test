@@ -19,6 +19,10 @@ use PhpOffice\PhpWord\IOFactory;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
+use TCPDF;
+//use setasign\Fpdi\Fpdi;
+use setasign\Fpdi\Tcpdf\Fpdi;
+
 // --------------- контроллер для отображения данных на страницы ---------------
 class workOrderController extends Controller
 {
@@ -181,122 +185,81 @@ class workOrderController extends Controller
     }
 
 
-    /**
-     * @throws CopyFileException
-     * @throws CreateTemporaryFileException
-     */
-    public function downloadWordDocument($id)
+    public function downloadPdfDocument($id)
     {
         // Находим заказ-наряд по его ID
         $workOrder = CardWorkOrder::findOrFail($id);
 
-        // Получаем данные о связанных записях с предварительной загрузкой связанных услуг и их типов работ
+        // Получаем данные о связанных записях
         $cardObjectMain = CardObjectMain::with(['services' => function ($query) use ($workOrder) {
             $query->with(['services_types'])->where('_id', $workOrder->card_object_services_id);
         }])->find($workOrder->card_id);
 
-        // Получаем все данные о связанных услугах из card_object_services
-        $cardObjectServices = $cardObjectMain->services->first();
-
-        // Извлекаем типы работ из первой услуги
-        $serviceTypes = $cardObjectServices->services_types;
-
-        // Форматируем дату в нужный формат (день-месяц-год)
-        $plannedMaintenanceDate = Carbon::parse($cardObjectServices->planned_maintenance_date)->format('d-m-Y');
-
-        // Получаем данные для вставки в шаблон
+        // Извлекаем данные для вставки в шаблон
         $data = [
             'name' => $cardObjectMain->name,
             'infrastructure' => $cardObjectMain->infrastructure,
-            'performer' => $cardObjectServices->performer,
-            'responsible' => $cardObjectServices->responsible,
+            'performer' => $cardObjectMain->services->first()->performer,
+            'responsible' => $cardObjectMain->services->first()->responsible,
             'location' => $cardObjectMain->location,
             'number' => $cardObjectMain->number,
-            'planned_maintenance_date' => $plannedMaintenanceDate, // Используем отформатированную дату
-            'consumable_materials' => $cardObjectServices->consumable_materials,
-//            'type_works' => $serviceTypes->pluck('type_work')->toArray(),
+            'planned_maintenance_date' => Carbon::parse($cardObjectMain->services->first()->planned_maintenance_date)->format('d-m-Y'),
+            'consumable_materials' => $cardObjectMain->services->first()->consumable_materials,
+            // Другие данные...
         ];
-        // Путь к вашему шаблону Word
-        $templatePath = storage_path('app/templates/workOrderTemplate.docx');
 
-        // Загружаем шаблон Word
-        $templateProcessor = new TemplateProcessor($templatePath);
+        // Путь к вашему PDF-шаблону
+        $templatePath = storage_path('app/templates/workOrderTemplate.pdf');
 
-        $types = $serviceTypes->toArray(); // Преобразуем коллекцию в массив
-        $templateProcessor->cloneRow('type_work', count($types));
-// Обход каждой строки данных и добавление значений в соответствующие ячейки
-        foreach ($types as $index => $type) {
-            $templateProcessor->setValue('type_work#' . ($index + 1), $type['type_work']); // Обращаемся к элементам массива, а не к свойствам объектов
-        }
+        // Создаем новый FPDI-документ с использованием TCPDF
+        $pdf = new Fpdi();
+        $pdf->setPrintHeader(false);
+        $pdf->setPrintFooter(false);
 
+        // Добавляем страницу
+        $pdf->AddPage();
 
-        // Заменяем остальные заполнители в шаблоне данными
-        foreach ($data as $key => $value) {
-            // Преобразуем массив строк в одну строку
-            if (is_array($value)) {
-                $value = implode("\n", $value);
-            }
-            // Преобразуем $value в строку перед вставкой в шаблон
-            $templateProcessor->setValue($key, (string) $value);
-        }
+        // Загружаем содержимое PDF-шаблона
+        $pdf->setSourceFile($templatePath);
+        $tplId = $pdf->importPage(1);
+        $pdf->useTemplate($tplId);
 
-        // Формируем имя файла (используем id в качестве части имени файла)
-        $fileName = 'Карточка_заказ-наряда_№' . $workOrder->id . '_объекта_' . $cardObjectMain->name . '.docx';
+        // Устанавливаем шрифт
+        $pdf->SetFont('dejavusans', '', 12);
+        $pdf->SetTextColor(255, 0, 0); // Красный цвет
 
-        // Путь к новому документу Word
-        $docxFilePath = storage_path('app/generated/' . $fileName);
+        // Добавляем текст на страницу
+        $pdf->SetXY(130, 16);
+        $pdf->MultiCell(35, 10, $data['name']);
 
-        // Сохраняем изменения в новом документе Word
-        $templateProcessor->saveAs($docxFilePath);
+        $pdf->SetXY(40, 36);
+        $pdf->MultiCell(35, 10, $data['infrastructure']);
 
-        // Возвращаем путь к файлу
-        return $docxFilePath;
-    }
+        $pdf->SetXY(105, 36);
+        $pdf->MultiCell(35, 10, $data['location']);
 
+        $pdf->SetXY(160, 36);
+        $pdf->MultiCell(0, 10, $data['number']);
 
-    public function convertDocxToPdf($docxFilePath)
-    {
-        // Создаем экземпляр PHPWord и загружаем содержимое из DOCX файла
-        $phpWord = IOFactory::load($docxFilePath);
+        $pdf->SetXY(23.5, 50);
+        $pdf->MultiCell(0, 10, $data['responsible']);
 
-        // Создаем экземпляр писателя для записи содержимого в HTML
-        $htmlWriter = IOFactory::createWriter($phpWord, 'HTML');
+        $pdf->SetXY(65.5, 50);
+        $pdf->MultiCell(0, 10, $data['performer']);
 
-        // Получаем содержимое DOCX файла в формате HTML
-        $html = $htmlWriter->getContent();
+        $pdf->SetXY(99, 50);
+        $pdf->MultiCell(0, 10, $data['planned_maintenance_date']);
 
-        // Создаем экземпляр Dompdf
-        $dompdf = new Dompdf();
-
-        // Устанавливаем размеры страницы и масштаб
-        $dompdf->setPaper('A4', 'portrait');
-
-        // Загружаем HTML содержимое в Dompdf
-        $dompdf->loadHtml(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
-
-        // Рендерим содержимое и сохраняем в PDF файл
-        $dompdf->render();
-
-        // Путь к файлу PDF
-        $pdfFilePath = storage_path('app/generated/' . basename($docxFilePath, '.docx') . '.pdf');
+        $pdf->SetXY(86, 248);
+        $pdf->MultiCell(0, 10, $data['consumable_materials']);
 
         // Сохраняем PDF файл
-        file_put_contents($pdfFilePath, $dompdf->output());
+        $pdfFileName = 'work_order_' . $workOrder->id . '.pdf';
+        $pdfFilePath = storage_path('app/generated/' . $pdfFileName);
+        $pdf->Output($pdfFilePath, 'F');
 
-        return $pdfFilePath;
-    }
-
-
-    public function downloadPdfDocument($id)
-    {
-        // Создаем и загружаем документ Word
-        $docxFilePath = $this->downloadWordDocument($id);
-
-        // Конвертируем DOCX в PDF
-        $pdfFilePath = $this->convertDocxToPdf($docxFilePath);
-
-        // Возвращаем файл как ответ на запрос
-        return response()->file($pdfFilePath);
+        // Возвращаем путь к файлу для загрузки
+        return response()->file($pdfFilePath, ['Content-Disposition' => 'attachment; filename="' . $pdfFileName . '"']);
     }
 
 //    /**

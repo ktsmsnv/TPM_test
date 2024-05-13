@@ -16,7 +16,9 @@
         "laravel/ui": "^4.5",
         "mongodb/laravel-mongodb": "^4.2",
         "mongodb/mongodb": "^1.15",
-        "phpoffice/phpword": "^1.2"
+        "phpoffice/phpword": "^1.2",
+        "setasign/fpdi": "^2.6",
+        "tecnickcom/tcpdf": "^6.7"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
