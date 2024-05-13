@@ -11,13 +11,18 @@ use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use Carbon\Carbon;
 
 use Illuminate\Support\Facades\DB;
+use Mpdf\MpdfException;
 use PhpOffice\PhpWord\Exception\CopyFileException;
 use PhpOffice\PhpWord\Exception\CreateTemporaryFileException;
+use PhpOffice\PhpWord\Exception\Exception;
 use PhpOffice\PhpWord\TemplateProcessor;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\IOFactory;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+
+use Mpdf\Mpdf;
+
 
 // --------------- контроллер для отображения данных на страницы ---------------
 class workOrderController extends Controller
@@ -254,37 +259,69 @@ class workOrderController extends Controller
     }
 
 
+
+//public function convertDocxToPdf($docxFilePath)
+//{
+//    // Загружаем содержимое из DOCX файла и преобразуем его в HTML
+//    $phpWord = IOFactory::load($docxFilePath);
+//    $htmlWriter = IOFactory::createWriter($phpWord, 'HTML');
+//    $html = $htmlWriter->getContent();
+//
+//    // Преобразуем кодировку текста в UTF-8
+//    $html = mb_convert_encoding($html, 'UTF-8', 'AUTO');
+//   // dd($html);
+//
+//    $options = new Options();
+//    $options->set('isHtml5ParserEnabled', true);
+//    $options->set('isPhpEnabled', true);
+//
+//    $dompdf = new Dompdf($options);
+//
+//    // Загружаем HTML содержимое в Dompdf
+//    $dompdf->loadHtml($html, 'UTF-8');
+//
+//    // Устанавливаем размеры страницы и другие параметры, если необходимо
+//    $dompdf->setPaper('A4', 'portrait');
+//
+//    // Рендерим содержимое и сохраняем в PDF файл
+//    $dompdf->render();
+//    $pdfFilePath = storage_path('app/generated/' . basename($docxFilePath, '.docx') . '.pdf');
+//    file_put_contents($pdfFilePath, $dompdf->output());
+//
+//    return $pdfFilePath;
+//}
+
+    /**
+     * @throws MpdfException
+     * @throws Exception
+     */
     public function convertDocxToPdf($docxFilePath)
     {
-        // Создаем экземпляр PHPWord и загружаем содержимое из DOCX файла
+        // Load the contents of the DOCX file and convert it to HTML
         $phpWord = IOFactory::load($docxFilePath);
-
-        // Создаем экземпляр писателя для записи содержимого в HTML
         $htmlWriter = IOFactory::createWriter($phpWord, 'HTML');
-
-        // Получаем содержимое DOCX файла в формате HTML
         $html = $htmlWriter->getContent();
 
-        // Создаем экземпляр Dompdf
-        $dompdf = new Dompdf();
+        // Convert the text encoding to UTF-8
+        $html = mb_convert_encoding($html, 'UTF-8', 'AUTO');
+        //dd($html);
 
-        // Устанавливаем размеры страницы и масштаб
-        $dompdf->setPaper('A4', 'portrait');
+        // Initialize mPDF
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+        ]);
 
-        // Загружаем HTML содержимое в Dompdf
-        $dompdf->loadHtml(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
-
-        // Рендерим содержимое и сохраняем в PDF файл
-        $dompdf->render();
-
-        // Путь к файлу PDF
+        // Load HTML content into mPDF
+        $mpdf->WriteHTML($html);
+        // Save the PDF to a file
         $pdfFilePath = storage_path('app/generated/' . basename($docxFilePath, '.docx') . '.pdf');
-
-        // Сохраняем PDF файл
-        file_put_contents($pdfFilePath, $dompdf->output());
+        $mpdf->Output($pdfFilePath, 'F');
 
         return $pdfFilePath;
     }
+
 
 
     public function downloadPdfDocument($id)

@@ -14,7 +14,7 @@
                     <button type="button" class="btn btn-secondary me-5">Закрыть</button>
 
 {{--                    <a href="{{ route('downloadPDF', ['id' => $workOrder->id]) }}" target="_blank" class="btn btn-success">Выгрузить PDF</a>--}}
-                    <a href="{{ route('downloadWordDocument', ['id' => $workOrder->id]) }}" class="btn btn-success">Выгрузить Word</a>
+                    <a href="{{ route('downloadWordDocument', ['id' => $workOrder->id]) }}" target="_blank" class="btn btn-success">Выгрузить Word</a>
 
                     <a href="/home/card-object/{{$cardObjectMain->id}}" target="_blank" type="button" class="btn btn-primary me-5">Открыть карточку объекта</a>
 

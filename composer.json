@@ -16,6 +16,7 @@
         "laravel/ui": "^4.5",
         "mongodb/laravel-mongodb": "^4.2",
         "mongodb/mongodb": "^1.15",
+        "mpdf/mpdf": "^8.2",
         "phpoffice/phpword": "^1.2"
     },
     "require-dev": {
