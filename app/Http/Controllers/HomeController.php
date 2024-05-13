@@ -184,8 +184,10 @@ class HomeController extends Controller
     public function reestrGraphView(Request $request)
     {
         // Получаем все карточки графика
-        $cardGraphs = CardGraph::all();
-
+        $cardGraphs = CardGraph::with(['object', 'services'])->get();
+//        $cardGraphs = CardGraph::all();
+//        $cardGraphs = CardGraph::with('object')->get();
+//        $cardGraphs = CardObjectMain::all();
         // Создаем пустые массивы для хранения данных performer и responsible
         $allPerformers = [];
         $allResponsibles = [];
@@ -202,9 +204,63 @@ class HomeController extends Controller
                 }
             }
         }
-
+//        dd($cardGraphs);
         // Возвращаем представление с передачей данных
         return view('reestrs/reestrGraph', compact('cardGraphs', 'allPerformers', 'allResponsibles'));
+    }
+
+    public function getCardGraph() {
+        // Получаем объекты инфраструктуры с их сервисами
+        $objects = CardGraph::with(['object', 'services'])->get();
+//        dd($objects);
+        // Создаем массив для хранения всех данных
+        $formattedGraphs = [];
+        // Проходимся по каждому объекту и выбираем все поля
+        foreach ($objects as $object) {
+
+            $formattedGraph = [
+                'id' => $object->id,
+                'infrastructure_type' => $object->infrastructure_type,
+                'name' => $object->name,
+                'curator' => $object->curator,
+                'year_action' => $object->year_action,
+                'date_create' => $object->date_create,
+                'date_last_save' => $object->date_last_save,
+                'date_archive' => $object->date_archive,
+                'cards_ids' => $object->cards_ids,
+                'object' => $object->object->map(function ($cardObject) {
+                    return [
+                        'infrastructure' => $cardObject->infrastructure,
+                        'name' => $cardObject->name,
+                        'number' => $cardObject->number,
+                        'location' => $cardObject->location,
+                        'date_arrival' => $cardObject->date_arrival,
+                        'date_usage' => $cardObject->date_usage,
+                        'date_cert_end' => $cardObject->date_cert_end,
+                        'date_usage_end' => $cardObject->date_usage_end,
+                    ];
+                })->toArray(),
+                'services' => $object->services->map(function($service) {
+                    return [
+                        'service_type' => $service->service_type,
+                        'short_name' => $service->short_name,
+                        'performer' => $service->performer,
+                        'responsible' => $service->responsible,
+                        'frequency' => $service->frequency,
+                        'prev_maintenance_date' => $service->prev_maintenance_date,
+                        'planned_maintenance_date' => $service->planned_maintenance_date,
+                        'calendar_color' => $service->calendar_color,
+                        'consumable_materials' => $service->consumable_materials,
+                        'work_order' => $service->cardWorkOrders()->first() ? route('workOrder.show', ['id' => $service->cardWorkOrders()->first()->_id]) : null,
+                    ];
+                })->toArray()
+            ];
+
+            // Добавляем объект к массиву с отформатированными данными
+            $formattedGraphs[] = $formattedGraph;
+        }
+        // Возвращаем все данные в формате JSON с правильным заголовком Content-Type
+        return response()->json($formattedGraphs);
     }
 
 

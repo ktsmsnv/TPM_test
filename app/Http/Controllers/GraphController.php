@@ -30,7 +30,7 @@ class GraphController extends Controller
 
         // Преобразуем строку cards_ids в массив
         $objectIds = explode(',', $data_CardGraph->cards_ids);
-
+//        dd($objectIds);
         // Создаем массив для хранения данных объектов
         $allObjectsData = [];
 
@@ -45,11 +45,10 @@ class GraphController extends Controller
             // Добавляем данные объекта в массив
             $allObjectsData[] = $cardObject;
         }
-//dd($data_CardGraph);
+//dd($objectIds);
         // Передаем данные в представление
         return view('cards/card-graph', compact('data_CardGraph','allObjectsData', 'maintenance'));
     }
-
 
 
     // ------------------  СОЗДАНИЕ карточки графика TPM (переход на страницу)  ------------------
@@ -149,6 +148,19 @@ class GraphController extends Controller
 
         // Возвращаем успешный ответ или редирект на страницу карточки объекта
         return response()->json(['success' => 'Данные карточки объекта успешно обновлены'], 200);
+    }
+
+    // --------------- удаление карточки заказ-наряда ---------------
+    public function deleteCardGraph(Request $request)
+    {
+        $ids = $request->ids;
+        // Обновляем записи, устанавливая значение deleted в 1
+        foreach ($ids as $id) {
+            // Удалить записи из связанных таблиц
+            CardGraph::find($id)->delete();
+        }
+
+        return response()->json(['success' => true], 200);
     }
 
 }
