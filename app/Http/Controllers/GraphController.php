@@ -104,12 +104,12 @@ class GraphController extends Controller
     {
 //        $cardGraph_id = CardGraph::all('_id', 'card_id');
 //        $data_CardGraph = CardGraph::where('card_id', $id)->get() and CardGraph::where('_id', $id)->get();
-        $selectedObjectMain = CardObjectMain::where('_id', $id)->get();
-//        dd($selectedObjectMain);
-        $data_CardObjectMain = CardObjectMain::with(['graph'])->find($id);
+//        $selectedObjectMain = CardObjectMain::where('_id', $id)->get();
+////        dd($selectedObjectMain);
+//        $data_CardObjectMain = CardObjectMain::with(['graph'])->find($id);
 
-        $data_CardGraph = CardGraph::with(['object'])->find('_id');
-        dd($data_CardGraph);
+        $data_CardGraph =  CardGraph::findOrFail($id);
+//        dd($data_CardGraph);
 
         $maintenance = [
             ['id' => 1, 'service_type' => 'Регламентные работы', 'short_name' => 'РР'],
@@ -120,7 +120,26 @@ class GraphController extends Controller
         ];
 //        dd($selectedObjectMain);
 //        $breadcrumbs = Breadcrumbs::generate('/card-graph-edit');
-        return view('cards/card-graph-edit', compact('data_CardObjectMain', 'selectedObjectMain', 'maintenance', 'data_CardGraph'));
+        // Преобразуем строку cards_ids в массив
+        $objectIds = explode(',', $data_CardGraph->cards_ids);
+//        dd($objectIds);
+        // Создаем массив для хранения данных объектов
+        $allObjectsData = [];
+
+        // Перебираем все идентификаторы объектов
+        foreach($objectIds as $objectId) {
+            // Удаляем лишние пробелы
+            $objectId = trim($objectId);
+
+            // Получаем объект по идентификатору
+            $cardObject = CardObjectMain::with('services')->findOrFail($objectId);
+
+            // Добавляем данные объекта в массив
+            $allObjectsData[] = $cardObject;
+        }
+//dd($objectIds);
+        // Передаем данные в представление
+        return view('cards/card-graph', compact('data_CardGraph','allObjectsData', 'maintenance'));
     }
 
     public function editSave(Request $request, $id)

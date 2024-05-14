@@ -15,8 +15,7 @@
                 <div class="d-flex gap-2">
                     <a href="/pageReestrGraph" type="button" class="btn btn-secondary me-5">Закрыть</a>
                     <button type="button" class="btn btn-success">Выгрузить PDF</button>
-                    <a href="{{ route('cardGraph-edit', ['id' => $data_CardGraph->id]) }}" target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
-                    <a href="/home/card-object/{{$data_CardGraph->id}}" target="_blank" type="button" class="btn btn-primary me-5">Открыть карточку объекта</a>
+                    <a href="{{ route('cardGraph-edit', ['id' => $data_CardGraph->_id]) }}" target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
                 </div>
             </div>
 
