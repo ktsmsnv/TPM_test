@@ -72,8 +72,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/create-work-order', [App\Http\Controllers\WorkOrderController::class, 'create'])->name('create-work-order');
     Route::post('/endWorkOrder',  [App\Http\Controllers\WorkOrderController::class, 'endWorkOrder'])->name('endWorkOrder');
 
-//    Route::get('/download-pdf/{id}', [App\Http\Controllers\WorkOrderController::class, 'downloadPDF'])->name('downloadPDF');
-    Route::get('/download-word-document/{id}', [App\Http\Controllers\WorkOrderController::class, 'downloadPdfDocument'])->name('downloadWordDocument');
+   Route::get('/download-pdf/{id}', [App\Http\Controllers\WorkOrderController::class, 'downloadPDF'])->name('downloadPDF');
+   // Route::get('/download-word-document/{id}', [App\Http\Controllers\WorkOrderController::class, 'downloadPdfDocument'])->name('downloadWordDocument');
 
 
     // ----------------------------------------------------------------------------------------------------------------

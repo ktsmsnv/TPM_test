@@ -189,8 +189,9 @@ class workOrderController extends Controller
     /**
      * @throws CopyFileException
      * @throws CreateTemporaryFileException
+     * @throws Exception
      */
-    public function downloadWordDocument($id)
+    public function downloadPDF_create($id)
     {
         // Находим заказ-наряд по его ID
         $workOrder = CardWorkOrder::findOrFail($id);
@@ -206,9 +207,6 @@ class workOrderController extends Controller
         // Извлекаем типы работ из первой услуги
         $serviceTypes = $cardObjectServices->services_types;
 
-        // Форматируем дату в нужный формат (день-месяц-год)
-        $plannedMaintenanceDate = Carbon::parse($cardObjectServices->planned_maintenance_date)->format('d-m-Y');
-
         // Получаем данные для вставки в шаблон
         $data = [
             'name' => $cardObjectMain->name,
@@ -217,25 +215,26 @@ class workOrderController extends Controller
             'responsible' => $cardObjectServices->responsible,
             'location' => $cardObjectMain->location,
             'number' => $cardObjectMain->number,
-            'planned_maintenance_date' => $plannedMaintenanceDate, // Используем отформатированную дату
+            'planned_maintenance_date' => $cardObjectServices->planned_maintenance_date,
             'consumable_materials' => $cardObjectServices->consumable_materials,
-//            'type_works' => $serviceTypes->pluck('type_work')->toArray(),
+            'type_works' => $serviceTypes->pluck('type_work')->toArray(),
         ];
+
         // Путь к вашему шаблону Word
         $templatePath = storage_path('app/templates/workOrderTemplate.docx');
 
         // Загружаем шаблон Word
         $templateProcessor = new TemplateProcessor($templatePath);
 
-        $types = $serviceTypes->toArray(); // Преобразуем коллекцию в массив
-        $templateProcessor->cloneRow('type_work', count($types));
-// Обход каждой строки данных и добавление значений в соответствующие ячейки
-        foreach ($types as $index => $type) {
-            $templateProcessor->setValue('type_work#' . ($index + 1), $type['type_work']); // Обращаемся к элементам массива, а не к свойствам объектов
+        // Клонируем строки для каждого типа работ
+        $templateProcessor->cloneRow('type_work', count($serviceTypes));
+
+        // Обход каждого типа работ и добавление значений в соответствующие ячейки
+        foreach ($serviceTypes as $index => $type) {
+            $templateProcessor->setValue('type_work#' . ($index + 1), (string) $type->type_work);
         }
 
 
-        // Заменяем остальные заполнители в шаблоне данными
         foreach ($data as $key => $value) {
             // Преобразуем массив строк в одну строку
             if (is_array($value)) {
@@ -245,196 +244,28 @@ class workOrderController extends Controller
             $templateProcessor->setValue($key, (string) $value);
         }
 
-        // Формируем имя файла (используем id в качестве части имени файла)
-        $fileName = 'Карточка_заказ-наряда_№' . $workOrder->id . '_объекта_' . $cardObjectMain->name . '.docx';
 
         // Путь к новому документу Word
-        $docxFilePath = storage_path('app/generated/' . $fileName);
+        $docxFilePath = storage_path('app/generated/workOrderProcessed.docx');
 
         // Сохраняем изменения в новом документе Word
         $templateProcessor->saveAs($docxFilePath);
 
-        // Возвращаем путь к файлу
         return $docxFilePath;
     }
 
 
-
-//public function convertDocxToPdf($docxFilePath)
-//{
-//    // Загружаем содержимое из DOCX файла и преобразуем его в HTML
-//    $phpWord = IOFactory::load($docxFilePath);
-//    $htmlWriter = IOFactory::createWriter($phpWord, 'HTML');
-//    $html = $htmlWriter->getContent();
-//
-//    // Преобразуем кодировку текста в UTF-8
-//    $html = mb_convert_encoding($html, 'UTF-8', 'AUTO');
-//   // dd($html);
-//
-//    $options = new Options();
-//    $options->set('isHtml5ParserEnabled', true);
-//    $options->set('isPhpEnabled', true);
-//
-//    $dompdf = new Dompdf($options);
-//
-//    // Загружаем HTML содержимое в Dompdf
-//    $dompdf->loadHtml($html, 'UTF-8');
-//
-//    // Устанавливаем размеры страницы и другие параметры, если необходимо
-//    $dompdf->setPaper('A4', 'portrait');
-//
-//    // Рендерим содержимое и сохраняем в PDF файл
-//    $dompdf->render();
-//    $pdfFilePath = storage_path('app/generated/' . basename($docxFilePath, '.docx') . '.pdf');
-//    file_put_contents($pdfFilePath, $dompdf->output());
-//
-//    return $pdfFilePath;
-//}
-
-    /**
-     * @throws MpdfException
-     * @throws Exception
-     */
-    public function convertDocxToPdf($docxFilePath)
+    public function downloadPDF($id)
     {
-        // Load the contents of the DOCX file and convert it to HTML
-        $phpWord = IOFactory::load($docxFilePath);
-        $htmlWriter = IOFactory::createWriter($phpWord, 'HTML');
-        $html = $htmlWriter->getContent();
+// Создаем Word документ
+        $docxFilePath = $this->downloadPDF_create($id);
 
-        // Convert the text encoding to UTF-8
-        $html = mb_convert_encoding($html, 'UTF-8', 'AUTO');
-        //dd($html);
+        // Определяем имя файла для скачивания
+        $fileName = 'Карточка_заказ-наряда_' . $id . '.docx';
 
-        // Initialize mPDF
-        $mpdf = new Mpdf([
-            'mode' => 'utf-8',
-            'format' => 'A4',
-            'orientation' => 'P',
-        ]);
-
-        // Load HTML content into mPDF
-        $mpdf->WriteHTML($html);
-        // Save the PDF to a file
-        $pdfFilePath = storage_path('app/generated/' . basename($docxFilePath, '.docx') . '.pdf');
-        $mpdf->Output($pdfFilePath, 'F');
-
-        return $pdfFilePath;
+        // Возвращаем Word-файл как ответ на запрос с заголовком для скачивания
+        return response()->download($docxFilePath, $fileName);
     }
-
-
-
-    public function downloadPdfDocument($id)
-    {
-        // Создаем и загружаем документ Word
-        $docxFilePath = $this->downloadWordDocument($id);
-
-        // Конвертируем DOCX в PDF
-        $pdfFilePath = $this->convertDocxToPdf($docxFilePath);
-
-        // Возвращаем файл как ответ на запрос
-        return response()->file($pdfFilePath);
-    }
-
-//    /**
-//     * @throws CopyFileException
-//     * @throws CreateTemporaryFileException
-//     */
-//    public function downloadPDF_create($id)
-//    {
-//        // Находим заказ-наряд по его ID
-//        $workOrder = CardWorkOrder::findOrFail($id);
-//
-//        // Получаем данные о связанных записях с предварительной загрузкой связанных услуг и их типов работ
-//        $cardObjectMain = CardObjectMain::with(['services' => function ($query) use ($workOrder) {
-//            $query->with(['services_types'])->where('_id', $workOrder->card_object_services_id);
-//        }])->find($workOrder->card_id);
-//
-//        // Получаем все данные о связанных услугах из card_object_services
-//        $cardObjectServices = $cardObjectMain->services->first();
-//
-//        // Извлекаем типы работ из первой услуги
-//        $serviceTypes = $cardObjectServices->services_types;
-//
-//        // Получаем данные для вставки в шаблон
-//        $data = [
-//            'infrastructure' => $cardObjectMain->infrastructure,
-//            'performer' => $cardObjectServices->performer,
-//            'responsible' => $cardObjectServices->responsible,
-//            'location' => $cardObjectMain->location,
-//            'number' => $cardObjectMain->number,
-//            'planned_maintenance_date' => $cardObjectServices->planned_maintenance_date,
-//            'consumable_materials' => $cardObjectServices->consumable_materials,
-//            'type_works' => $serviceTypes->pluck('type_work')->toArray(),
-//        ];
-//
-//        // Путь к вашему шаблону Word
-//        $templatePath = storage_path('app/templates/workOrderTemplate.docx');
-//
-//        // Загружаем шаблон Word
-//        $templateProcessor = new TemplateProcessor($templatePath);
-//
-//        // Заменяем заполнители в шаблоне данными
-//        foreach ($data as $key => $value) {
-//            // Преобразовываем массив строк в одну строку
-//            if (is_array($value)) {
-//                $value = implode("\n", $value); // или join("\n", $value)
-//            }
-//            // Преобразуем $value в строку перед вставкой в шаблон
-//            $templateProcessor->setValue($key, (string) $value);
-//        }
-//
-//        // Путь к новому документу Word
-//        $docxFilePath = storage_path('app/generated/workOrderProcessed.docx');
-//
-//        // Сохраняем изменения в новом документе Word
-//        $templateProcessor->saveAs($docxFilePath);
-//
-//        return $docxFilePath;
-//    }
-//
-//    public function convertToPDF($docxFilePath)
-//    {
-//        // Создаем экземпляр PhpWord и загружаем документ Word
-//        $phpWord = IOFactory::load($docxFilePath);
-//
-//        // Создаем экземпляр Dompdf
-//        $options = new Options();
-//        $options->set('isHtml5ParserEnabled', true);
-//        $dompdf = new Dompdf($options);
-//
-//        // Получаем содержимое документа Word
-//        $docxContent = file_get_contents($docxFilePath);
-//
-//        // Определяем кодировку текста (в данном примере используется UTF-8)
-//        $encoding = 'UTF-8';
-//
-//        // Загружаем содержимое документа Word в Dompdf с указанием кодировки
-//        $dompdf->loadHtml(mb_convert_encoding($docxContent, 'HTML-ENTITIES', $encoding), $encoding);
-//
-//        // Рендерим PDF (по умолчанию настраивается формат A4)
-//        $dompdf->render();
-//
-//        // Путь к PDF-файлу
-//        $pdfFilePath = public_path('generated/workOrderConverted.pdf');
-//
-//        // Сохраняем PDF
-//        file_put_contents($pdfFilePath, $dompdf->output());
-//
-//        return $pdfFilePath;
-//    }
-//
-//
-//
-//    public function downloadPDF($id)
-//    {
-//        // Создаем и загружаем PDF из документа Word
-//        $docxFilePath = $this->downloadPDF_create($id);
-//        $pdfFilePath = $this->convertToPDF($docxFilePath);
-//
-//        // Возвращаем PDF-файл как ответ на запрос
-//        return response()->file($pdfFilePath);
-//    }
 
 
 
