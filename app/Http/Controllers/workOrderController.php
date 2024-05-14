@@ -226,14 +226,15 @@ class workOrderController extends Controller
         // Загружаем шаблон Word
         $templateProcessor = new TemplateProcessor($templatePath);
 
-        // Клонируем блок с маркером "type_work" в шаблоне для каждого типа работ
-        foreach ($data['type_works'] as $type_work) {
-            $templateProcessor->cloneBlock('type_work', 1, true, false, ['type_work' => $type_work]);
+        // Клонируем строки для каждого типа работ
+        $templateProcessor->cloneRow('type_work', count($serviceTypes));
+
+        // Обход каждого типа работ и добавление значений в соответствующие ячейки
+        foreach ($serviceTypes as $index => $type) {
+            $templateProcessor->setValue('type_work#' . ($index + 1), (string) $type->type_work);
         }
 
 
-// Заменяем остальные заполнители в шаблоне данными
-        unset($data['type_works']); // Удаляем типы работ из данных, так как они уже вставлены в шаблон
         foreach ($data as $key => $value) {
             // Преобразуем массив строк в одну строку
             if (is_array($value)) {
