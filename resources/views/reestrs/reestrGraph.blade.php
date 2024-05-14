@@ -31,62 +31,6 @@
                                data-show-export="true" data-click-to-select="true" data-minimum-count-columns="11"
                                data-show-pagination-switch="true" data-pagination="true"
                                data-id-field="id" data-response-handler="responseHandler">
-{{--                            <thead>--}}
-{{--                            <tr>--}}
-{{--                                <th></th>--}}
-{{--                                <th colspan="6"></th>--}}
-{{--                                <th colspan="3"></th>--}}
-{{--                            </tr>--}}
-{{--                            <tr>--}}
-{{--                                <th>Вид инфраструктуры</th>--}}
-{{--                                <th>Наименование графика</th>--}}
-{{--                                <th>Год действия</th>--}}
-{{--                                <th>Дата создания</th>--}}
-{{--                                <th>Дата последнего сохранения</th>--}}
-{{--                                <th>Дата архивации</th>--}}
-{{--                                <th>Исполнитель</th>--}}
-{{--                                <th>Ответственный</th>--}}
-{{--                                <th>Куратор</th>--}}
-{{--                            </tr>--}}
-{{--                            </thead>--}}
-{{--                            <tbody>--}}
-{{--                            @foreach ($cardGraphs as $object)--}}
-{{--                                <tr data-id="{{ $object->id }}">--}}
-{{--                                    <td>{{ $object->_id }}</td>--}}
-{{--                                    <td>{{ $object->infrastructure_type }}</td>--}}
-{{--                                    <td class="tool-tip" title="открыть карточку графика">--}}
-{{--                                        <a href="{{ route('cardGraph', ['id' => $object->_id]) }}" target="_blank">--}}
-{{--                                            {{ $object->name }}--}}
-{{--                                        </a>--}}
-{{--                                    </td>--}}
-{{--                                    <td>{{ date('Y', strtotime($object->year_action)) }}</td>--}}
-{{--                                    <td>{{ date('d.m.Y', strtotime($object->date_create)) }}</td>--}}
-{{--                                    <td>{{ date('d.m.Y', strtotime($object->date_last_save)) }}</td>--}}
-{{--                                    <td>{{ date('d.m.Y', strtotime($object->date_archive)) }}</td>--}}
-{{--                                     Проверка на существование записи в cardObjectServices--}}
-{{--                                    <td>--}}
-{{--                                        @if ($object->cardObjectServices->isNotEmpty())--}}
-{{--                                            @foreach ($object->cardObjectServices as $service)--}}
-{{--                                                {{ $service->performer }}<br>--}}
-{{--                                            @endforeach--}}
-{{--                                        @else--}}
-{{--                                            Нет данных--}}
-{{--                                        @endif--}}
-{{--                                    </td>--}}
-{{--                                    <td>--}}
-{{--                                        @if ($object->cardObjectServices->isNotEmpty())--}}
-{{--                                            @foreach ($object->cardObjectServices as $service)--}}
-{{--                                                {{ $service->responsible }}<br>--}}
-{{--                                            @endforeach--}}
-{{--                                        @else--}}
-{{--                                            Нет данных--}}
-{{--                                        @endif--}}
-{{--                                    </td>--}}
-{{--                                    <td>{{ $object->curator }}</td>--}}
-{{--                                </tr>--}}
-{{--                            @endforeach--}}
-{{--                            </tbody>--}}
-
                         </table>
                     </div>
                 </div>

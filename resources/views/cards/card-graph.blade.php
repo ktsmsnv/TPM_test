@@ -14,7 +14,8 @@
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
                     <a href="/pageReestrGraph" type="button" class="btn btn-secondary me-5">Закрыть</a>
-                    <button type="button" class="btn btn-success">Выгрузить PDF</button>
+                    <button type="button" class="btn btn-success" data-toggle="tooltip"
+                            title="ДАННАЯ КНОПКА ПОКА НЕ РАБОТАЕТ">Выгрузить PDF</button>
                     <a href="{{ route('cardGraph-edit', ['id' => $data_CardGraph->_id]) }}" target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
                 </div>
             </div>

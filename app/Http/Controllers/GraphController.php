@@ -139,13 +139,13 @@ class GraphController extends Controller
         }
 //dd($objectIds);
         // Передаем данные в представление
-        return view('cards/card-graph', compact('data_CardGraph','allObjectsData', 'maintenance'));
+        return view('cards/card-graph-edit', compact('data_CardGraph','allObjectsData', 'maintenance'));
     }
 
     public function editSave(Request $request, $id)
     {
         // Находим карточку объекта по переданному идентификатору
-        $card = CardGraph::where('_id', $id)->get();
+        $card = CardGraph::find($id);
         // Проверяем, найдена ли карточка
         if (!$card) {
             // Если карточка не найдена, возвращаем ошибку или редирект на страницу ошибки

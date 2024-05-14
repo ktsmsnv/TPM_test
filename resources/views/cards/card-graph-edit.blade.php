@@ -13,9 +13,10 @@
             </div>
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
-                    <a href="/pageReestrGraph" type="button" class="btn btn-secondary me-5">Закрыть</a>
-                    <button type="button" class="btn btn-success">Выгрузить PDF</button>
-                    <a href="{{ route('cardGraph-edit', ['id' => $data_CardGraph->id]) }}" target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
+                    <button type="button" class="btn btn-success saveEditGraph">Сохранить изменения</button>
+                    <a href="{{ route('cardObject', ['id' => $data_CardGraph->_id]) }}" type="button" class="btn btn-secondary me-5">Отменить изменения</a>
+                    <button type="button" class="btn btn-success" data-toggle="tooltip"
+                            title="ДАННАЯ КНОПКА ПОКА НЕ РАБОТАЕТ">Выгрузить PDF</button>
                 </div>
             </div>
 
@@ -43,35 +44,37 @@
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид инфраструктуры</label>
                                             <input name="" placeholder="Введите вид инфраструктуры" class="form-control w-100"
-                                                   readonly value="{{ $data_CardGraph->infrastructure_type ?? 'нет данных' }}">
+                                                   readonly value="{{ $data_CardGraph->infrastructure_type ?? 'нет данных' }}"
+                                                   data-toggle="tooltip" title="Данное поле меняется в карточке объекта">
+
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Куратор</label>
-                                            <input name="" placeholder="Введите куратора" class="form-control w-100"
-                                                   readonly value="{{$data_CardGraph->curator ?? 'нет данных' }}">
+                                            <input name="curator" placeholder="Введите куратора" class="form-control w-100"
+                                                   value="{{$data_CardGraph->curator ?? 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Год действия</label>
-                                            <input name="" placeholder="Введите год действия" class="form-control w-100"
-                                                   readonly value="{{$data_CardGraph->year_action ?? 'нет данных' }}">
+                                            <input class="form-control w-100" type="number" min="1800" max="5099" step="1" name="year_action" placeholder="Введите год действия"
+                                                   value="{{$data_CardGraph->year_action ?? 'нет данных' }}">
                                         </div>
                                     </div>
 
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата создания</label>
-                                            <input name="" placeholder="Введите дату создания" class="form-control w-100"
-                                                   readonly value="{{ date('d.m.Y', strtotime($data_CardGraph->date_create)) ?? 'нет данных'  }}">
+                                            <input type="date" name="date_create" placeholder="Введите дату создания" class="form-control w-100"
+                                                   value="{{ isset($data_CardGraph->date_create) ? $data_CardGraph->date_create : 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата последнего сохранения</label>
-                                            <input name="" placeholder="Введите дату последнего сохранения" class="form-control w-100"
-                                                   readonly value="{{ date('d.m.Y', strtotime($data_CardGraph->date_last_save)) ?? 'нет данных'  }}">
+                                            <input type="date" name="date_last_save" placeholder="Введите дату последнего сохранения" class="form-control w-100"
+                                                   value="{{ isset($data_CardGraph->date_last_save) ? $data_CardGraph->date_last_save : 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата архивации</label>
-                                            <input name="" placeholder="Введите дату архивации" class="form-control w-100"
-                                                   readonly value="{{ date('d.m.Y', strtotime($data_CardGraph->date_archive)) ?? 'нет данных'  }}">
+                                            <input type="date" name="date_archive" placeholder="Введите дату архивации" class="form-control w-100"
+                                                   value="{{ isset($data_CardGraph->date_archive) ?$data_CardGraph->date_archive : 'нет данных' }}">
                                         </div>
                                     </div>
                                 </div>
@@ -166,32 +169,20 @@
         </div>
 
     <script>
+
+
         $(document).ready(function () {
+            let formData = new FormData();
+
             $("#cardGraphTab").show;
 
             let $table = $('#reestrCardGraph');
-            var $remove = $('#remove');
             var selections = [];
 
             function getIdSelections() {
                 return $.map($table.bootstrapTable('getSelections'), function (row) {
                     return row.id;
                 });
-            }
-
-            function responseHandler(res) {
-                $.each(res.rows, function (i, row) {
-                    row.state = $.inArray(row.id, selections) !== -1;
-                });
-                return res;
-            }
-
-            function detailFormatter(index, row) {
-                var html = [];
-                $.each(row, function (key, value) {
-                    html.push('<p><b>' + key + ':</b> ' + value + '</p>');
-                });
-                return html.join('');
             }
 
             function initTable() {
@@ -211,17 +202,7 @@
                 });
 
                 $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
-                    $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
                     selections = getIdSelections();
-                });
-
-                $remove.click(function () {
-                    let ids = getIdSelections();
-                    $table.bootstrapTable('remove', {
-                        field: 'id',
-                        values: ids
-                    });
-                    $remove.prop('disabled', true);
                 });
             }
 
@@ -229,8 +210,6 @@
                 initTable();
                 $('#locale').change(initTable);
             });
-
-
 
             //------------  обработчик сохранения данных  ------------
             $(".saveEditGraph").click(function () {
@@ -247,19 +226,20 @@
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    url: "/edit-card-graph-save/{{ $data_CardObjectMain->id }}",
+                    url: "/edit-card-graph/save/{{ $data_CardGraph->_id }}",
                     data: formData,
                     processData: false, // Не обрабатывать данные
                     contentType: false, // Не устанавливать тип содержимого
                     success: function (response) {
                         // Обработка успешного ответа от сервера (например, отображение сообщения об успешном сохранении)
-                        alert("Данные для карточки графика успешно обновлены!");
-                        console.log(formData);
+                        // alert("Данные для карточки графика успешно обновлены!");
+                        window.location.href = "{{ route('cardGraph', ['id' => $data_CardGraph->id]) }}";
+                        // console.log(formData);
                     },
                     error: function (error) {
                         // Обработка ошибки при сохранении данных
                         alert("Ошибка при обновлении данных для карточки графика!");
-                        console.log(formData);
+                        // console.log(formData);
                     }
                 });
             });
