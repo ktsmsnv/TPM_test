@@ -93,6 +93,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/card-calendar-create/{id}', [App\Http\Controllers\CalendarController::class, 'create'])->name('card-calendar.create');
     Route::post('/card-calendar-store', [App\Http\Controllers\CalendarController::class, 'store'])->name('card-calendar.store');
+
+    Route::post('/archive',  [App\Http\Controllers\CalendarController::class, 'archiveCalendar'])->name('archiveCalendar');
     // ----------------------------------------------------------------------------------------------------------------
 });
 

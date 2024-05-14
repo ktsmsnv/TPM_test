@@ -61,4 +61,15 @@ class CalendarController extends Controller
         // Передаем найденные данные в представление
         return view('cards/card-calendar', compact('cardCalendar', 'cardObjectMain'));
     }
+
+    public function archiveCalendar(Request $request) {
+        $calendarId = $request->id;
+        $dateArchive = Carbon::now()->format('d-m-Y');
+
+        $calendar = cardcalendar::findOrFail($calendarId);
+        $calendar->date_archive = $dateArchive;
+        $calendar->save();
+
+        return response()->json(['message' => 'Календарь успешно заархивирован'], 200);
+    }
 }

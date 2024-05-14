@@ -41,8 +41,9 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    <button class="btn btn-primary end_workOrder{{ $cardCalendar->date_archive =! 'null' ? ' disabled' : '' }}">
-                                        Заархивировать</button>
+                                    <button class="btn btn-primary archive_calendar {{ $cardCalendar->date_archive != null ? 'disabled' : '' }}">
+                                        Заархивировать
+                                    </button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
@@ -90,12 +91,12 @@
                                         {{--                                        </div>--}}
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата архивации</label>
-                                            @if ($cardCalendar && $cardCalendar->date_archive)
+                                            @if ($cardCalendar && $cardCalendar->date_archive !== null)
                                                 <input name="date_archive" class="form-control w-100" value="{{ $cardCalendar->date_archive }}" readonly
-                                                       data-toggle="tooltip" title="дата архивации">
+                                                       data-toggle="tooltip" aria-label="дата архивации" title="дата архивации">
                                             @else
                                                 <input name="date_archive" class="form-control w-100" value="дата архивации"
-                                                       readonly style="opacity: 0.5;" data-toggle="tooltip" title="дата появится после архивации">
+                                                       readonly style="opacity: 0.5;" data-toggle="tooltip" aria-label="дата архивации" title="дата архивации">
                                             @endif
                                         </div>
                                     </div>
@@ -190,6 +191,26 @@
             </div>
         </div>
 
+        <!-- Модальное окно подтверждения завершения заказа-наряда -->
+        <div class="modal fade" id="confirmArchiveModal" tabindex="-1" aria-labelledby="confirmArchiveModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmArchiveModalLabel">Подтверждение архивации календаря</h5>
+                        <button type="button" class="btn-close" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Вы уверены, что хотите архивировать данный календарь объекта
+                       "{{$cardObjectMain->name}}" ?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="button" class="btn btn-danger" id="confirmArchiveButton">Заархивировать</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script>
 
             $(document).ready(function () {
@@ -227,6 +248,42 @@
                         // Пересчитываем размеры календаря после рендеринга
                         calendar.updateSize();
                     }
+                });
+
+
+                // Обработчик события нажатия на кнопку "Завершить заказ"
+                $('.archive_calendar').click(function () {
+                    // Открываем модальное окно с вопросом о завершении заказа-наряда
+                    $('#confirmArchiveModal').modal('show');
+                });
+                // Обработчик события нажатия на кнопку "Да" в модальном окне подтверждения
+                $('#confirmArchiveButton').click(function () {
+                    // Устанавливаем текущую дату в поле "Фактическая дата"
+                    const currentDate = new Date();
+                    const formattedDate = currentDate.toLocaleDateString('ru-RU').split('.').reverse().join('-'); // Форматируем дату в формат dd-mm-yyyy
+                    $('input[name="date_archive"]').val(formattedDate);
+                    // Отправляем данные в контроллер для сохранения изменений в базе данных
+                    $.ajax({
+                        type: "POST",
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        url: "{{ route('archiveCalendar') }}",
+                        data: {
+                            id: "{{ $cardCalendar->_id }}", // Здесь нужно передать ID текущего заказа-наряда
+                            date_archive: formattedDate, // Передаем текущую дату
+                        },
+                        success: function (response) {
+                            // Обработка успешного завершения запроса
+                            console.log(response);
+                        },
+                        error: function (error) {
+                            // Обработка ошибки
+                            console.log(error);
+                        }
+                    });
+                    // Закрываем модальное окно подтверждения
+                    $('#confirmArchiveModal').modal('hide');
                 });
             });
         </script>
