@@ -3,9 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
-class cardcalendar extends Model
+use MongoDB\Laravel\Eloquent\Model as Eloquent;
+class cardcalendar extends Eloquent
 {
     protected $connection = 'mongodb';
     protected $collection = 'card_calendar';
@@ -15,5 +14,11 @@ class cardcalendar extends Model
 //        'date_last_save',
         'date_archive',
         'year',
+    ];
+    protected $attributes = [
+        'card_id' => null,
+        'date_create' => null,
+        'date_archive' => null,
+        'year' => null,
     ];
 }

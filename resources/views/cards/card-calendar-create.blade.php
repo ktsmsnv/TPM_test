@@ -8,13 +8,12 @@
             <div class="col-md-12 text-left">
                 <h2 class="mb-4"><strong>Создание картчоки календаря для объекта {{ $cardObjectMain->name }}</strong></h2>
             </div>
+            <input type="hidden" name="card_id" value="{{ $cardObjectMain->id }}">
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-success">Сохранить</button>
-                    <button type="button" class="btn btn-secondary me-5">Закрыть</button>
-
-                    <button type="button" class="btn btn-success">Выгрузить PDF</button>
-                    <button type="button" class="btn btn-success">Открыть карточку объекта</button>
+                    <button type="button" class="btn btn-success saveCard">Сохранить</button>
+                    <a href="/pageReestrCalendar" type="button" class="btn btn-secondary me-5">Закрыть</a>
+                    <a href="/home/card-object/{{$cardObjectMain->id}}" target="_blank" type="button" class="btn btn-primary me-5">Открыть карточку объекта</a>
                 </div>
             </div>
 
@@ -34,7 +33,7 @@
             <div class="tab-content" id="cardCalendarTabContent">
                 {{-- ВКЛАДКА "ОСНОВНАЯ" --}}
                 <div class="tab-pane fade show active" id="main" role="tabpanel" aria-labelledby="main-tab">
-                    <div id="main__blocks" class="d-grid">
+                    <div id="main__blocks_calendar" class="d-grid">
                         {{-- ОБЩИЕ ДАННЫЕ --}}
                         <div class="member_card_style general">
                             <div class="member-info">
@@ -77,7 +76,7 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата создания</label>
-                                            <input type="date" name="date_create" value="{{ date('Y-m-d') }}" class="form-control w-100" placeholder="Введите дату создания" readonly>
+                                            <input type="date" name="date_create" value="{{ date('Y-m-d') }}" style="opacity: 0.5;" class="form-control w-100" placeholder="Введите дату создания" readonly>
                                         </div>
 {{--                                        <div class="d-flex justify-content-between align-items-center gap-3">--}}
 {{--                                            <label class="w-100">Дата последнего сохранения</label>--}}
@@ -86,8 +85,8 @@
 {{--                                        </div>--}}
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата архивации</label>
-                                            <input class="form-control  w-100" name=""
-                                                   placeholder="дата архивации" readonly style="opacity: 0.5;" data-toggle="tooltip" title="дата появится после завершения заказ-наряда">
+                                            <input class="form-control  w-100" name="date_archive"
+                                                   placeholder="дата архивации" readonly style="opacity: 0.5;" data-toggle="tooltip" title="дата появится после архивации">
                                         </div>
                                     </div>
                                 </div>
@@ -100,52 +99,28 @@
                                     <h4>Обслуживание ТРМ</h4>
                                 </div>
                                 @foreach($cardObjectMain->services as $index => $service)
-                                    <div class="member-info--inputs d-flex gap-5">
-                                        <div class="d-flex justify-content-between">
-                                            <div class="d-flex justify-content-between align-items-center gap-3">
+                                    <div class="member-info--inputs d-flex flex-column gap-3">
+                                        <div class="d-flex justify-content-between gap-3">
+                                            <div class="d-flex align-items-center gap-0">
                                                 <label class="w-100">Вид обслуживания {{ $index + 1 }}</label>
-                                                <input name="services[{{ $index }}][service_type]" value="{{ $service->service_type }}" class="form-control w-100" readonly>
+                                                <input name="services[{{ $index }}][service_type]" value="{{ $service->service_type }}" class="form-control w-100" readonly
+                                                       data-toggle="tooltip" title="{{ $service->service_type }}">
                                             </div>
-                                            <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <div class="d-flex align-items-center gap-0">
                                                 <label class="w-100">Периодичность</label>
                                                 <input name="services[{{ $index }}][frequency]" value="{{ $service->frequency }}"  class="form-control w-100" readonly>
                                             </div>
-                                            <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <div class="d-flex align-items-center gap-0">
                                                 <label class="w-100">Исполнитель</label>
                                                 <input name="services[{{ $index }}][performer]" value="{{ $service->performer }}"  class="form-control w-100" readonly>
                                             </div>
-                                            <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <div class="d-flex align-items-center gap-0">
                                                 <label class="w-100">Ответственный</label>
                                                 <input name="services[{{ $index }}][responsible]" value="{{ $service->responsible }}"  class="form-control w-100" readonly>
                                             </div>
                                         </div>
                                     </div>
                                 @endforeach
-
-                                {{--                                <div class="member-info--inputs d-flex gap-5">--}}
-{{--                                    <div class="d-flex justify-content-between">--}}
-{{--                                        <div class="d-flex justify-content-between align-items-center gap-3">--}}
-{{--                                            <label class="w-100">Вид обслуживания 1</label>--}}
-{{--                                            <input name="" placeholder="Введите вид обслуживания 1"--}}
-{{--                                                   class="form-control w-100">--}}
-{{--                                        </div>--}}
-{{--                                        <div class="d-flex justify-content-between align-items-center gap-3">--}}
-{{--                                            <label class="w-100">Периодичность</label>--}}
-{{--                                            <input class="form-control w-100" name=""--}}
-{{--                                                   placeholder="Введите периодичность">--}}
-{{--                                        </div>--}}
-{{--                                        <div class="d-flex justify-content-between align-items-center gap-3">--}}
-{{--                                            <label class="w-100">Исполнитель</label>--}}
-{{--                                            <input class="form-control w-100" name=""--}}
-{{--                                                   placeholder="Введите исполнителя">--}}
-{{--                                        </div>--}}
-{{--                                        <div class="d-flex justify-content-between align-items-center gap-3">--}}
-{{--                                            <label class="w-100">Ответственный</label>--}}
-{{--                                            <input class="form-control w-100" name=""--}}
-{{--                                                   placeholder="Введите ответственного">--}}
-{{--                                        </div>--}}
-{{--                                    </div>--}}
-{{--                                </div>--}}
                             </div>
                         </div>
                         {{-- ИЗОБРАЖЕНИЕ --}}
@@ -155,7 +130,13 @@
                                     <h4>Изображение объекта</h4>
                                 </div>
                                 <div class="objectImage">
-                                    <img src="http://placehold.it/350x450"/>
+                                    @if ($cardObjectMain && $cardObjectMain->image)
+                                        <!-- Если у объекта есть изображение, отобразите его -->
+                                        <img src="{{ route('getImage', ['id' => $cardObjectMain->id]) }}" alt="Image">
+                                    @else
+                                        <!-- Если у объекта нет изображения, отобразите сообщение -->
+                                        <p>Нет доступных изображений</p>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -181,7 +162,13 @@
                                     <h4>Изображение объекта</h4>
                                 </div>
                                 <div class="objectImage">
-                                    <img src="http://placehold.it/350x450"/>
+                                    @if ($cardObjectMain && $cardObjectMain->image)
+                                        <!-- Если у объекта есть изображение, отобразите его -->
+                                        <img src="{{ route('getImage', ['id' => $cardObjectMain->id]) }}" alt="Image">
+                                    @else
+                                        <!-- Если у объекта нет изображения, отобразите сообщение -->
+                                        <p>Нет доступных изображений</p>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -227,6 +214,36 @@
                         // Пересчитываем размеры календаря после рендеринга
                         calendar.updateSize();
                     }
+                });
+
+                $(".saveCard").click(function () {
+                    let formData = new FormData();
+                    // Собираем данные с основной формы
+                    formData.append('year', $("input[name=year]").val());
+                    formData.append('date_create', $("input[name=date_create]").val());
+                    formData.append('card_id', $("input[name=card_id]").val());
+                    // Отправляем данные на сервер
+                    $.ajax({
+                        type: "POST",
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        url: "/card-calendar-store",
+                        data: formData,
+                        processData: false, // Не обрабатывать данные
+                        contentType: false, // Не устанавливать тип содержимого
+                        success: function (response) {
+                            // Обработка успешного ответа от сервера (например, отображение сообщения об успешном сохранении)
+                            // alert("Данные успешно сохранены!");
+                            // console.log(formData);
+                            window.location.href = "/pageReestrCalendar/card-calendar/" + response.id;
+                        },
+                        error: function (error) {
+                            // Обработка ошибки при сохранении данных
+                            alert("Ошибка при сохранении данных!");
+                            console.log(formData);
+                        }
+                    });
                 });
             });
         </script>
