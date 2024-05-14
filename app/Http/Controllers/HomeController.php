@@ -217,7 +217,24 @@ class HomeController extends Controller
         $formattedGraphs = [];
         // Проходимся по каждому объекту и выбираем все поля
         foreach ($objects as $object) {
+            // Разделяем cards_ids на массив
+            $cardsIds = explode(',', $object->cards_ids);
 
+            // Создаем массив для хранения всех сервисов
+            $allServices = [];
+
+            // Обрабатываем каждый cards_ids отдельно
+            foreach ($cardsIds as $cardId) {
+                // Получаем объект инфраструктуры для данного cards_ids
+                $cardObject = CardObjectMain::find($cardId);
+
+                // Если объект найден, добавляем все его связанные записи CardObjectServices в массив
+                if ($cardObject) {
+                    $allServices = array_merge($allServices, $cardObject->services->toArray());
+                }
+            }
+
+            // Добавляем объект к массиву с отформатированными данными
             $formattedGraph = [
                 'id' => $object->id,
                 'infrastructure_type' => $object->infrastructure_type,
@@ -227,33 +244,30 @@ class HomeController extends Controller
                 'date_create' => $object->date_create,
                 'date_last_save' => $object->date_last_save,
                 'date_archive' => $object->date_archive,
-                'cards_ids' => $object->cards_ids,
-                'object' => $object->object->map(function ($cardObject) {
+                'object' => [
+                    'infrastructure' => $cardObject ? $cardObject->infrastructure : null,
+                    'name' => $cardObject ? $cardObject->name : null,
+                    'number' => $cardObject ? $cardObject->number : null,
+                    'location' => $cardObject ? $cardObject->location : null,
+                    'date_arrival' => $cardObject ? $cardObject->date_arrival : null,
+                    'date_usage' => $cardObject ? $cardObject->date_usage : null,
+                    'date_cert_end' => $cardObject ? $cardObject->date_cert_end : null,
+                    'date_usage_end' => $cardObject ? $cardObject->date_usage_end : null,
+                ],
+                'services' => array_map(function($service) {
                     return [
-                        'infrastructure' => $cardObject->infrastructure,
-                        'name' => $cardObject->name,
-                        'number' => $cardObject->number,
-                        'location' => $cardObject->location,
-                        'date_arrival' => $cardObject->date_arrival,
-                        'date_usage' => $cardObject->date_usage,
-                        'date_cert_end' => $cardObject->date_cert_end,
-                        'date_usage_end' => $cardObject->date_usage_end,
+                        'service_type' => $service['service_type'],
+                        'short_name' => $service['short_name'],
+                        'performer' => $service['performer'],
+                        'responsible' => $service['responsible'],
+                        'frequency' => $service['frequency'],
+                        'prev_maintenance_date' => $service['prev_maintenance_date'],
+                        'planned_maintenance_date' => $service['planned_maintenance_date'],
+                        'calendar_color' => isset($service['calendar_color']) ? $service['calendar_color'] : null,
+                        'consumable_materials' => isset($service['consumable_materials']) ? $service['consumable_materials'] : null,
+                        'work_order' => isset($service['card_work_orders'][0]) ? route('workOrder.show', ['id' => $service['card_work_orders'][0]['_id']]) : null,
                     ];
-                })->toArray(),
-                'services' => $object->services->map(function($service) {
-                    return [
-                        'service_type' => $service->service_type,
-                        'short_name' => $service->short_name,
-                        'performer' => $service->performer,
-                        'responsible' => $service->responsible,
-                        'frequency' => $service->frequency,
-                        'prev_maintenance_date' => $service->prev_maintenance_date,
-                        'planned_maintenance_date' => $service->planned_maintenance_date,
-                        'calendar_color' => $service->calendar_color,
-                        'consumable_materials' => $service->consumable_materials,
-                        'work_order' => $service->cardWorkOrders()->first() ? route('workOrder.show', ['id' => $service->cardWorkOrders()->first()->_id]) : null,
-                    ];
-                })->toArray()
+                }, $allServices)
             ];
 
             // Добавляем объект к массиву с отформатированными данными

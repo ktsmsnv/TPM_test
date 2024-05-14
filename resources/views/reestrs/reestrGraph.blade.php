@@ -195,14 +195,12 @@
                             },
                             {title: 'Исполнитель', field: 'performer', align: 'center',
                                 formatter: function(value, row) {
-                                    let nearestService = null;
+                                    let performers = []; // Создаем пустой массив для всех исполнителей
                                     if (row.services && Array.isArray(row.services) && row.services.length > 0) {
                                         row.services.forEach(function(service) {
-                                            if (!nearestService || new Date(service.planned_maintenance_date) < new Date(nearestService.planned_maintenance_date)) {
-                                                nearestService = service;
-                                            }
+                                            performers.push(service.performer); // Добавляем исполнителя в массив
                                         });
-                                        return nearestService ? nearestService.performer : 'Нет исполнителя';
+                                        return performers.length > 0 ? performers : 'Нет исполнителя'; // Возвращаем массив всех исполнителей
                                     } else {
                                         return 'Нет исполнителя';
                                     }
@@ -210,14 +208,12 @@
                             },
                             {title: 'Ответственный', field: 'responsible', align: 'center',
                                 formatter: function(value, row) {
-                                    let nearestService = null;
+                                    let responsibles = []; // Создаем пустой массив для всех ответственных
                                     if (row.services && Array.isArray(row.services) && row.services.length > 0) {
                                         row.services.forEach(function(service) {
-                                            if (!nearestService || new Date(service.planned_maintenance_date) < new Date(nearestService.planned_maintenance_date)) {
-                                                nearestService = service;
-                                            }
+                                            responsibles.push(service.responsible); // Добавляем ответственного в массив
                                         });
-                                        return nearestService ? nearestService.responsible : 'Нет ответственного';
+                                        return responsibles.length > 0 ? responsibles : 'Нет ответственного'; // Возвращаем массив всех ответственных
                                     } else {
                                         return 'Нет ответственного';
                                     }
