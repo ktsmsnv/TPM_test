@@ -6,10 +6,12 @@ use App\Models\CardObjectMain;
 use App\Models\CardObjectServices;
 use App\Models\CardWorkOrder;
 use App\Models\HistoryCardWorkOrder;
+use App\Models\User;
 use Illuminate\Http\Request;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use Carbon\Carbon;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Mpdf\MpdfException;
 use PhpOffice\PhpWord\Exception\CopyFileException;
@@ -27,40 +29,59 @@ use Mpdf\Mpdf;
 // --------------- контроллер для отображения данных на страницы ---------------
 class workOrderController extends Controller
 {
+    public function getCurrentUserRole($role)
+    {
+        // Получаем пользователей с указанной ролью
+        $users = User::where('role', $role)->get();
 
-    public function index() {
-        // Получаем все заказы-наряды с отношениями к объектам обслуживания и главным объектам
-        $workOrders = CardWorkOrder::with('cardObjectServices.cardObjectMain')->get();
-
-        // Создаем массив для хранения всех данных
-        $formattedWorkOrders = [];
-
-        // Проходимся по каждому заказу-наряду и выбираем все поля
-        foreach ($workOrders as $workOrder) {
-            $formattedWorkOrder = [
-                'id' => $workOrder->id,
-                'infrastructure' => $workOrder->cardObjectServices->cardObjectMain->infrastructure,
-                'name' => $workOrder->cardObjectServices->cardObjectMain->name,
-                'number' => $workOrder->cardObjectServices->cardObjectMain->number,
-                'location' => $workOrder->cardObjectServices->cardObjectMain->location,
-                'service_type' => $workOrder->cardObjectServices->service_type,
-                'planned_maintenance_date' => $workOrder->cardObjectServices->planned_maintenance_date,
-                'prev_maintenance_date' => $workOrder->cardObjectServices->prev_maintenance_date,
-                'status' => $workOrder->status,
-                'date_create' => $workOrder->date_create,
-//                'date_last_save' => $workOrder->date_last_save,
-                'performer' => $workOrder->cardObjectServices->performer,
-                'responsible' => $workOrder->cardObjectServices->responsible,
-                // Добавьте другие поля, если необходимо
-            ];
-
-            // Добавляем заказ-наряд к массиву с отформатированными данными
-            $formattedWorkOrders[] = $formattedWorkOrder;
-        }
-
-        // Возвращаем все данные в формате JSON с правильным заголовком Content-Type
-        return response()->json($formattedWorkOrders);
+        return $users;
     }
+    public function index() {
+        // Получаем текущего пользователя
+        $currentUser = Auth::user();
+
+        // Проверяем, аутентифицирован ли пользователь
+        if ($currentUser) {
+            // Получаем роль текущего пользователя
+            $userRole = $currentUser->role;
+
+            // Получаем все заказы-наряды с отношениями к объектам обслуживания и главным объектам
+            $workOrders = CardWorkOrder::with('cardObjectServices.cardObjectMain')->get();
+
+            // Создаем массив для хранения всех данных
+            $formattedWorkOrders = [];
+
+            // Проходимся по каждому заказу-наряду и выбираем все поля
+            foreach ($workOrders as $workOrder) {
+                // Проверяем роль текущего пользователя и фильтруем записи соответствующим образом
+                if (($userRole == 'executor' && $workOrder->cardObjectServices->performer == $currentUser->name) ||
+                    ($userRole == 'responsible' && $workOrder->cardObjectServices->responsible == $currentUser->name) ||
+                    ($userRole == 'curator' || $userRole == 'admin')) {
+                    $formattedWorkOrder = [
+                        'id' => $workOrder->id,
+                        'infrastructure' => $workOrder->cardObjectServices->cardObjectMain->infrastructure,
+                        'name' => $workOrder->cardObjectServices->cardObjectMain->name,
+                        'number' => $workOrder->cardObjectServices->cardObjectMain->number,
+                        'location' => $workOrder->cardObjectServices->cardObjectMain->location,
+                        'service_type' => $workOrder->cardObjectServices->service_type,
+                        'planned_maintenance_date' => $workOrder->cardObjectServices->planned_maintenance_date,
+                        'prev_maintenance_date' => $workOrder->cardObjectServices->prev_maintenance_date,
+                        'status' => $workOrder->status,
+                        'date_create' => $workOrder->date_create,
+                        'performer' => $workOrder->cardObjectServices->performer,
+                        'responsible' => $workOrder->cardObjectServices->responsible,
+                    ];
+
+                    // Добавляем заказ-наряд к массиву с отформатированными данными
+                    $formattedWorkOrders[] = $formattedWorkOrder;
+                }
+            }
+
+            // Возвращаем все данные в формате JSON с правильным заголовком Content-Type
+            return response()->json($formattedWorkOrders);
+        }
+    }
+
 
 // --------------- контроллер для отображения данных на страницы ---------------
     public function show($id)
@@ -257,7 +278,7 @@ class workOrderController extends Controller
 
     public function downloadPDF($id)
     {
-// Создаем Word документ
+        // Создаем Word документ
         $docxFilePath = $this->downloadPDF_create($id);
 
         // Определяем имя файла для скачивания
