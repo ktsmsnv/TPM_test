@@ -64,6 +64,7 @@
         </div>
     </div>
 
+    {{-- настройка таблицы и модалка удаления --}}
     <script>
         $(document).ready(function () {
             let $table = $('#reestrObject');
@@ -302,6 +303,16 @@
                     showConfirmDeleteModal();
                 }
             });
+
+            // $generateGraphTPM.click(function (){
+            //     let ids = getIdSelections();
+            //     console.log(ids);
+            //     if (ids.length > 0) {
+            //         // Сформируйте URL с ID выбранных записей и перенаправьте пользователя на страницу формирования графика TPM
+            //         window.location.href = "/pageReestrGraph/card-graph-create?ids=" + ids.join(',');
+            //     }
+            // });
+
             // Функция для отображения модального окна удаления
             function showConfirmDeleteModal() {
                 $confirmDelete.modal('show');
@@ -449,6 +460,7 @@
                     }
                 });
             });
+
 
 
         });

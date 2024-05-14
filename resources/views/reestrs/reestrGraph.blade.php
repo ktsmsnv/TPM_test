@@ -30,7 +30,7 @@
                                data-show-fullscreen="true"
                                data-show-columns="true"
                                data-show-columns-toggle-all="true"
-                               data-detail-view="true"
+{{--                               data-detail-view="true"--}}
                                data-show-export="true"
                                data-click-to-select="true"
                                data-detail-formatter="detailFormatter"
@@ -60,35 +60,24 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr data-id="1">
-                                <td></td>
-                                <td>из карточки графика</td>
-                                <td class="tool-tip" title="открыть карточку графика">
-                                    <a href="/pageReestrGraph/card-graph" >
-                                    ГОДОВОЙ ГРАФИК TPM ОБЪЕКТОВ ТЕХНОЛОГИЧЕСКОЙ  ИНФРАСТРУКТУРЫ</a>
-                                </td>
-                                <td>из карточки графика</td>
-                                <td>из карточки графика</td>
-                                <td>из карточки графика</td>
-                                <td>из карточки графика</td>
-                                <td>из карточки графика</td>
-                                <td>из карточки графика</td>
-                                <td>из карточки графика</td>
-                            </tr>
-{{--                            @foreach ($pageReestrGraph as $item)--}}
-{{--                                <tr class="editable-row" data-id="{{ $item->id }}">--}}
-{{--                                    <td>{{ $item->id }}</td>--}}
-{{--                                    <td>{{ $item->typeInfrastruct }}</td>--}}
-{{--                                    <td>{{ $item->nameGraph }}</td>--}}
-{{--                                    <td>{{ year($item->yearAction) }}</td>--}}
-{{--                                    <td>{{ date('d.m.Y', strtotime($item->dateCreation)) }}</td>--}}
-{{--                                    <td>{{ date('d.m.Y', strtotime($item->dateLastSave)) }}</td>--}}
-{{--                                    <td>{{ date('d.m.Y', strtotime($item->dateArchiv)) }}</td>--}}
-{{--                                    <td>{{ $item->actor }}</td>--}}
-{{--                                    <td>{{ $item->responsible }}</td>--}}
-{{--                                    <td>{{ $item->curator }}</td>--}}
-{{--                                </tr>--}}
-{{--                            @endforeach--}}
+                            @foreach ($objects as $object)
+                                <tr data-id="{{ $object->id }}">
+                                    <td>{{ $object->card_id }}</td>
+                                    <td>{{ $object->cardObjectMain->infrastructure }}</td>
+                                    <td class="tool-tip" title="открыть карточку графика">
+                                        <a href="{{ route('cardGraph', ['id' => $object->card_id]) }}" target="_blank">
+                                            {{ $object->cardObjectMain->infrastructure }}
+                                        </a>
+                                    </td>
+                                    <td>{{ date('Y', strtotime($object->year_action)) }}</td>
+                                    <td>{{ date('d.m.Y', strtotime($object->date_create)) }}</td>
+                                    <td>{{ date('d.m.Y', strtotime($object->date_last_save)) }}</td>
+                                    <td>{{ date('d.m.Y', strtotime($object->date_archive)) }}</td>
+                                    <td>{{ $object->cardObjectServices->performer }}</td>
+                                    <td>{{ $object->cardObjectServices->responsible }}</td>
+                                    <td>{{ $object->curator }}</td>
+                                </tr>
+                            @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -192,80 +181,7 @@
                 initTable();
                 $('#locale').change(initTable);
             });
-            // var $table = $('#reestrGraphTable');
-            // initTable($table);
-            // // инициализация таблицы и ее настроек
-            // function initTable($table) {
-            //     $table.bootstrapTable({
-            //         locale: $('#locale').val(),
-            //         pagination: true,
-            //         pageNumber: 1,
-            //         pageSize: 5,
-            //         pageList: [5, 15, 50, 'all'],
-            //         columns: [
-            //             // {
-            //             //     field: 'id',
-            //             //     title: '№',
-            //             //     valign: 'middle',
-            //             //     sortable: true,
-            //             // },
-            //             {
-            //                 field: 'typeInfrastruct',
-            //                 title: 'Вид инфраструктуры',
-            //                 valign: 'middle',
-            //                 sortable: true,
-            //             },
-            //             {
-            //                 field: 'nameGraph',
-            //                 title: 'Наименование графика',
-            //                 valign: 'middle',
-            //                 sortable: true
-            //             },
-            //             {
-            //                 field: 'yearAction',
-            //                 title: 'Год действия',
-            //                 valign: 'middle',
-            //                 sortable: true
-            //             },
-            //             {
-            //                 field: 'dateCreation',
-            //                 title: 'Дата создания',
-            //                 valign: 'middle',
-            //                 sortable: true
-            //             },
-            //             {
-            //                 field: 'dateLastSave',
-            //                 title: 'Дата последнего сохранения',
-            //                 valign: 'middle',
-            //                 sortable: true
-            //             },
-            //             {
-            //                 field: 'dateArchiv',
-            //                 title: 'Дата архивации',
-            //                 valign: 'middle',
-            //                 sortable: true
-            //             },
-            //             {
-            //                 field: 'actor',
-            //                 title: 'Исполнитель',
-            //                 valign: 'middle',
-            //                 sortable: true
-            //             },
-            //             {
-            //                 field: 'responsible',
-            //                 title: 'Ответственный',
-            //                 valign: 'middle',
-            //                 sortable: true
-            //             },
-            //             {
-            //                 field: 'curator',
-            //                 title: 'Куратор',
-            //                 valign: 'middle',
-            //                 sortable: true
-            //             }
-            //         ]
-            //     });
-            // }
+
 
         });
 

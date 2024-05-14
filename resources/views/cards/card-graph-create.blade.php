@@ -9,13 +9,13 @@
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
-                <h2 class="mb-4"><strong>Карточка графика</strong></h2>
+                <h2 class="mb-4"><strong>Создание карточки графика: "{{ $nameGraph }}"</strong></h2>
             </div>
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-success">Сохранить</button>
-                    <button type="button" class="btn btn-secondary me-5">Закрыть</button>
-                    <button type="button" class="btn btn-success">Выгрузить PDF</button>
+                    <button type="button" class="btn btn-success saveCardGraph">Сохранить</button>
+                    <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
+                    <button type="button" class="btn btn-success d-none">Выгрузить PDF</button>
                 </div>
             </div>
 
@@ -36,23 +36,29 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
+                                    <input type="" name="cards_ids" value="{{ implode(',', $selectedIds) }}">
                                     <button class="btn btn-primary">Заархивировать</button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Наименование объекта</label>
+                                            <input name="name" value="{{ $nameGraph }}" class="form-control w-100" readonly>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид инфраструктуры</label>
-                                            <input name="" placeholder="Введите вид инфраструктуры"
-                                                   class="form-control w-100">
+                                            <input name="infrastructure" value="{{ $selectedObjectMain->first()->infrastructure }}"
+                                                   class="form-control w-100" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Куратор</label>
-                                            <input name="" placeholder="Введите куратора"
+                                            <input name="curator" placeholder="Введите куратора"
                                                    class="form-control w-100">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Год действия</label>
-                                            <input class="form-control w-100" name=""
+                                            <input class="form-control w-100" name="year_action"
                                                    placeholder="Введите год действия">
                                         </div>
                                     </div>
@@ -60,24 +66,24 @@
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата создания</label>
-                                            <input class="form-control w-100" name=""
+                                            <input type="date" class="form-control w-100" name="date_create"
                                                    placeholder="Введите дату создания">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата последнего сохранения</label>
-                                            <input class="form-control w-100" name=""
+                                            <input type="date" class="form-control w-100" name="date_last_save"
                                                    placeholder="Введите дату последнего сохранения">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата архивации</label>
-                                            <input class="form-control w-100" name=""
+                                            <input type="date" class="form-control w-100" name="date_archive"
                                                    placeholder="Введите дату архивации">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        {{-- ДОКУМЕНТАЦИЯ --}}
+                        {{-- ГРАФИК TPM --}}
                         <div class="member_card_style documentation">
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
@@ -89,7 +95,7 @@
                                            data-search="true"
                                            data-show-refresh="true"
                                            data-show-toggle="true"
-                                           data-show-fullscreen="true"
+{{--                                           data-show-fullscreen="true"--}}
                                            data-show-columns="true"
                                            data-show-columns-toggle-all="true"
                                            data-detail-view="true"
@@ -97,10 +103,10 @@
                                            data-click-to-select="true"
                                            data-detail-formatter="detailFormatter"
                                            data-minimum-count-columns="2"
-                                           data-show-pagination-switch="true"
-                                           data-pagination="true"
+{{--                                           data-show-pagination-switch="true"--}}
+{{--                                           data-pagination="true"--}}
                                            data-id-field="id"
-                                           data-show-footer="true"
+{{--                                           data-show-footer="true"--}}
                                            data-side-pagination="server"
                                            data-response-handler="responseHandler">
                                         <thead>
@@ -128,24 +134,41 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr data-id="1">
-                                                <td></td>
-                                                <td>1</td>
-                                                <td>Сварочное оборудование JASIC MIG 3500 TECH N222</td>
-                                                <td>из карточки объекта</td>
-                                                <td>РР</td>
-                                                <td>РР</td>
-                                                <td>РР</td>
-                                                <td>ТО</td>
-                                                <td>РР</td>
-                                                <td>РР</td>
-                                                <td>РР</td>
-                                                <td>РР</td>
-                                                <td>РР</td>
-                                                <td>КР</td>
-                                                <td>КР</td>
-                                                <td>КР</td>
-                                            </tr>
+                                        @php $rowIndex = 1; @endphp
+                                            @foreach($selectedObjectMain as $index => $object)
+                                                @foreach ($object->services as $service)
+                                                <tr>
+                                                    <td></td>
+                                                    <td>{{ $rowIndex }}</td>
+                                                    <td>{{ $object->name }}</td>
+                                                    <td>{{ $object->number }}</td>
+                                                    @for($i = 1; $i <= 12; $i++)
+                                                        <td>
+                                                            @php
+                                                                $maintenanceExists = false;
+                                                                $maintenanceType = ' ';
+//                                                                foreach ($object->services as $service) {
+                                                                    $plannedMaintenanceDate = $service->planned_maintenance_date;
+                                                                    $service_type = $service->service_type;
+                                                                    $month = date('n', strtotime($plannedMaintenanceDate));
+                                                                    if ($month == $i) {
+                                                                        $maintenanceExists = true;
+                                                                        // Найти соответствующий тип обслуживания в массиве $maintenance
+                                                                        foreach ($maintenance as $item) {
+                                                                            if ($service->service_type == $item['service_type']) {
+                                                                                $maintenanceType = $item['short_name'];
+                                                                                break;
+                                                                            }
+                                                                        }
+//                                                                    }
+                                                                }
+                                                               echo $maintenanceExists ? $maintenanceType : ' ';
+                                                            @endphp
+                                                        </td>
+                                                    @endfor
+                                                </tr>
+                                                @php $rowIndex++; @endphp
+                                            @endforeach @endforeach
                                         </tbody>
                                     </table>
                                 </div>
@@ -157,7 +180,8 @@
         </div>
 
         <script>
-            $(document).ready(function () {
+            document.addEventListener('DOMContentLoaded', function () {
+            // $(document).ready(function () {
                 $("#cardGraphTab").show;
 
                 let $table = $('#reestrCardGraph');
@@ -221,111 +245,43 @@
                     $('#locale').change(initTable);
                 });
 
-                // // СКРИПТ ТАБЛИЦЫ
-                // var $table = $('#cardGraphTable');
-                // initTable($table);
-                // // инициализация таблицы и ее настроек
-                // function initTable($table) {
-                //     $table.bootstrapTable({
-                //         locale: $('#locale').val(),
-                //         pagination: true,
-                //         pageNumber: 1,
-                //         pageSize: 5,
-                //         pageList: [5, 15, 50, 'all'],
-                //         columns: [
-                //             {
-                //                 field: 'id',
-                //                 title: '№ п/п',
-                //                 valign: 'middle',
-                //                 sortable: true,
-                //             },
-                //             {
-                //                 field: 'a',
-                //                 title: 'Наименование объекта',
-                //                 valign: 'middle',
-                //                 sortable: true,
-                //             },
-                //             {
-                //                 field: 's',
-                //                 title: 'Инв./заводской №',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'd',
-                //                 title: 'Янв.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'f',
-                //                 title: 'Фев.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'g',
-                //                 title: 'Мар.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'h',
-                //                 title: 'Апр.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'j',
-                //                 title: 'Май',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'k',
-                //                 title: 'Июн.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'l',
-                //                 title: 'Июл.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'z',
-                //                 title: 'Авг.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'x',
-                //                 title: 'Сен.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'c',
-                //                 title: 'Окт.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'v',
-                //                 title: 'Ноя.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             },
-                //             {
-                //                 field: 'b',
-                //                 title: 'Дек.',
-                //                 valign: 'middle',
-                //                 sortable: true
-                //             }
-                //         ]
-                //     });
-                // }
+                let formData = new FormData();``
+
+                $(".saveCardGraph").click(function () {
+                    // Собираем данные с основной формы
+                    // Получаем данные с элементов формы
+                    formData.append('name', $("input[name=name]").val());
+                    formData.append('infrastructure_type', $("input[name=infrastructure]").val());
+                    formData.append('cards_ids', $("input[name=cards_ids]").val());
+
+                    formData.append('curator', $("input[name=curator]").val());
+                    formData.append('year_action', $("input[name=year_action]").val());
+                    formData.append('date_create', $("input[name=date_create]").val());
+                    formData.append('date_last_save', $("input[name=date_last_save]").val());
+                    formData.append('date_archive', $("input[name=date_archive]").val());
+
+                    // Отправляем данные на сервер
+                    $.ajax({
+                        type: "POST",
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        url: "/save-cardGraph-data/{{ $object->id }}",
+                        data: formData,
+                        processData: false, // Не обрабатывать данные
+                        contentType: false, // Не устанавливать тип содержимого
+                        success: function (response) {
+                            // Обработка успешного ответа от сервера (например, отображение сообщения об успешном сохранении)
+                            alert("Данные успешно сохранены!");
+                            console.log(formData);
+                        },
+                        error: function (error) {
+                            // Обработка ошибки при сохранении данных
+                            alert("Ошибка при сохранении данных!");
+                            console.log(formData);
+                        }
+                    });
+                });
             });
         </script>
 @endsection
