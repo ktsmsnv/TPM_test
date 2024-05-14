@@ -30,8 +30,26 @@ class HomeController extends Controller
         return view('home', compact('breadcrumbs', 'objects'));
     }
     public function getObjects() {
-        // Получаем объекты инфраструктуры с их сервисами
-        $objects = CardObjectMain::with(['services', 'workOrders'])->get();
+//        // Получаем объекты инфраструктуры с их сервисами
+//        $objects = CardObjectMain::with(['services', 'workOrders'])->get();
+
+        // Получение текущего пользователя и его роли
+        $user = Auth::user();
+        $role = $user->role;
+
+        // Получение объектов с соответствующими услугами
+        if ($role === 'executor') {
+            $objects = CardObjectMain::whereHas('services', function ($query) use ($user) {
+                $query->where('performer', $user->name);
+            })->with(['services', 'workOrders'])->get();
+        } elseif ($role === 'responsible') {
+            $objects = CardObjectMain::whereHas('services', function ($query) use ($user) {
+                $query->where('responsible', $user->name);
+            })->with(['services', 'workOrders'])->get();
+        } else { // Для ролей curator и admin выводим все объекты
+            $objects = CardObjectMain::with(['services', 'workOrders'])->get();
+        }
+
         // Создаем массив для хранения всех данных
         $formattedObjects = [];
         // Проходимся по каждому объекту и выбираем все поля

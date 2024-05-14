@@ -32,7 +32,7 @@
                                     <option value="responsible">Ответственный за обслуживание</option>
                                     <option value="executor">Исполнитель обслуживания</option>
                                     <option value="curator">Куратор</option>
-                                    <option value="curator">Администратор</option>
+                                    <option value="admin">Администратор</option>
                                 </select>
                             </div>
                         </div>
