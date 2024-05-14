@@ -10,6 +10,20 @@ use Illuminate\Http\Request;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use Carbon\Carbon;
 
+use Illuminate\Support\Facades\DB;
+use Mpdf\MpdfException;
+use PhpOffice\PhpWord\Exception\CopyFileException;
+use PhpOffice\PhpWord\Exception\CreateTemporaryFileException;
+use PhpOffice\PhpWord\Exception\Exception;
+use PhpOffice\PhpWord\TemplateProcessor;
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\IOFactory;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
+use Mpdf\Mpdf;
+
+
 // --------------- контроллер для отображения данных на страницы ---------------
 class workOrderController extends Controller
 {
@@ -170,5 +184,89 @@ class workOrderController extends Controller
 
         return response()->json(['message' => 'Заказ-наряд успешно завершен'], 200);
     }
+
+
+    /**
+     * @throws CopyFileException
+     * @throws CreateTemporaryFileException
+     * @throws Exception
+     */
+    public function downloadPDF_create($id)
+    {
+        // Находим заказ-наряд по его ID
+        $workOrder = CardWorkOrder::findOrFail($id);
+
+        // Получаем данные о связанных записях с предварительной загрузкой связанных услуг и их типов работ
+        $cardObjectMain = CardObjectMain::with(['services' => function ($query) use ($workOrder) {
+            $query->with(['services_types'])->where('_id', $workOrder->card_object_services_id);
+        }])->find($workOrder->card_id);
+
+        // Получаем все данные о связанных услугах из card_object_services
+        $cardObjectServices = $cardObjectMain->services->first();
+
+        // Извлекаем типы работ из первой услуги
+        $serviceTypes = $cardObjectServices->services_types;
+
+        // Получаем данные для вставки в шаблон
+        $data = [
+            'name' => $cardObjectMain->name,
+            'infrastructure' => $cardObjectMain->infrastructure,
+            'performer' => $cardObjectServices->performer,
+            'responsible' => $cardObjectServices->responsible,
+            'location' => $cardObjectMain->location,
+            'number' => $cardObjectMain->number,
+            'planned_maintenance_date' => $cardObjectServices->planned_maintenance_date,
+            'consumable_materials' => $cardObjectServices->consumable_materials,
+            'type_works' => $serviceTypes->pluck('type_work')->toArray(),
+        ];
+
+        // Путь к вашему шаблону Word
+        $templatePath = storage_path('app/templates/workOrderTemplate.docx');
+
+        // Загружаем шаблон Word
+        $templateProcessor = new TemplateProcessor($templatePath);
+
+        // Клонируем строки для каждого типа работ
+        $templateProcessor->cloneRow('type_work', count($serviceTypes));
+
+        // Обход каждого типа работ и добавление значений в соответствующие ячейки
+        foreach ($serviceTypes as $index => $type) {
+            $templateProcessor->setValue('type_work#' . ($index + 1), (string) $type->type_work);
+        }
+
+
+        foreach ($data as $key => $value) {
+            // Преобразуем массив строк в одну строку
+            if (is_array($value)) {
+                $value = implode("\n", $value);
+            }
+            // Преобразуем $value в строку перед вставкой в шаблон
+            $templateProcessor->setValue($key, (string) $value);
+        }
+
+
+        // Путь к новому документу Word
+        $docxFilePath = storage_path('app/generated/workOrderProcessed.docx');
+
+        // Сохраняем изменения в новом документе Word
+        $templateProcessor->saveAs($docxFilePath);
+
+        return $docxFilePath;
+    }
+
+
+    public function downloadPDF($id)
+    {
+// Создаем Word документ
+        $docxFilePath = $this->downloadPDF_create($id);
+
+        // Определяем имя файла для скачивания
+        $fileName = 'Карточка_заказ-наряда_' . $id . '.docx';
+
+        // Возвращаем Word-файл как ответ на запрос с заголовком для скачивания
+        return response()->download($docxFilePath, $fileName);
+    }
+
+
 
 }
