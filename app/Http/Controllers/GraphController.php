@@ -7,6 +7,7 @@ use App\Models\CardObjectMainDoc;
 use App\Models\CardObjectServices;
 use App\Models\CardObjectMain;
 use App\Models\CardObjectServicesTypes;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
@@ -109,8 +110,7 @@ class GraphController extends Controller
 //        $data_CardObjectMain = CardObjectMain::with(['graph'])->find($id);
 
         $data_CardGraph =  CardGraph::findOrFail($id);
-//        dd($data_CardGraph);
-
+//dd($data_CardGraph);
         $maintenance = [
             ['id' => 1, 'service_type' => 'Регламентные работы', 'short_name' => 'РР'],
             ['id' => 2, 'service_type' => 'Техническое обслуживание', 'short_name' => 'ТО'],
@@ -167,6 +167,35 @@ class GraphController extends Controller
 
         // Возвращаем успешный ответ или редирект на страницу карточки объекта
         return response()->json(['success' => 'Данные карточки объекта успешно обновлены'], 200);
+    }
+
+    public function archiveGraphDateButt(Request $request)
+    {
+        $date_archive = Carbon::now()->format('Y-m-d');
+        $cardId = $request->id;
+        $card = CardGraph::find($cardId);
+        // Проверяем, найдена ли карточка
+        if (!$card) {
+            // Если карточка не найдена, возвращаем ошибку или редирект на страницу ошибки
+            return response()->json(['error' => 'Карточка объекта не найдена'], 404);
+        }
+
+        // Найдите заказ-наряд по его ID и обновите фактическую дату и статус
+        $card->date_archive = $date_archive;
+        $card->save();
+
+//        $newWorkOrder_history = new HistoryCardWorkOrder();
+//        $newWorkOrder_history->card_id = $card->card_id; // Связываем заказ-наряд с выбранной карточкой объекта
+//        $newWorkOrder_history->card_object_services_id = $card->card_object_services_id; // Связываем заказ-наряд с ближайшей услугой
+//        $newWorkOrder_history->date_create =  $card->date_create;
+//        $newWorkOrder_history->status =  $request->status; // Устанавливаем статус
+//        $newWorkOrder_history->date_fact = $card;
+//        // Присваиваем номер заказа-наряда
+//        $newWorkOrder_history->number = $workOrder->number;
+//        $newWorkOrder_history->save();
+
+
+        return response()->json(['message' => 'Карточка графика успешно заархивирована'], 200);
     }
 
     // --------------- удаление карточки заказ-наряда ---------------

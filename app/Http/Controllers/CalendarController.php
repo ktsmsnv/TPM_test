@@ -64,7 +64,7 @@ class CalendarController extends Controller
 
     public function archiveCalendar(Request $request) {
         $calendarId = $request->id;
-        $dateArchive = Carbon::now()->format('d-m-Y');
+        $dateArchive = Carbon::now()->format('Y-m-d');
 
         $calendar = cardcalendar::findOrFail($calendarId);
         $calendar->date_archive = $dateArchive;

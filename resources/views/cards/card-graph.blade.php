@@ -16,7 +16,8 @@
                     <a href="/pageReestrGraph" type="button" class="btn btn-secondary me-5">Закрыть</a>
                     <button type="button" class="btn btn-success" data-toggle="tooltip"
                             title="ДАННАЯ КНОПКА ПОКА НЕ РАБОТАЕТ">Выгрузить PDF</button>
-                    <a href="{{ route('cardGraph-edit', ['id' => $data_CardGraph->_id]) }}" target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
+                    <a href="{{ route('cardGraph-edit', ['id' => $data_CardGraph->_id]) }}"
+                       target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
                 </div>
             </div>
 
@@ -37,23 +38,23 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-{{--                                    <button class="btn btn-primary">Заархивировать</button>--}}
+                                    <button class="btn btn-primary" id="confirmArchiveGraph">Заархивировать</button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид инфраструктуры</label>
-                                            <input name="" placeholder="Введите вид инфраструктуры" class="form-control w-100"
+                                            <input name="infrastructure_type" placeholder="Введите вид инфраструктуры" class="form-control w-100"
                                                    readonly value="{{ $data_CardGraph->infrastructure_type ?? 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Куратор</label>
-                                            <input name="" placeholder="Введите куратора" class="form-control w-100"
+                                            <input name="curator" placeholder="Введите куратора" class="form-control w-100"
                                                    readonly value="{{$data_CardGraph->curator ?? 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Год действия</label>
-                                            <input name="" placeholder="Введите год действия" class="form-control w-100"
+                                            <input name="year_action" placeholder="Введите год действия" class="form-control w-100"
                                                    readonly value="{{$data_CardGraph->year_action ?? 'нет данных' }}">
                                         </div>
                                     </div>
@@ -61,18 +62,23 @@
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата создания</label>
-                                            <input name="" placeholder="Введите дату создания" class="form-control w-100"
+                                            <input name="date_create" placeholder="Введите дату создания" class="form-control w-100"
                                                    readonly value="{{ date('d.m.Y', strtotime($data_CardGraph->date_create)) ?? 'нет данных'  }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата последнего сохранения</label>
-                                            <input name="" placeholder="Введите дату последнего сохранения" class="form-control w-100"
+                                            <input name="date_last_save" placeholder="Введите дату последнего сохранения" class="form-control w-100"
                                                    readonly value="{{ date('d.m.Y', strtotime($data_CardGraph->date_last_save)) ?? 'нет данных'  }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата архивации</label>
-                                            <input name="" placeholder="Введите дату архивации" class="form-control w-100"
+                                            @if ($data_CardGraph && $data_CardGraph->date_archive)
+                                                <input name="date_archive" placeholder="Введите дату архивации" class="form-control w-100"
                                                    readonly value="{{ date('d.m.Y', strtotime($data_CardGraph->date_archive)) ?? 'нет данных'  }}">
+                                            @else
+                                                <input name="date_archive" class="form-control w-100" value="Дата архивации"
+                                                       readonly style="opacity: 0.5;" data-toggle="tooltip" title="Дата архивации появится после нажатия на кнопку Заархивировать">
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -165,6 +171,35 @@
                 </div>
             </div>
         </div>
+
+        <script>
+            $('#confirmArchiveGraph').click(function () {
+                // Устанавливаем текущую дату в поле "Фактическая дата"
+                const currentDate = new Date();
+                const formattedDate = currentDate.toLocaleDateString('ru-RU').split('.').reverse().join('-'); // Форматируем дату в формат dd-mm-yyyy
+                $('input[name="date_archive"]').val(formattedDate);
+                // Отправляем данные в контроллер для сохранения изменений в базе данных
+                $.ajax({
+                    type: "POST",
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: "{{ route('archiveGraphDateButt') }}",
+                    data: {
+                        id: "{{ $data_CardGraph->_id }}", // Здесь нужно передать ID текущего заказа-наряда
+                        date_archive: formattedDate, // Передаем текущую дату
+                    },
+                    success: function (response) {
+                        // Обработка успешного завершения запроса
+                        console.log(response);
+                    },
+                    error: function (error) {
+                        // Обработка ошибки
+                        console.log(error);
+                    }
+                });
+            });
+        </script>
 
         <script>
             $(document).ready(function () {

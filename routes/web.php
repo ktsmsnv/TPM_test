@@ -94,6 +94,8 @@ Route::middleware(['auth'])->group(function () {
         // РЕДАКТИРОВАНИЕ существующей карточки графика TPM
         Route::get('/pageReestrGraph/card-graph/edit/{id}', [App\Http\Controllers\GraphController::class, 'edit'])->name('cardGraph-edit');
         Route::post('/edit-card-graph/save/{id}', [App\Http\Controllers\GraphController::class, 'editSave'])->name('cardGraph-editSave');
+
+    Route::post('/archiveGraphDateButt',  [App\Http\Controllers\GraphController::class, 'archiveGraphDateButt'])->name('archiveGraphDateButt');
     // ----------------------------------------------------------------------------------------------------------------
 
     // ---------------------------- КАРТОЧКА КАЛЕНДАРЯ ----------------------------------------------------------------
