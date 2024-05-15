@@ -16,16 +16,10 @@ use MongoDB\BSON\Binary;
 class GraphController extends Controller
 {
 
-    public function index($id)
+    public function index($id, Request $request)
     {
-        $data_CardGraph = CardGraph::all();
-        $data_CardObjectMain = CardObjectMain::with(['graph'])->find($id);
-//        $data_CardGraph = CardGraph::find('card_id');
-//dd($data_CardGraph);
-//        dd($data_CardObjectMain);
-        $selectedObjectMain = CardObjectMain::where('_id', $id)->get();
-
-        $selectedObjectServices = CardObjectServices::where('card_object_main_id', $id)->get();
+//        $data_CardGraph = CardGraph::with('object.services')->findOrFail($id);
+        $data_CardGraph =  CardGraph::findOrFail($id);
         $maintenance = [
             ['id' => 1, 'service_type' => 'Регламентные работы', 'short_name' => 'РР'],
             ['id' => 2, 'service_type' => 'Техническое обслуживание', 'short_name' => 'ТО'],
@@ -34,8 +28,26 @@ class GraphController extends Controller
             ['id' => 5, 'service_type' => 'Аварийный ремонт', 'short_name' => 'АР'],
         ];
 
-        return view('cards/card-graph', compact( 'data_CardObjectMain', 'data_CardGraph',
-            'selectedObjectMain', 'selectedObjectServices', 'maintenance'));
+        // Преобразуем строку cards_ids в массив
+        $objectIds = explode(',', $data_CardGraph->cards_ids);
+//        dd($objectIds);
+        // Создаем массив для хранения данных объектов
+        $allObjectsData = [];
+
+        // Перебираем все идентификаторы объектов
+        foreach($objectIds as $objectId) {
+            // Удаляем лишние пробелы
+            $objectId = trim($objectId);
+
+            // Получаем объект по идентификатору
+            $cardObject = CardObjectMain::with('services')->findOrFail($objectId);
+
+            // Добавляем данные объекта в массив
+            $allObjectsData[] = $cardObject;
+        }
+//dd($objectIds);
+        // Передаем данные в представление
+        return view('cards/card-graph', compact('data_CardGraph','allObjectsData', 'maintenance'));
     }
 
 
@@ -47,14 +59,15 @@ class GraphController extends Controller
         $selectedObjectMain = CardObjectMain::whereIn('_id', $selectedIds)->get();
 
         // Получаем тип инфраструктуры для первого выбранного объекта
-        $infrastructureName = strtoupper($selectedObjectMain->first()->infrastructure);
-
+        $infrastructureName = $selectedObjectMain->first()->infrastructure;
         // Получаем количество уже существующих карточек графика для данного типа инфраструктуры
         $count = CardGraph::where('infrastructure_type', $infrastructureName)->count();
 
+        $infrastructureName = mb_strtoupper($infrastructureName);
+
         // Формируем название карточки графика
         $nameGraph = "ГОДОВОЙ ГРАФИК TPM ОБЪЕКТОВ $infrastructureName ИНФРАСТРУКТУРЫ #" . ($count + 1);
-
+//dd($selectedIds);
         $maintenance = [
             ['id' => 1, 'service_type' => 'Регламентные работы', 'short_name' => 'РР'],
             ['id' => 2, 'service_type' => 'Техническое обслуживание', 'short_name' => 'ТО'],
@@ -62,7 +75,7 @@ class GraphController extends Controller
             ['id' => 4, 'service_type' => 'Капитальный ремонт', 'short_name' => 'КР'],
             ['id' => 5, 'service_type' => 'Аварийный ремонт', 'short_name' => 'АР'],
         ];
-
+//        dd($selectedObjectMain);
         return view('cards.card-graph-create', compact('selectedObjectMain', 'nameGraph', 'maintenance', 'selectedIds'));
     }
 
@@ -91,12 +104,12 @@ class GraphController extends Controller
     {
 //        $cardGraph_id = CardGraph::all('_id', 'card_id');
 //        $data_CardGraph = CardGraph::where('card_id', $id)->get() and CardGraph::where('_id', $id)->get();
-        $selectedObjectMain = CardObjectMain::where('_id', $id)->get();
-//        dd($selectedObjectMain);
-        $data_CardObjectMain = CardObjectMain::with(['graph'])->find($id);
+//        $selectedObjectMain = CardObjectMain::where('_id', $id)->get();
+////        dd($selectedObjectMain);
+//        $data_CardObjectMain = CardObjectMain::with(['graph'])->find($id);
 
-        $data_CardGraph = CardGraph::with(['object'])->find('_id');
-        dd($data_CardGraph);
+        $data_CardGraph =  CardGraph::findOrFail($id);
+//        dd($data_CardGraph);
 
         $maintenance = [
             ['id' => 1, 'service_type' => 'Регламентные работы', 'short_name' => 'РР'],
@@ -107,13 +120,32 @@ class GraphController extends Controller
         ];
 //        dd($selectedObjectMain);
 //        $breadcrumbs = Breadcrumbs::generate('/card-graph-edit');
-        return view('cards/card-graph-edit', compact('data_CardObjectMain', 'selectedObjectMain', 'maintenance', 'data_CardGraph'));
+        // Преобразуем строку cards_ids в массив
+        $objectIds = explode(',', $data_CardGraph->cards_ids);
+//        dd($objectIds);
+        // Создаем массив для хранения данных объектов
+        $allObjectsData = [];
+
+        // Перебираем все идентификаторы объектов
+        foreach($objectIds as $objectId) {
+            // Удаляем лишние пробелы
+            $objectId = trim($objectId);
+
+            // Получаем объект по идентификатору
+            $cardObject = CardObjectMain::with('services')->findOrFail($objectId);
+
+            // Добавляем данные объекта в массив
+            $allObjectsData[] = $cardObject;
+        }
+//dd($objectIds);
+        // Передаем данные в представление
+        return view('cards/card-graph-edit', compact('data_CardGraph','allObjectsData', 'maintenance'));
     }
 
     public function editSave(Request $request, $id)
     {
         // Находим карточку объекта по переданному идентификатору
-        $card = CardGraph::where('_id', $id)->get();
+        $card = CardGraph::find($id);
         // Проверяем, найдена ли карточка
         if (!$card) {
             // Если карточка не найдена, возвращаем ошибку или редирект на страницу ошибки
@@ -135,6 +167,19 @@ class GraphController extends Controller
 
         // Возвращаем успешный ответ или редирект на страницу карточки объекта
         return response()->json(['success' => 'Данные карточки объекта успешно обновлены'], 200);
+    }
+
+    // --------------- удаление карточки заказ-наряда ---------------
+    public function deleteCardGraph(Request $request)
+    {
+        $ids = $request->ids;
+        // Обновляем записи, устанавливая значение deleted в 1
+        foreach ($ids as $id) {
+            // Удалить записи из связанных таблиц
+            CardGraph::find($id)->delete();
+        }
+
+        return response()->json(['success' => true], 200);
     }
 
 }

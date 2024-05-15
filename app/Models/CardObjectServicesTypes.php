@@ -14,6 +14,6 @@ protected $fillable = ['card_id', 'card_services_id', 'type_work'];
     }
     public function cardObjectMain()
     {
-        return $this->belongsTo(CardObjectMain::class, 'card_id');
+        return $this->belongsTo(CardObjectMain::class, 'cards_ids');
     }
 }

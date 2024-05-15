@@ -95,7 +95,6 @@
                                            data-search="true"
                                            data-show-refresh="true"
                                            data-show-toggle="true"
-{{--                                           data-show-fullscreen="true"--}}
                                            data-show-columns="true"
                                            data-show-columns-toggle-all="true"
                                            data-detail-view="true"
@@ -103,10 +102,7 @@
                                            data-click-to-select="true"
                                            data-detail-formatter="detailFormatter"
                                            data-minimum-count-columns="2"
-{{--                                           data-show-pagination-switch="true"--}}
-{{--                                           data-pagination="true"--}}
                                            data-id-field="id"
-{{--                                           data-show-footer="true"--}}
                                            data-side-pagination="server"
                                            data-response-handler="responseHandler">
                                         <thead>
@@ -134,9 +130,9 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                        @php $rowIndex = 1; @endphp
+                                            @php $rowIndex = 1; @endphp
                                             @foreach($selectedObjectMain as $index => $object)
-                                                @foreach ($object->services as $service)
+{{--                                                @foreach ($object->services as $service)--}}
                                                 <tr>
                                                     <td></td>
                                                     <td>{{ $rowIndex }}</td>
@@ -147,28 +143,30 @@
                                                             @php
                                                                 $maintenanceExists = false;
                                                                 $maintenanceType = ' ';
-//                                                                foreach ($object->services as $service) {
+                                                                $maintenanceTypes = [];
+                                                                foreach ($object->services as $service) {
                                                                     $plannedMaintenanceDate = $service->planned_maintenance_date;
                                                                     $service_type = $service->service_type;
                                                                     $month = date('n', strtotime($plannedMaintenanceDate));
                                                                     if ($month == $i) {
                                                                         $maintenanceExists = true;
                                                                         // Найти соответствующий тип обслуживания в массиве $maintenance
-                                                                        foreach ($maintenance as $item) {
-                                                                            if ($service->service_type == $item['service_type']) {
-                                                                                $maintenanceType = $item['short_name'];
-                                                                                break;
+                                                                            foreach ($maintenance as $item) {
+                                                                                if ($service->service_type == $item['service_type']) {
+                                                                                    $maintenanceTypes[] = $item['short_name'];
+                                                                                    break;
+                                                                                }
                                                                             }
                                                                         }
-//                                                                    }
                                                                 }
-                                                               echo $maintenanceExists ? $maintenanceType : ' ';
+                                                                echo implode(', ', $maintenanceTypes);
                                                             @endphp
                                                         </td>
                                                     @endfor
                                                 </tr>
                                                 @php $rowIndex++; @endphp
-                                            @endforeach @endforeach
+{{--                                            @endforeach --}}
+                                            @endforeach
                                         </tbody>
                                     </table>
                                 </div>

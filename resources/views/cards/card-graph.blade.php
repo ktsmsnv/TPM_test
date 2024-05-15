@@ -9,14 +9,14 @@
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
-                <h1 class="mb-4"><strong>Карточка графика: "{{ $data_CardObjectMain->name ?? 'Название объекта не найдено' }}"</strong></h1>
+                <h1 class="mb-4"><strong>Карточка графика: "{{ $data_CardGraph->name ?? 'Название объекта не найдено' }}"</strong></h1>
             </div>
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
                     <a href="/pageReestrGraph" type="button" class="btn btn-secondary me-5">Закрыть</a>
-                    <button type="button" class="btn btn-success">Выгрузить PDF</button>
-                    <a href="{{ route('cardGraph-edit', ['id' => $data_CardObjectMain->_id]) }}" target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
-                    <a href="/home/card-object/{{$data_CardObjectMain->id}}" target="_blank" type="button" class="btn btn-primary me-5">Открыть карточку объекта</a>
+                    <button type="button" class="btn btn-success" data-toggle="tooltip"
+                            title="ДАННАЯ КНОПКА ПОКА НЕ РАБОТАЕТ">Выгрузить PDF</button>
+                    <a href="{{ route('cardGraph-edit', ['id' => $data_CardGraph->_id]) }}" target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
                 </div>
             </div>
 
@@ -44,17 +44,17 @@
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид инфраструктуры</label>
                                             <input name="" placeholder="Введите вид инфраструктуры" class="form-control w-100"
-                                                   readonly value="{{ $data_CardObjectMain->graph->first()->infrastructure ?? 'нет данных' }}">
+                                                   readonly value="{{ $data_CardGraph->infrastructure_type ?? 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Куратор</label>
                                             <input name="" placeholder="Введите куратора" class="form-control w-100"
-                                                   readonly value="{{$data_CardObjectMain->graph->first()->curator ?? 'нет данных' }}">
+                                                   readonly value="{{$data_CardGraph->curator ?? 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Год действия</label>
                                             <input name="" placeholder="Введите год действия" class="form-control w-100"
-                                                   readonly value="{{$data_CardObjectMain->graph->first()->year_action ?? 'нет данных' }}">
+                                                   readonly value="{{$data_CardGraph->year_action ?? 'нет данных' }}">
                                         </div>
                                     </div>
 
@@ -62,23 +62,23 @@
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата создания</label>
                                             <input name="" placeholder="Введите дату создания" class="form-control w-100"
-                                                   readonly value="{{ date('d.m.Y', strtotime($data_CardObjectMain->graph->first()->date_create)) ?? 'нет данных'  }}">
+                                                   readonly value="{{ date('d.m.Y', strtotime($data_CardGraph->date_create)) ?? 'нет данных'  }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата последнего сохранения</label>
                                             <input name="" placeholder="Введите дату последнего сохранения" class="form-control w-100"
-                                                   readonly value="{{ date('d.m.Y', strtotime($data_CardObjectMain->graph->first()->date_last_save)) ?? 'нет данных'  }}">
+                                                   readonly value="{{ date('d.m.Y', strtotime($data_CardGraph->date_last_save)) ?? 'нет данных'  }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата архивации</label>
                                             <input name="" placeholder="Введите дату архивации" class="form-control w-100"
-                                                   readonly value="{{ date('d.m.Y', strtotime($data_CardObjectMain->graph->first()->date_archive)) ?? 'нет данных'  }}">
+                                                   readonly value="{{ date('d.m.Y', strtotime($data_CardGraph->date_archive)) ?? 'нет данных'  }}">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        {{-- ДОКУМЕНТАЦИЯ --}}
+                        {{-- ГРАФИК TPM --}}
                         <div class="member_card_style documentation">
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
@@ -124,41 +124,39 @@
                                         </thead>
                                         <tbody>
                                         @php $rowIndex = 1; @endphp
-                                        @foreach($selectedObjectMain as $index => $object)
-                                            @foreach ($object->services as $service)
-                                                <tr>
-                                                    <td></td>
-                                                    <td>{{ $rowIndex }}</td>
-                                                    <td>{{ $object->name }}</td>
-                                                    <td>{{ $object->number }}</td>
-                                                    @for($i = 1; $i <= 12; $i++)
-                                                        <td>
-                                                            @php
-                                                                $maintenanceExists = false;
-                                                                $maintenanceType = ' ';
-//                                                                foreach ($object->services as $service) {
-                                                                    $plannedMaintenanceDate = $service->planned_maintenance_date;
-                                                                    $service_type = $service->service_type;
-                                                                    $month = date('n', strtotime($plannedMaintenanceDate));
-                                                                    if ($month == $i) {
-                                                                        $maintenanceExists = true;
-                                                                        // Найти соответствующий тип обслуживания в массиве $maintenance
-                                                                        foreach ($maintenance as $item) {
-                                                                            if ($service->service_type == $item['service_type']) {
-                                                                                $maintenanceType = $item['short_name'];
-                                                                                break;
-                                                                            }
+                                        @foreach($allObjectsData as $cardObject)
+                                            <tr>
+                                                <td></td>
+                                                <td>{{ $rowIndex }}</td>
+                                                <td>{{ $cardObject->name }}</td>
+                                                <td>{{ $cardObject->number }}</td>
+                                                @for($i = 1; $i <= 12; $i++)
+                                                    <td>
+                                                        @php
+                                                            $maintenanceExists = false;
+                                                            $maintenanceTypes = [];
+                                                            foreach ($cardObject->services as $service) {
+                                                                $plannedMaintenanceDate = $service->planned_maintenance_date;
+                                                                $service_type = $service->service_type;
+                                                                $month = date('n', strtotime($plannedMaintenanceDate));
+                                                                if ($month == $i) {
+                                                                    $maintenanceExists = true;
+                                                                    foreach ($maintenance as $item) {
+                                                                        if ($service_type == $item['service_type']) {
+                                                                            $maintenanceTypes[] = $item['short_name'];
                                                                         }
-//                                                                    }
+                                                                    }
                                                                 }
-                                                               echo $maintenanceExists ? $maintenanceType : ' ';
-                                                            @endphp
-                                                        </td>
-                                                    @endfor
-                                                </tr>
-                                                @php $rowIndex++; @endphp
-                                            @endforeach @endforeach
+                                                            }
+                                                            echo implode(', ', $maintenanceTypes);
+                                                        @endphp
+                                                    </td>
+                                                @endfor
+                                            </tr>
+                                            @php $rowIndex++; @endphp
+                                        @endforeach
                                         </tbody>
+
                                     </table>
                                 </div>
                             </div>

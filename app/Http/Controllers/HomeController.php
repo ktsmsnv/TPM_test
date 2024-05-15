@@ -199,18 +199,102 @@ class HomeController extends Controller
         return redirect()->back()->with('success', 'Пароль успешно изменен.');
     }
 
-    public function reestrGraphView( Request $request)
+    public function reestrGraphView(Request $request)
     {
-        // Генерация хлебных крошек
-//        $breadcrumbs = Breadcrumbs::generate('reestr-graphs');
-        $objects = CardGraph::all();
-        $selectedObjectMain = CardObjectMain::all();
-        $selectedObjectServices = CardObjectServices::all();
-//        dd($selectedObjectMain);
+        // Получаем все карточки графика
+        $cardGraphs = CardGraph::with(['object', 'services'])->get();
+//        $cardGraphs = CardGraph::all();
+//        $cardGraphs = CardGraph::with('object')->get();
+//        $cardGraphs = CardObjectMain::all();
+        // Создаем пустые массивы для хранения данных performer и responsible
+        $allPerformers = [];
+        $allResponsibles = [];
 
-        // Возвращение представления с передачей хлебных крошек
-        return view('reestrs/reestrGraph', compact('objects','selectedObjectMain','selectedObjectServices'));
+        // Перебираем все карточки графика
+        foreach ($cardGraphs as $object) {
+            // Проверяем наличие связанных записей в cardObjectServices
+            if ($object->cardObjectServices->isNotEmpty()) {
+                // Если есть связанные записи, перебираем их
+                foreach ($object->cardObjectServices as $service) {
+                    // Добавляем данные performer и responsible в соответствующие массивы
+                    $allPerformers[] = $service->performer;
+                    $allResponsibles[] = $service->responsible;
+                }
+            }
+        }
+//        dd($cardGraphs);
+        // Возвращаем представление с передачей данных
+        return view('reestrs/reestrGraph', compact('cardGraphs', 'allPerformers', 'allResponsibles'));
     }
+
+    public function getCardGraph() {
+        // Получаем объекты инфраструктуры с их сервисами
+        $objects = CardGraph::with(['object', 'services'])->get();
+//        dd($objects);
+        // Создаем массив для хранения всех данных
+        $formattedGraphs = [];
+        // Проходимся по каждому объекту и выбираем все поля
+        foreach ($objects as $object) {
+            // Разделяем cards_ids на массив
+            $cardsIds = explode(',', $object->cards_ids);
+
+            // Создаем массив для хранения всех сервисов
+            $allServices = [];
+
+            // Обрабатываем каждый cards_ids отдельно
+            foreach ($cardsIds as $cardId) {
+                // Получаем объект инфраструктуры для данного cards_ids
+                $cardObject = CardObjectMain::find($cardId);
+
+                // Если объект найден, добавляем все его связанные записи CardObjectServices в массив
+                if ($cardObject) {
+                    $allServices = array_merge($allServices, $cardObject->services->toArray());
+                }
+            }
+
+            // Добавляем объект к массиву с отформатированными данными
+            $formattedGraph = [
+                'id' => $object->id,
+                'infrastructure_type' => $object->infrastructure_type,
+                'name' => $object->name,
+                'curator' => $object->curator,
+                'year_action' => $object->year_action,
+                'date_create' => $object->date_create,
+                'date_last_save' => $object->date_last_save,
+                'date_archive' => $object->date_archive,
+                'object' => [
+                    'infrastructure' => $cardObject ? $cardObject->infrastructure : null,
+                    'name' => $cardObject ? $cardObject->name : null,
+                    'number' => $cardObject ? $cardObject->number : null,
+                    'location' => $cardObject ? $cardObject->location : null,
+                    'date_arrival' => $cardObject ? $cardObject->date_arrival : null,
+                    'date_usage' => $cardObject ? $cardObject->date_usage : null,
+                    'date_cert_end' => $cardObject ? $cardObject->date_cert_end : null,
+                    'date_usage_end' => $cardObject ? $cardObject->date_usage_end : null,
+                ],
+                'services' => array_map(function($service) {
+                    return [
+                        'service_type' => $service['service_type'],
+                        'short_name' => $service['short_name'],
+                        'performer' => $service['performer'],
+                        'responsible' => $service['responsible'],
+                        'frequency' => $service['frequency'],
+                        'prev_maintenance_date' => $service['prev_maintenance_date'],
+                        'planned_maintenance_date' => $service['planned_maintenance_date'],
+                        'calendar_color' => isset($service['calendar_color']) ? $service['calendar_color'] : null,
+                        'consumable_materials' => isset($service['consumable_materials']) ? $service['consumable_materials'] : null,
+                        'work_order' => isset($service['card_work_orders'][0]) ? route('workOrder.show', ['id' => $service['card_work_orders'][0]['_id']]) : null,
+                    ];
+                }, $allServices)
+            ];
+
+            // Добавляем объект к массиву с отформатированными данными
+            $formattedGraphs[] = $formattedGraph;
+        }
+        // Возвращаем все данные в формате JSON с правильным заголовком Content-Type
+        return response()->json($formattedGraphs);
+    }
+
 
     public function reestrWorkOrdersView()
     {
