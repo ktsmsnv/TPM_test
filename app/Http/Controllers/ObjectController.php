@@ -81,17 +81,25 @@ class ObjectController extends Controller
         // Получаем пользователей с ролью 'responsible'
         $responsibles = $this->getUsersByRole('responsible');
 
+        $curators = User::all();
+
         $breadcrumbs = Breadcrumbs::generate('card-object-create');
-        return view('cards/card-object-create', compact('breadcrumbs', 'executors', 'responsibles'));
+        return view('cards/card-object-create', compact('breadcrumbs', 'executors', 'responsibles', 'curators'));
     }
 
     // ------------------  РЕДАКТИРОВАНИЕ карточки объекта (переход на страницу) ------------------
     public function edit($id)
-    {
+    {        // Получаем пользователей с ролью 'executor'
+        $executors = $this->getUsersByRole('executor');
+
+        // Получаем пользователей с ролью 'responsible'
+        $responsibles = $this->getUsersByRole('responsible');
+
+        $curators = User::all();
         $data_CardObjectMain = CardObjectMain::find($id);
         $data_CardObjectMainDocs = CardObjectMainDoc::where('card_object_main_id', $id)->get();
 //        $breadcrumbs = Breadcrumbs::generate('/card-object/edit');
-        return view('cards/card-object-edit', compact('data_CardObjectMain', 'data_CardObjectMainDocs'));
+        return view('cards/card-object-edit', compact('data_CardObjectMain', 'data_CardObjectMainDocs', 'executors', 'responsibles', 'curators'));
     }
 
 
@@ -101,6 +109,7 @@ class ObjectController extends Controller
         // Обработка сохранения основных данных карточки
         $card = new CardObjectMain();
         $card->infrastructure = $request->infrastructure;
+        $card->curator = $request->curator;
         $card->name = $request->name;
         $card->number = $request->number;
         $card->location = $request->location;
@@ -179,6 +188,7 @@ class ObjectController extends Controller
         // ------------ ИСТОРИЯ ------------
         $history_card = new HistoryCardObjectMain();
         $history_card->infrastructure = $request->infrastructure;
+        $history_card->curator = $request->curator;
         $history_card->name = $request->name;
         $history_card->number = $request->number;
         $history_card->location = $request->location;
@@ -267,6 +277,7 @@ class ObjectController extends Controller
         // Обновляем основные данные карточки объекта
         $card->infrastructure = $request->infrastructure;
         $card->name = $request->name;
+        $card->curator = $request->curator;
         $card->number = $request->number;
         $card->location = $request->location;
         $card->date_arrival = $request->date_arrival;
