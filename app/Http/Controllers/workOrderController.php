@@ -238,11 +238,30 @@ class workOrderController extends Controller
             'number' => $cardObjectMain->number,
             'planned_maintenance_date' => $cardObjectServices->planned_maintenance_date,
             'consumable_materials' => $cardObjectServices->consumable_materials,
+            'service_type' => $cardObjectServices->service_type,
+            'frequency' => $cardObjectServices->frequency,
             'type_works' => $serviceTypes->pluck('type_work')->toArray(),
         ];
 
-        // Путь к вашему шаблону Word
-        $templatePath = storage_path('app/templates/workOrderTemplate.docx');
+        // Получаем значение calendar_color
+        $calendarColor = $cardObjectServices->calendar_color;
+        // Определяем путь к шаблону в зависимости от calendar_color
+        switch ($calendarColor) {
+            case '#ff0000':
+                $templatePath = storage_path('app/templates/red_workOrderTemplate.docx');
+                break;
+            case '#00ff00':
+                $templatePath = storage_path('app/templates/green_workOrderTemplate.docx');
+                break;
+            case '#0000ff':
+                $templatePath = storage_path('app/templates/blue_workOrderTemplate.docx');
+                break;
+            default:
+                // Если calendar_color не соответствует ни одному известному значению, используем общий шаблон
+                $templatePath = storage_path('app/templates/workOrderTemplate.docx');
+                break;
+        }
+
 
         // Загружаем шаблон Word
         $templateProcessor = new TemplateProcessor($templatePath);
