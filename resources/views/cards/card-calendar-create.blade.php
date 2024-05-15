@@ -6,15 +6,13 @@
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
-                <h2 class="mb-4"><strong>Карточка календаря для объекта {{ $cardObjectMain->name }}</strong></h2>
+                <h2 class="mb-4"><strong>Создание картчоки календаря для объекта {{ $cardObjectMain->name }}</strong></h2>
             </div>
             <input type="hidden" name="card_id" value="{{ $cardObjectMain->id }}">
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-danger editCard">Редактировать</button>
-                    <a href="/pageReestrCalendar" type="button" class="btn btn-secondary me-5">Назад</a>
-
-                    <button type="button" class="btn btn-success">Выгрузить PDF</button>
+                    <button type="button" class="btn btn-success saveCard">Сохранить</button>
+                    <a href="/pageReestrCalendar" type="button" class="btn btn-secondary me-5">Закрыть</a>
                     <a href="/home/card-object/{{$cardObjectMain->id}}" target="_blank" type="button" class="btn btn-primary me-5">Открыть карточку объекта</a>
                 </div>
             </div>
@@ -41,9 +39,6 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    <button class="btn btn-primary archive_calendar {{ $cardCalendar->date_archive != null ? 'disabled' : '' }}">
-                                        Заархивировать
-                                    </button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
@@ -67,37 +62,30 @@
                                             <input class="form-control  w-100" name="location" value="{{ $cardObjectMain->location }}" readonly  data-toggle="tooltip" title="изменить можно в карточке объекта 'основная'"
                                                    placeholder="Введите место установки">
                                         </div>
-                                        {{--                                        <div class="d-flex justify-content-between align-items-center gap-3">--}}
-                                        {{--                                            <label class="w-100">Куратор</label>--}}
-                                        {{--                                            <input class="form-control  w-100" name=""--}}
-                                        {{--                                                   placeholder="Введите куратора">--}}
-                                        {{--                                        </div>--}}
+{{--                                        <div class="d-flex justify-content-between align-items-center gap-3">--}}
+{{--                                            <label class="w-100">Куратор</label>--}}
+{{--                                            <input class="form-control  w-100" name=""--}}
+{{--                                                   placeholder="Введите куратора">--}}
+{{--                                        </div>--}}
                                     </div>
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Год действия</label>
-                                            <input type="number" name="year" value="{{ $cardCalendar -> year }}" class="form-control w-100" readonly
-                                                   data-toggle="tooltip" title="изменить можно нажав кнопку редактировать">
+                                            <input type="number" name="year" value="{{ date('Y') }}" min="{{ date('Y') }}" max="{{ date('Y') + 10 }}" class="form-control w-100" placeholder="Введите год действия">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата создания</label>
-                                            <input type="date" name="date_create" class="form-control w-100" value="{{ $cardCalendar -> date_create }}" readonly
-                                                   data-toggle="tooltip" title="дата создания календаря">
+                                            <input type="date" name="date_create" value="{{ date('Y-m-d') }}" style="opacity: 0.5;" class="form-control w-100" placeholder="Введите дату создания" readonly>
                                         </div>
-                                        {{--                                        <div class="d-flex justify-content-between align-items-center gap-3">--}}
-                                        {{--                                            <label class="w-100">Дата последнего сохранения</label>--}}
-                                        {{--                                            <input class="form-control w-100" name=""--}}
-                                        {{--                                                   placeholder="Введите дату последнего сохранения">--}}
-                                        {{--                                        </div>--}}
+{{--                                        <div class="d-flex justify-content-between align-items-center gap-3">--}}
+{{--                                            <label class="w-100">Дата последнего сохранения</label>--}}
+{{--                                            <input class="form-control w-100" name=""--}}
+{{--                                                   placeholder="Введите дату последнего сохранения">--}}
+{{--                                        </div>--}}
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата архивации</label>
-                                            @if ($cardCalendar && $cardCalendar->date_archive !== null)
-                                                <input name="date_archive" class="form-control w-100" value="{{ $cardCalendar->date_archive }}" readonly
-                                                       data-toggle="tooltip" aria-label="дата архивации" title="дата архивации">
-                                            @else
-                                                <input name="date_archive" class="form-control w-100" value="дата архивации"
-                                                       readonly style="opacity: 0.5;" data-toggle="tooltip" aria-label="дата архивации" title="дата архивации">
-                                            @endif
+                                            <input class="form-control  w-100" name="date_archive"
+                                                   placeholder="дата архивации" readonly style="opacity: 0.5;" data-toggle="tooltip" title="дата появится после архивации">
                                         </div>
                                     </div>
                                 </div>
@@ -119,18 +107,15 @@
                                             </div>
                                             <div class="d-flex align-items-center gap-0">
                                                 <label class="w-100">Периодичность</label>
-                                                <input name="services[{{ $index }}][frequency]" value="{{ $service->frequency }}"  class="form-control w-100" readonly
-                                                       data-toggle="tooltip" title="{{ $service->frequency }}">
+                                                <input name="services[{{ $index }}][frequency]" value="{{ $service->frequency }}"  class="form-control w-100" readonly>
                                             </div>
                                             <div class="d-flex align-items-center gap-0">
                                                 <label class="w-100">Исполнитель</label>
-                                                <input name="services[{{ $index }}][performer]" value="{{ $service->performer }}"  class="form-control w-100" readonly
-                                                 data-toggle="tooltip" title="{{ $service->performer }}">
+                                                <input name="services[{{ $index }}][performer]" value="{{ $service->performer }}"  class="form-control w-100" readonly>
                                             </div>
                                             <div class="d-flex align-items-center gap-0">
                                                 <label class="w-100">Ответственный</label>
-                                                <input name="services[{{ $index }}][responsible]" value="{{ $service->responsible }}"  class="form-control w-100" readonly
-                                                 data-toggle="tooltip" title="{{ $service->responsible }}">
+                                                <input name="services[{{ $index }}][responsible]" value="{{ $service->responsible }}"  class="form-control w-100" readonly>
                                             </div>
                                         </div>
                                     </div>
@@ -191,26 +176,6 @@
             </div>
         </div>
 
-        <!-- Модальное окно подтверждения завершения заказа-наряда -->
-        <div class="modal fade" id="confirmArchiveModal" tabindex="-1" aria-labelledby="confirmArchiveModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="confirmArchiveModalLabel">Подтверждение архивации календаря</h5>
-                        <button type="button" class="btn-close" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Вы уверены, что хотите архивировать данный календарь объекта
-                       "{{$cardObjectMain->name}}" ?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                        <button type="button" class="btn btn-danger" id="confirmArchiveButton">Заархивировать</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <script>
 
             $(document).ready(function () {
@@ -250,40 +215,34 @@
                     }
                 });
 
-
-                // Обработчик события нажатия на кнопку "Завершить заказ"
-                $('.archive_calendar').click(function () {
-                    // Открываем модальное окно с вопросом о завершении заказа-наряда
-                    $('#confirmArchiveModal').modal('show');
-                });
-                // Обработчик события нажатия на кнопку "Да" в модальном окне подтверждения
-                $('#confirmArchiveButton').click(function () {
-                    // Устанавливаем текущую дату в поле "Фактическая дата"
-                    const currentDate = new Date();
-                    const formattedDate = currentDate.toLocaleDateString('ru-RU').split('.').reverse().join('-'); // Форматируем дату в формат dd-mm-yyyy
-                    $('input[name="date_archive"]').val(formattedDate);
-                    // Отправляем данные в контроллер для сохранения изменений в базе данных
+                $(".saveCard").click(function () {
+                    let formData = new FormData();
+                    // Собираем данные с основной формы
+                    formData.append('year', $("input[name=year]").val());
+                    formData.append('date_create', $("input[name=date_create]").val());
+                    formData.append('card_id', $("input[name=card_id]").val());
+                    // Отправляем данные на сервер
                     $.ajax({
                         type: "POST",
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
-                        url: "{{ route('archiveCalendar') }}",
-                        data: {
-                            id: "{{ $cardCalendar->_id }}", // Здесь нужно передать ID текущего заказа-наряда
-                            date_archive: formattedDate, // Передаем текущую дату
-                        },
+                        url: "/card-calendar-store",
+                        data: formData,
+                        processData: false, // Не обрабатывать данные
+                        contentType: false, // Не устанавливать тип содержимого
                         success: function (response) {
-                            // Обработка успешного завершения запроса
-                            console.log(response);
+                            // Обработка успешного ответа от сервера (например, отображение сообщения об успешном сохранении)
+                            // alert("Данные успешно сохранены!");
+                            // console.log(formData);
+                            window.location.href = "/pageReestrCalendar/card-calendar/" + response.id;
                         },
                         error: function (error) {
-                            // Обработка ошибки
-                            console.log(error);
+                            // Обработка ошибки при сохранении данных
+                            alert("Ошибка при сохранении данных!");
+                            console.log(formData);
                         }
                     });
-                    // Закрываем модальное окно подтверждения
-                    $('#confirmArchiveModal').modal('hide');
                 });
             });
         </script>
