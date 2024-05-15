@@ -7,6 +7,7 @@ use App\Models\CardObjectMainDoc;
 use App\Models\CardObjectServices;
 use App\Models\CardObjectMain;
 use App\Models\CardObjectServicesTypes;
+use App\Models\HistoryCardGraph;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
@@ -82,21 +83,39 @@ class GraphController extends Controller
     //------------------ СОХРАНЕНИЕ НОВОЙ карточки графика (СОЗДАНИЕ) ------------------
     public function saveCardGraph(Request $request)
     {
-        $data = $request->validate([
-            'curator' => 'nullable',
-            'year_action' => 'nullable|integer',
-            'date_create' => 'required|date',
-            'date_last_save' => 'required|date',
-            'date_archive' => 'nullable|date',
-        ]);
-        $data['name'] = $request->input('name');
-        $data['infrastructure_type'] = $request->input('infrastructure_type');
-        $data['cards_ids'] = $request->input('cards_ids');
+        // Создаем массив с данными для новой карточки графика
+        $data = [
+            'name' => $request->input('name'),
+            'infrastructure_type' => $request->infrastructure_type,
+            'cards_ids' => '"' . $request->input('cards_ids') . '"', // Добавляем кавычки к значению
+            'curator' => $request->curator,
+            'year_action' => $request->year_action,
+            'date_create' => $request->date_create,
+            'date_last_save' => $request->date_last_save,
+            'date_archive' => $request->date_archive,
+        ];
 
-        $cardGraph = CardGraph::create($data);
+        // Сохраняем карточку графика и получаем ее ID
+        $cardId = CardGraph::insertGetId($data);
 
-        // Редирект или что-то еще
+        // Проверка наличия ID карточки графика
+        if ($cardId) {
+            // Создаем запись истории и привязываем ее к ID созданной карточки графика
+            $history_card = new HistoryCardGraph();
+            $history_card->name = $request->input('name');
+            $history_card->infrastructure_type = $request->infrastructure_type;
+            $history_card->curator = $request->curator;
+            $history_card->year_action = $request->year_action;
+            $history_card->date_create = $request->date_create;
+            $history_card->date_last_save = $request->date_last_save;
+            $history_card->date_archive = $request->date_archive;
+            $history_card->cards_ids = $request->input('cards_ids'); // Добавляем кавычки к значению
+            $history_card->card_graph_id = $cardId;
+            $history_card->save();
+        }
     }
+
+
 
 
     // ------------------  РЕДАКТИРОВАНИЕ карточки графика TPM (переход на страницу) ------------------
@@ -163,6 +182,17 @@ class GraphController extends Controller
         // Сохраняем изменения
         $card->save();
 
+        $history_card = new HistoryCardGraph();
+        $history_card->name =  $card->name;
+        $history_card->infrastructure_type = $card->infrastructure_type;
+        $history_card->curator = $request->curator;
+        $history_card->year_action = $request->year_action;
+        $history_card->date_create = $request->date_create;
+        $history_card->date_last_save = $request->date_last_save;
+        $history_card->date_archive = $request->date_archive;
+        $history_card->cards_ids =  $card->cards_ids;
+        $history_card->card_graph_id = $card->card_graph_id;
+        $history_card->save();
 
 
         // Возвращаем успешный ответ или редирект на страницу карточки объекта

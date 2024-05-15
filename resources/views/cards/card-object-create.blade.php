@@ -82,6 +82,15 @@
                                                 <option value="Мезонин">Мезонин</option>
                                             </select>
                                         </div>
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100" for="curator">Куратор</label>
+                                            <select id="curator" name="curator" class="form-select w-100">
+                                                <option value="" disabled selected>Выберите куратора</option>
+                                                @foreach($curators as $curator)
+                                                    <option value="{{ $curator->name }}">{{ $curator->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
@@ -564,6 +573,7 @@
                     // Собираем данные с основной формы
                     formData.append('infrastructure', $("select[name=infrastructure]").val());
                     formData.append('name', $("input[name=name]").val());
+                    formData.append('curator', $("select[name=curator]").val());
                     formData.append('number', $("input[name=number]").val());
                     formData.append('location', $("select[name=location]").val());
                     formData.append('date_arrival', $("input[name=date_arrival]").val());

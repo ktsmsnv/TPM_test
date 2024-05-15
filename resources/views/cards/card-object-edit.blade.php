@@ -89,7 +89,15 @@
                                             <option value="Основной склад" {{ isset($data_CardObjectMain) && $data_CardObjectMain->location === "Основной склад" ? 'selected' : '' }}>Основной склад</option>
                                             <option value="Мезонин" {{ isset($data_CardObjectMain) && $data_CardObjectMain->location === "Мезонин" ? 'selected' : '' }}>Мезонин</option>
                                         </select>
-
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center gap-3">
+                                        <label class="w-100" for="curator">Куратор</label>
+                                        <select id="curator" name="curator" class="form-select w-100">
+                                            <option value="" disabled selected>Выберите куратора</option>
+                                            @foreach($curators as $curator)
+                                                <option value="{{ $curator->name }}" {{ isset($data_CardObjectMain) && $data_CardObjectMain->curator === $curator->name ? 'selected' : '' }}>{{ $curator->name }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="d-flex flex-column gap-3 w-50">
@@ -202,13 +210,24 @@
                                             <input id="short_name_{{ $key + 1 }}" name="short_name" class="form-control w-100" value="{{ $service->short_name }}" >
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
-                                            <label class="w-100">Исполнитель</label>
-                                            <input id="performer_{{ $key + 1 }}" class="form-control w-100" name="performer" value="{{ $service->performer }}" >
+                                            <label class="w-100" for="performer_{{ $key + 1 }}">Исполнитель</label>
+                                            <select id="performer_{{ $key + 1 }}" name="performer" class="form-select w-100">
+                                                <option value="" disabled selected>Выберите исполнителя</option>
+                                                @foreach($executors as $executor)
+                                                    <option value="{{ $executor->name }}" {{ $service->performer === $executor->name ? 'selected' : '' }}>{{ $executor->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
-                                            <label class="w-100">Ответственный</label>
-                                            <input id="responsible_{{ $key + 1 }}" class="form-control  w-100" name="responsible" value="{{ $service->responsible }}" >
+                                            <label class="w-100" for="responsible_{{ $key + 1 }}">Ответственный</label>
+                                            <select id="responsible_{{ $key + 1 }}" name="responsible" class="form-select w-100">
+                                                <option value="" disabled selected>Выберите ответственного</option>
+                                                @foreach($responsibles as $responsible)
+                                                    <option value="{{ $responsible->name }}" {{ $service->responsible === $responsible->name ? 'selected' : '' }}>{{ $responsible->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
+
                                     </div>
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
@@ -474,16 +493,24 @@
                                                 <input id="short_name_' + serviceTabsCount + '" name="short_name" placeholder="Введите сокращенное название" \
                                                     class="form-control w-100"> \
                                             </div> \
+                                     <div class="d-flex justify-content-between align-items-center gap-3"> \
+                                            <label class="w-100" for="performer_' + serviceTabsCount + '">Исполнитель</label> \
+                                            <select id="performer_' + serviceTabsCount + '" name="performer" class="form-select w-100">\
+                                             <option value="" disabled selected>Выберите исполнителя</option>\
+                                              @foreach($executors as $executor)\
+                                               <option value="{{ $executor->name }}">{{ $executor->name }}</option>\
+                                              @endforeach\
+                                            </select>\
+                                            </div>\
                                             <div class="d-flex justify-content-between align-items-center gap-3"> \
-                                                <label class="w-100" for="performer_' + serviceTabsCount + '">Исполнитель</label> \
-                                                <input id="performer_' + serviceTabsCount + '" name="performer" class="form-control w-100" \
-                                                    placeholder="Введите исполнителя"> \
-                                            </div> \
-                                            <div class="d-flex justify-content-between align-items-center gap-3"> \
-                                                <label class="w-100" for="responsible_' + serviceTabsCount + '">Ответственный</label> \
-                                                <input id="responsible_' + serviceTabsCount + '" name="responsible" class="form-control  w-100" \
-                                                    placeholder="Введите ответственного"> \
-                                            </div> \
+                                            <label class="w-100" for="responsible_' + serviceTabsCount + '">Ответственный</label> \
+                                            <select id="responsible_' + serviceTabsCount + '" name="responsible" class="form-select w-100">\
+                                              <option value="" disabled selected>Выберите ответственного</option>\
+                                                 @foreach($responsibles as $responsible)\
+                                                  <option value="{{ $responsible->name }}">{{ $responsible->name }}</option>\
+                                                  @endforeach\
+                                               </select>\
+                                            </div>\
                                         </div> \
                                         <div class="d-flex flex-column gap-3 w-50"> \
                                             <div class="d-flex justify-content-between align-items-center gap-3"> \
@@ -702,6 +729,7 @@
                 // Собираем данные с основной формы
                 formData.append('infrastructure', $("select[name=infrastructure]").val());
                 formData.append('name', $("input[name=name]").val());
+                formData.append('curator', $("select[name=curator]").val());
                 formData.append('number', $("input[name=number]").val());
                 formData.append('location', $("select[name=location]").val());
                 formData.append('date_arrival', $("input[name=date_arrival]").val());
@@ -761,7 +789,7 @@
                     success: function (response) {
                         // Обработка успешного ответа от сервера (например, отображение сообщения об успешном сохранении)
                         // alert("Данные для карточки объекта успешно обновлены!");
-                        window.location.href = "{{ route('cardObject', ['id' => $data_CardObjectMain->id]) }}";
+                   //     window.location.href = "{{ route('cardObject', ['id' => $data_CardObjectMain->id]) }}";
                         //console.log(formData);
                     },
                     error: function (error) {

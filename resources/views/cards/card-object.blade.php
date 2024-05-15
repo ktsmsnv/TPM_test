@@ -69,6 +69,11 @@
                                             <input class="form-control  w-100" name="" readonly
                                                    value="{{ $data_CardObjectMain->location ?? 'нет данных' }}">
                                         </div>
+                                        <div class="d-flex justify-content-between align-items-center gap-3">
+                                            <label class="w-100">Куратор</label>
+                                            <input class="form-control  w-100" name="" readonly
+                                                   value="{{ $data_CardObjectMain->curator ?? 'нет данных' }}">
+                                        </div>
                                     </div>
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
