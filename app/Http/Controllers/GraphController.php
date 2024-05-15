@@ -177,6 +177,17 @@ class GraphController extends Controller
         // Сохраняем изменения
         $card->save();
 
+        $history_card = new HistoryCardGraph();
+        $history_card->name =  $card->name;
+        $history_card->infrastructure_type = $card->infrastructure_type;
+        $history_card->curator = $request->curator;
+        $history_card->year_action = $request->year_action;
+        $history_card->date_create = $request->date_create;
+        $history_card->date_last_save = $request->date_last_save;
+        $history_card->date_archive = $request->date_archive;
+        $history_card->cards_ids =  $card->cards_ids;
+        $history_card->card_graph_id = $card->card_graph_id;
+        $history_card->save();
 
 
         // Возвращаем успешный ответ или редирект на страницу карточки объекта
