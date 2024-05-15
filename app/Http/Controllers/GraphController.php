@@ -7,6 +7,7 @@ use App\Models\CardObjectMainDoc;
 use App\Models\CardObjectServices;
 use App\Models\CardObjectMain;
 use App\Models\CardObjectServicesTypes;
+use App\Models\HistoryCardGraph;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
@@ -82,20 +83,33 @@ class GraphController extends Controller
     //------------------ СОХРАНЕНИЕ НОВОЙ карточки графика (СОЗДАНИЕ) ------------------
     public function saveCardGraph(Request $request)
     {
-        $data = $request->validate([
-            'curator' => 'nullable',
-            'year_action' => 'nullable|integer',
-            'date_create' => 'required|date',
-            'date_last_save' => 'required|date',
-            'date_archive' => 'nullable|date',
+        $cardId = CardGraph::insertGetId([
+            'name' => $request->name,
+            'infrastructure_type' => $request->infrastructure_type,
+            'cards_ids' => $request->cards_ids,
+            'curator' => $request->curator,
+            'year_action' => $request->year_action,
+            'date_create' => $request->date_create,
+            'date_last_save' => $request->date_last_save,
+            'date_archive' => $request->date_archive,
         ]);
-        $data['name'] = $request->input('name');
-        $data['infrastructure_type'] = $request->input('infrastructure_type');
-        $data['cards_ids'] = $request->input('cards_ids');
 
-        $cardGraph = CardGraph::create($data);
-
-        // Редирект или что-то еще
+// Проверка наличия идентификатора
+        if ($cardId) {
+            // Создаем запись истории и присваиваем ей _id объекта CardGraph
+            $history_card = new HistoryCardGraph();
+            $history_card->name = $request->input('name');
+            $history_card->infrastructure_type = $request->input('infrastructure_type');
+            $history_card->curator = $request->curator;
+            $history_card->year_action = $request->year_action;
+            $history_card->date_create = $request->date_create;
+            $history_card->date_last_save = $request->date_last_save;
+            $history_card->date_archive = $request->date_archive;
+            $history_card->cards_ids = $request->input('cards_ids');
+            $history_card->card_graph_id = $cardId;
+            $history_card->save();
+        }
+        dd($history_card);
     }
 
 
