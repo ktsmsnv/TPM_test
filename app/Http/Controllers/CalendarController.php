@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CardObjectMain;
+use App\Models\HistoryCardCalendar;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
@@ -32,6 +33,14 @@ class CalendarController extends Controller
 
         // Получение ID созданной записи
         $createdId = $calendar->id;
+
+        $history_card = new HistoryCardCalendar();
+        $history_card->card_id = $request->input('card_id');
+        $history_card->date_create = $request->input('date_create');
+        $history_card->date_archive = $request->input('date_archive');
+        $history_card->year = $request->input('year');
+        $history_card->card_calendar_id =  $createdId;
+        $history_card->save();
 
         // Возвращение ответа с ID созданной записи
         return response()->json(['success' => true, 'id' => $createdId]);
