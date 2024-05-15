@@ -233,6 +233,7 @@
                         <button class="nav-link" id="' + tabId + '" data-bs-toggle="tab" data-bs-target="#' + paneId + '" type="button" role="tab" aria-controls="' + paneId + '" aria-selected="false">ОБСЛУЖИВАНИЕ ' + serviceTabsCount + '</button> \
                     </li>');
                     let tabContent = $('<div class="tab-pane fade" id="' + paneId + '" role="tabpanel" aria-labelledby="' + tabId + '"> \
+                         <button class="btn btn-danger mt-3 delete_service">Удалить</button>\
                         <div id="service__blocks" class="d-grid"> \
                             {{-- ОБСЛУЖИВАНИЕ ТРМ --}} \
                             <div class="member_card_style services"> \
@@ -266,15 +267,23 @@
                                                     class="form-control w-100"> \
                                             </div> \
                                             <div class="d-flex justify-content-between align-items-center gap-3"> \
-                                                <label class="w-100" for="performer_' + serviceTabsCount + '">Исполнитель</label> \
-                                                <input id="performer_' + serviceTabsCount + '" name="performer" class="form-control w-100" \
-                                                    placeholder="Введите исполнителя"> \
-                                            </div> \
+                                            <label class="w-100" for="performer_' + serviceTabsCount + '">Исполнитель</label> \
+                                            <select id="performer_' + serviceTabsCount + '" name="performer" class="form-select w-100">\
+                                             <option value="" disabled selected>Выберите исполнителя</option>\
+                                              @foreach($executors as $executor)\
+                                               <option value="{{ $executor->name }}">{{ $executor->name }}</option>\
+                                              @endforeach\
+                                            </select>\
+                                            </div>\
                                             <div class="d-flex justify-content-between align-items-center gap-3"> \
-                                                <label class="w-100" for="responsible_' + serviceTabsCount + '">Ответственный</label> \
-                                                <input id="responsible_' + serviceTabsCount + '" name="responsible" class="form-control  w-100" \
-                                                    placeholder="Введите ответственного"> \
-                                            </div> \
+                                            <label class="w-100" for="responsible_' + serviceTabsCount + '">Ответственный</label> \
+                                            <select id="responsible_' + serviceTabsCount + '" name="responsible" class="form-select w-100">\
+                                              <option value="" disabled selected>Выберите ответственного</option>\
+                                                 @foreach($responsibles as $responsible)\
+                                                  <option value="{{ $responsible->name }}">{{ $responsible->name }}</option>\
+                                                  @endforeach\
+                                               </select>\
+                                            </div>\
                                         </div> \
                                         <div class="d-flex flex-column gap-3 w-50"> \
                                             <div class="d-flex justify-content-between align-items-center gap-3"> \
@@ -375,6 +384,32 @@
                         // Увеличиваем счетчик вкладок для обслуживания
                         serviceTabsCount++;
                 });
+                // Добавляем обработчик события на кнопку "Удалить"
+                $(document).on('click', '.delete_service', function() {
+                    // Находим родительский элемент блока обслуживания
+                    let serviceBlock = $(this).closest('.tab-pane');
+                    // Получаем ID вкладки, чтобы удалить соответствующую кнопку навигации
+                    let tabId = serviceBlock.attr('id') + '-tab';
+                    // Получаем ID блока обслуживания
+                    let serviceId = serviceBlock.attr('id');
+
+                    // Добавим отладочную информацию о типах работ перед их удалением
+                    console.log('Типы работ до удаления:', typesOfWorkByService[serviceId]);
+
+                    // Удаляем соответствующие данные types_of_work из объекта typesOfWorkByService
+                    delete typesOfWorkByService[serviceId];
+
+                    // Выведем в консоль объект typesOfWorkByService после удаления
+                    console.log('Типы работ после удаления:', typesOfWorkByService);
+
+                    // Удаляем блок обслуживания
+                    serviceBlock.remove();
+                    // Удаляем соответствующую кнопку навигации
+                    $('#' + tabId).parent().remove();
+                });
+
+
+
                 // Функция для обновления обработчика событий для выбора цвета
                 function updateColorPicker() {
                     // Получаем все блоки цветов
@@ -566,9 +601,15 @@
                             checked: $('#disableInTable_' + i).is(':checked') // Добавляем значение чекбокса "не выводить"
                         };
                         // Добавляем данные в массив servicesData
-                        servicesData.push(serviceData);
+                        //servicesData.push(serviceData);
+                        // Проверяем, что хотя бы одно из полей не пустое
+                        if (Object.values(serviceData).some(val => val !== null && val !== '')) {
+                            // Добавляем данные в массив servicesData
+                            servicesData.push(serviceData);
+                        }
                     }
-
+                    // Фильтруем массив servicesData, исключая элементы, у которых все поля пустые
+                    servicesData = servicesData.filter(service => Object.values(service).some(val => val !== null && val !== ''));
                     // // Преобразуем типы работ в строку и добавляем в formData
                     // let typesOfWorkString = JSON.stringify(typesOfWorkByService);
                     // formData.append("types_of_work", typesOfWorkString);

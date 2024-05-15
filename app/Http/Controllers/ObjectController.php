@@ -6,6 +6,7 @@ use App\Models\HistoryCardObjectMain;
 use App\Models\HistoryCardObjectMainDoc;
 use App\Models\HistoryCardObjectServices;
 use App\Models\HistoryCardObjectServicesTypes;
+use App\Models\User;
 use Illuminate\Http\Request;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use App\Models\CardObjectMain;
@@ -65,10 +66,23 @@ class ObjectController extends Controller
 
 
     // ------------------  СОЗДАНИЕ карточки объекта (переход на страницу)  ------------------
+    public function getUsersByRole($role)
+    {
+        // Получаем пользователей с указанной ролью
+        $users = User::where('role', $role)->get();
+
+        return $users;
+    }
     public function create()
     {
+        // Получаем пользователей с ролью 'executor'
+        $executors = $this->getUsersByRole('executor');
+
+        // Получаем пользователей с ролью 'responsible'
+        $responsibles = $this->getUsersByRole('responsible');
+
         $breadcrumbs = Breadcrumbs::generate('card-object-create');
-        return view('cards/card-object-create', compact('breadcrumbs'));
+        return view('cards/card-object-create', compact('breadcrumbs', 'executors', 'responsibles'));
     }
 
     // ------------------  РЕДАКТИРОВАНИЕ карточки объекта (переход на страницу) ------------------

@@ -14,7 +14,7 @@
                     <a href="/home/card-object-create" target="_blank" type="button" class="btn btn-primary">Создать карточку объекта</a>
                     <a type="button" class="btn btn-primary btn-primary--2 copy_cardObject" disabled="true">Скопировать карточку объекта</a>
                     <button id="generateGraphTPM" class="btn btn-light" disabled>Сформировать график TPM</button>
-                    <a type="button" class="btn btn-light">Сформировать календарь TPM</a>
+                    <button class="btn btn-light createCalendar">Сформировать календарь TPM</button>
                     <button class="btn btn-light create_workOrder" disabled>Сформировать заказ-наряд TPM</button>
                 </div>
             </div>
@@ -290,6 +290,7 @@
                     $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
                     $generateGraphTPM.prop('disabled', !$table.bootstrapTable('getSelections').length)
                     $('.create_workOrder').prop('disabled', !$table.bootstrapTable('getSelections').length)
+                    $('.createCalendar').prop('disabled', !$table.bootstrapTable('getSelections').length)
                         selections = getIdSelections();
                     updateCopyButtonState();
                 });
@@ -460,6 +461,20 @@
                     }
                 });
             });
+
+            $('.createCalendar').click(function () {
+                let selectedRows = $table.bootstrapTable('getSelections');
+                if (selectedRows.length > 0) {
+                    selectedRows.forEach(function(row) {
+                        // Создаем URL для каждой выбранной записи
+                        let url = "/card-calendar-create/" + row.id;
+                        // Открываем URL в новой вкладке
+                        window.open(url, '_blank');
+                    });
+                }
+            });
+
+
 
 
 
