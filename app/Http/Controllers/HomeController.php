@@ -69,6 +69,7 @@ class HomeController extends Controller
                 'id' => $object->id,
                 'infrastructure' => $object->infrastructure,
                 'name' => $object->name,
+                'curator' => $object->curator,
                 'number' => $object->number,
                 'location' => $object->location,
                 'date_usage' => $object->date_usage,
