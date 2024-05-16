@@ -14,6 +14,7 @@
         "vite": "^5.0.0"
     },
     "dependencies": {
-        "fullcalendar-scheduler": "^6.1.11"
+        "fullcalendar-scheduler": "^6.1.11",
+        "intro.js": "^7.2.0"
     }
 }

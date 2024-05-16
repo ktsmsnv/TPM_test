@@ -26,8 +26,16 @@
 
 body {
     font-family: "DM Sans", sans-serif;
+    height: 100vh;
 }
-
+.introjs-tooltip {
+    box-sizing: content-box;
+    position: absolute;
+    visibility: visible;
+    background-color: #fff;
+    min-width: 400px;
+    max-width: 500px!important;
+}
 .container {
     position: relative;
     width: 95% !important;

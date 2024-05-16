@@ -104,5 +104,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/archive',  [App\Http\Controllers\CalendarController::class, 'archiveCalendar'])->name('archiveCalendar');
     // ----------------------------------------------------------------------------------------------------------------
+
 });
 

@@ -1,15 +1,23 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
+    <div class="container" data-title="Работа с реестром графиков" data-step="14"
+         data-intro="Здесь представлена таблица, содержащая в себе все графики, добавленные в систему.">
         <div class="reestrGraph">
             <div class="reestrGraph__btns d-flex justify-content-between">
                 <button type="button" class="btn btn-secondary refreshTable" data-toggle="tooltip"
-                        title="показать последние данные">Обновить реестр
+                        title="показать последние данные"
+                        data-title="Работа с реестром графиков" data-step="15"
+                        data-intro="По нажатию на данную кнопку обновляются данные в реестре в зависимости от внесенных свежих данных в систему.">
+                    Обновить реестр
                 </button>
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-success">Выбрать период действия</button>
-                    <button type="button" class="btn btn-success">Показать активные графики</button>
+                    <button type="button" class="btn btn-success" data-title="Работа с реестром графиков" data-step="16"
+                            data-intro="Обновлять данные в реестре в зависимости от выбранного периода и «Года действия» графика.">
+                        Выбрать период действия</button>
+                    <button type="button" class="btn btn-success" data-title="Работа с реестром графиков" data-step="17"
+                            data-intro="Кнопка «Показать активные графики» - отображать только те календари, в карточке которых не заполнена «Дата архивации».">
+                        Показать активные графики</button>
                 </div>
             </div>
             <select class="form-control d-none" id="locale">
@@ -19,7 +27,9 @@
             <div class="card">
                 <div class="card-body">
                     <div class="reestrGraph__table text-center">
-                        <div id="toolbar">
+                        <div id="toolbar" data-title="Работа с реестром объектов" data-step="18"
+                             data-intro="Это панель инструментов для таблицы. При выборе галочками одной или нескольких строк в реестре можно удалить записи из реестра, нажав соответствующую кнопку.
+                             В строке поиска можно найти нужную запись по любой имеющейся информации. Информация об остальных кнопках справа на панели доступна после завершения обучения при наведении на них.">
                             <button id="remove" class="btn btn-danger" disabled>
                                 <i class="fa fa-trash"></i> Удалить
                             </button>
@@ -265,4 +275,28 @@
         });
 
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Получаем блок header на странице home
+            var header = document.querySelector('header');
+            var restartTutorialBtn = document.querySelector('#restartTutorialBtn');
+            var navbarNavElements = document.querySelectorAll('header ul.navbar-nav');
+            var navElements = document.querySelectorAll('header ul.nav');
+            // Устанавливаем атрибут data-step равным null для header на странице home
+            if (header) {
+                header.setAttribute('data-step', null);
+            }
+            restartTutorialBtn.setAttribute('data-step', null);
+            // Устанавливаем атрибут data-step равным null для всех элементов navbar-nav
+            navbarNavElements.forEach(function(navbarNavElement) {
+                navbarNavElement.setAttribute('data-step', null);
+            });
+            // Устанавливаем атрибут data-step равным null для всех элементов nav
+            navElements.forEach(function(navElement) {
+                navElement.setAttribute('data-step', null);
+            });
+        });
+    </script>
+
+
 @endsection

@@ -2,10 +2,12 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="profile container mt-5">
+    <div class="profile container mt-5" id="toolbar" data-title="Профиль пользователя" data-step="30"
+         data-intro="Это страница профиля пользователя системы.">
         <div class="row d-flex justify-content-center">
             <div class="col-md-5">
-                <div class="card p-3 py-4">
+                <div class="card p-3 py-4" data-title="Профиль пользователя" data-step="31"
+                     data-intro="Здесь отображена основная информация пользователя: ФИО, почта (на которую приходят уведомления) и роль в системе.">
                     <div class="text-center">
                         {{-- <img src="{{ asset('/storage/user.png') }}" width="100" class="rounded-circle" alt="user">--}}
                         <svg id="Layer_1" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"
@@ -35,15 +37,22 @@
                                 Неопределено
                             @endif
                         </span>
-                        <h5 class="mt-4 mb-4 text-start"><strong class="me-4">Фамилия
-                                Имя:</strong> {{ Auth::user()->name }}</h5>
+                        <h5 class="mt-4 mb-4 text-start"><strong class="me-4">ФИО:</strong> {{ Auth::user()->name }}</h5>
                         <h5 class="mt-2 mb-5 text-start"><strong class="me-4">Почта:</strong> {{ Auth::user()->email }}
                         </h5>
                         <div class="buttons d-flex gap-3 justify-content-center">
                             <div class="buttons d-flex gap-3 justify-content-center">
-                                <a href="" class="btn btn-outline-primary px-4">Подключить telegram бота</a>
-                                <button type="button" class="btn btn-primary px-4" data-bs-toggle="modal" data-bs-target="#editProfileModal">Изменить данные</button>
-                                <button type="button" class="btn btn-secondary px-4" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Сменить пароль</button>
+                                <a href="" class="btn btn-outline-primary px-4"
+                                   data-title="Профиль пользователя" data-step="32" data-position="bottom"
+                                   data-intro="По этой кнопке можно подключить telegram бота для получения уведомлений о заказ-нарядах.За 14 календарных дней до плановой даты обслуживания,уведомление со ссылкой на сформированный заказ-наряд на обслуживание объекта.
+                                   Уведомление о просрочке со ссылкой на заказ-наряд.">
+                                    Подключить telegram бота</a>
+                                <button type="button" class="btn btn-primary px-4" data-bs-toggle="modal" data-bs-target="#editProfileModal"
+                                        data-title="Профиль пользователя" data-step="33"
+                                        data-intro="По нажатию можно изменить ФИО и Почту">Изменить данные</button>
+                                <button type="button" class="btn btn-secondary px-4" data-bs-toggle="modal" data-bs-target="#changePasswordModal"
+                                        data-title="Профиль пользователя" data-step="34"
+                                        data-intro="По нажатию можно сменить пароль">Сменить пароль</button>
                             </div>
                         </div>
                     </div>
@@ -112,4 +121,26 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Получаем блок header на странице home
+            var header = document.querySelector('header');
+            var navbarNavElements = document.querySelectorAll('header ul.navbar-nav');
+            var navElements = document.querySelectorAll('header ul.nav');
+            var restartTutorialBtn = document.querySelector('#restartTutorialBtn');
+            restartTutorialBtn.setAttribute('data-step', null);
+            // Устанавливаем атрибут data-step равным null для header на странице home
+            if (header) {
+                header.setAttribute('data-step', null);
+            }
+            // Устанавливаем атрибут data-step равным null для всех элементов navbar-nav
+            navbarNavElements.forEach(function(navbarNavElement) {
+                navbarNavElement.setAttribute('data-step', null);
+            });
+            // Устанавливаем атрибут data-step равным null для всех элементов nav
+            navElements.forEach(function(navElement) {
+                navElement.setAttribute('data-step', null);
+            });
+        });
+    </script>
 @endsection

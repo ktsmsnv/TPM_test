@@ -1,14 +1,21 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
+    <div class="container" data-title="Работа с реестром календарей" data-step="20"
+         data-intro="Здесь представлена таблица, содержащая в себе все календари, добавленные в систему.">
         <div class="reestrCalendar">
             <div class="reestrCalendar__btns d-flex justify-content-between">
-                <button type="button" class="btn btn-secondary">Обновить реестр</button>
+                <button type="button" class="btn btn-secondary"
+                        data-title="Работа с реестром календарей" data-step="21"
+                        data-intro="По нажатию на данную кнопку обновляются данные в реестре в зависимости от внесенных свежих данных в систему.">
+                    Обновить реестр</button>
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-success">Выбрать период действия</button>
-                    <button type="button" class="btn btn-success">Показать активные календари</button>
-                    <button type="button" class="btn btn-primary">Реестр календарей ТРМ</button>
+                    <button type="button" class="btn btn-success"
+                            data-title="Работа с реестром календарей" data-step="22"
+                            data-intro="Обновлять данные в реестре в зависимости от выбранного периода и «Года действия» календаря">Выбрать период действия</button>
+                    <button type="button" class="btn btn-success"
+                            data-title="Работа с реестром календарей" data-step="23"
+                            data-intro="Отображать только те календари, в карточке которых не заполнена «Дата архивации»">Показать активные календари</button>
                 </div>
             </div>
             <select class="form-control d-none" id="locale">
@@ -18,7 +25,9 @@
             <div class="card">
                 <div class="card-body">
                     <div class="reestrCalendar__table text-center">
-                        <div id="toolbar">
+                        <div id="toolbar"  data-title="Работа с реестром календарей" data-step="24"
+                             data-intro="Это панель инструментов для таблицы. При выборе галочками одной или нескольких строк в реестре можно удалить записи из реестра, нажав соответствующую кнопку.
+                             В строке поиска можно найти нужную запись по любой имеющейся информации. Информация об остальных кнопках справа на панели доступна после завершения обучения при наведении на них.">
                             <button id="remove" class="btn btn-danger" disabled>
                                 <i class="fa fa-trash"></i> Удалить
                             </button>
@@ -282,5 +291,27 @@
             // }
         });
 
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Получаем блок header на странице home
+            var header = document.querySelector('header');
+            var navbarNavElements = document.querySelectorAll('header ul.navbar-nav');
+            var navElements = document.querySelectorAll('header ul.nav');
+            var restartTutorialBtn = document.querySelector('#restartTutorialBtn');
+            restartTutorialBtn.setAttribute('data-step', null);
+            // Устанавливаем атрибут data-step равным null для header на странице home
+            if (header) {
+                header.setAttribute('data-step', null);
+            }
+            // Устанавливаем атрибут data-step равным null для всех элементов navbar-nav
+            navbarNavElements.forEach(function(navbarNavElement) {
+                navbarNavElement.setAttribute('data-step', null);
+            });
+            // Устанавливаем атрибут data-step равным null для всех элементов nav
+            navElements.forEach(function(navElement) {
+                navElement.setAttribute('data-step', null);
+            });
+        });
     </script>
 @endsection

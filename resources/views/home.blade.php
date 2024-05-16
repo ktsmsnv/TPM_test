@@ -3,19 +3,40 @@
 
 @section('content')
     <div class="container">
-        <div class="reestrObject">
+        <div class="reestrObject" data-title="Работа с реестром объектов" data-step="5"
+             data-intro="Здесь представлена таблица, содержащая в себе все объекты, зарегистрированные в системе.">
             <div class="reestrObject__btns d-flex justify-content-between mb-5">
-                <button type="button" class="btn btn-secondary refreshTable" data-toggle="tooltip"
-                        title="показать последние данные">Обновить реестр
+                <button type="button" class="btn btn-secondary refreshTable" data-toggle="tooltip" title="показать последние данные"
+                        data-title="Работа с реестром объектов" data-step="6"
+                        data-intro="По нажатию на данную кнопку обновляются данные в реестре в зависимости от внесенных свежих данных в систему.">
+                    Обновить реестр
                 </button>
                 <div class="d-flex gap-2">
                     <a id="showActiveBtn" type="button" class="btn btn-success" data-toggle="tooltip"
-                       title="без даты вывода объекта из эксплуатации">Показать активные объекты</a>
-                    <a href="/home/card-object-create" target="_blank" type="button" class="btn btn-primary">Создать карточку объекта</a>
-                    <a type="button" class="btn btn-primary btn-primary--2 copy_cardObject" disabled="true">Скопировать карточку объекта</a>
-                    <button id="generateGraphTPM" class="btn btn-light" disabled>Сформировать график TPM</button>
-                    <button class="btn btn-light createCalendar">Сформировать календарь TPM</button>
-                    <button class="btn btn-light create_workOrder" disabled>Сформировать заказ-наряд TPM</button>
+                       title="без даты вывода объекта из эксплуатации"
+                       data-title="Работа с реестром объектов" data-step="7"
+                       data-intro="По нажатию на данную кнопку отображаются только те объекты, в карточке которых не заполнена «Дата вывода объекта из эксплуатации».">
+                        Показать активные объекты</a>
+                    <a href="/home/card-object-create" target="_blank" type="button" class="btn btn-primary"
+                       data-title="Работа с реестром объектов" data-step="8"
+                       data-intro="По нажатию на данную кнопку создается новая сущность «Карточка объекта» и открывается в новом окне.">
+                        Создать карточку объекта</a>
+                    <a type="button" class="btn btn-primary btn-primary--2 copy_cardObject" disabled="true"
+                       data-title="Работа с реестром объектов" data-step="9"
+                       data-intro="Кнопка активна только при выборе галочками одной или нескольких строк в реестре. По нажатию создаются копии сущностей «Карточка объекта» и открываются в новом окне.">
+                        Скопировать карточку объекта</a>
+                    <button id="generateGraphTPM" class="btn btn-light" disabled
+                            data-title="Работа с реестром объектов" data-step="10"
+                            data-intro="Кнопка активна только при выборе галочками одной или нескольких строк в реестре с ОДИНАКОВЫМ  видом инфраструктуры. По нажатию создается новая сущность «График TPM» и открывается в отдельном окне.">
+                        Сформировать график TPM</button>
+                    <button class="btn btn-light createCalendar" disabled
+                            data-title="Работа с реестром объектов" data-step="11"
+                            data-intro="Кнопка активна только при выборе галочками одной или нескольких строк в реестре, а также при отсутствии уже созданного календаря на выбранные объекты. По нажатию создаются новые сущности «Календарь TPM» и открываются отдельном окне.">
+                        Сформировать календарь TPM</button>
+                    <button class="btn btn-light create_workOrder" disabled
+                            data-title="Работа с реестром объектов" data-step="12"
+                            data-intro="Кнопка активна только при выборе галочками одной или нескольких строк в реестре, а также при отсутствии уже созданного заказа на выбранный объект. По нажатию создаются новые сущности «Заказ-наряд TPM»  и открываются отдельном окне.">
+                        Сформировать заказ-наряд TPM</button>
                 </div>
             </div>
             <select class="form-control d-none" id="locale">
@@ -25,7 +46,9 @@
             <div class="card">
                 <div class="card-body">
                     <div class="reestrObject__table text-center">
-                        <div id="toolbar">
+                        <div id="toolbar" data-title="Работа с реестром объектов" data-step="13"
+                             data-intro="Это панель инструментов для таблицы. При выборе галочками одной или нескольких строк в реестре можно удалить записи из реестра, нажав соответствующую кнопку.
+                             В строке поиска можно найти нужную запись по любой имеющейся информации. Информация об остальных кнопках справа на панели доступна после завершения обучения при наведении на них.">
                             <button id="remove" class="btn btn-danger" disabled>
                                 <i class="fa fa-trash"></i> Удалить
                             </button>
