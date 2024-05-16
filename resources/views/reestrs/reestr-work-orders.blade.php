@@ -2,15 +2,25 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
+    <div class="container" data-title="Работа с реестром заказ-нарядов TPM" data-step="25"
+         data-intro="Здесь представлена таблица, содержащая в себе все заказ-наряды TPM, добавленные в систему.">
         <div class="reestrObject">
             <div class="reestrObject__btns d-flex mb-5">
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-secondary refreshTable" data-toggle="tooltip"
-                            title="показать последние данные">Обновить реестр
+                            title="показать последние данные"
+                            data-title="Работа с реестром заказ-нарядов TPM" data-step="26"
+                            data-intro="По нажатию на данную кнопку обновляются данные в реестре в зависимости от внесенных свежих данных в систему.">
+                        Обновить реестр
                     </button>
-                    <button type="button" class="btn btn-primary" id="togglePeriodSelection" data-toggle="tooltip" title="показать записи за период">Выбрать период</button>
-                    <button id="showActiveBtn" type="button" class="btn btn-success" data-toggle="tooltip" title="статус 'в работе'">Показать активные заказ-наряды</button>
+                    <button type="button" class="btn btn-primary" id="togglePeriodSelection" data-toggle="tooltip" title="показать записи за период"
+                            data-title="Работа с реестром заказ-нарядов TPM" data-step="27"
+                            data-intro="Обновлять данные в реестре в зависимости от выбранного периода и «Плановой даты» заказ-наряда.">
+                        Выбрать период</button>
+                    <button id="showActiveBtn" type="button" class="btn btn-success" data-toggle="tooltip" title="статус 'в работе'"
+                            data-title="Работа с реестром заказ-нарядов TPM" data-step="28"
+                            data-intro="Отображать только те заказы, в карточке которых указан статус «В работе»">
+                        Показать активные заказ-наряды</button>
                 </div>
             </div>
             <div class="collapse" id="periodSelection">
@@ -36,7 +46,9 @@
             <div class="card">
                 <div class="card-body">
                     <div class="reestrObject__table text-center">
-                        <div id="toolbar">
+                        <div id="toolbar" data-title="Работа с реестром календарей" data-step="29"
+                             data-intro="Это панель инструментов для таблицы. При выборе галочками одной или нескольких строк в реестре можно удалить записи из реестра, нажав соответствующую кнопку.
+                             В строке поиска можно найти нужную запись по любой имеющейся информации. Информация об остальных кнопках справа на панели доступна после завершения обучения при наведении на них.">
                             <button id="remove" class="btn btn-danger" disabled>
                                 <i class="fa fa-trash"></i> Удалить
                             </button>
@@ -328,5 +340,27 @@
 
         });
 
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Получаем блок header на странице home
+            var header = document.querySelector('header');
+            var navbarNavElements = document.querySelectorAll('header ul.navbar-nav');
+            var navElements = document.querySelectorAll('header ul.nav');
+            var restartTutorialBtn = document.querySelector('#restartTutorialBtn');
+            restartTutorialBtn.setAttribute('data-step', null);
+            // Устанавливаем атрибут data-step равным null для header на странице home
+            if (header) {
+                header.setAttribute('data-step', null);
+            }
+            // Устанавливаем атрибут data-step равным null для всех элементов navbar-nav
+            navbarNavElements.forEach(function(navbarNavElement) {
+                navbarNavElement.setAttribute('data-step', null);
+            });
+            // Устанавливаем атрибут data-step равным null для всех элементов nav
+            navElements.forEach(function(navElement) {
+                navElement.setAttribute('data-step', null);
+            });
+        });
     </script>
 @endsection

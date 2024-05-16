@@ -20,22 +20,21 @@
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
+    @vite(['node_modules/intro.js/introjs.css', 'node_modules/intro.js/intro.js'])
 
     <!-- Подключаем скрипты Bootstrap Table -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.22.2/dist/bootstrap-table.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.28.0/tableExport.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.22.2/dist/bootstrap-table.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.22.2/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.22.2/dist/extensions/export/bootstrap-table-export.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.22.3/dist/bootstrap-table-locale-all.min.js"></script>
-
     <!-- Подключаем библиотеку FullCalendar -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.js'></script>
-
     <!-- icons -->
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule="" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 </head>
@@ -43,108 +42,22 @@
 <body>
 <div id="app">
     @if(Route::currentRouteName() !== 'register')
-    <header>
-        <div class="px-3 py-3 header-bg text-black shadow-sm">
-            <div class="container">
-                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-                    <a href="{{ url('/') }}"
-                       class="navbar-brand d-flex align-items-center my-2 my-lg-0 me-lg-auto text-white text-decoration-none"
-                       data-toggle="tooltip" title="Перейти на главную">  <img src="{{ asset('/storage/apm_apm.png') }}" alt="лого вход">
-                    </a>
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-
-                    <ul class="nav col-12 col-lg-auto my-2 justify-content-center my-md-0 text-small">
-                        <li>
-                            <a href="/home" class="nav-link text-white">
-                                <i class="bi bi-card-list me-1"></i>
-                                Реестр объектов
-                                <span class="hover-bar"></span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/pageReestrGraph" class="nav-link text-white">
-                                <i class="bi bi-bar-chart me-1"></i>
-                                Реестр графиков
-                                <span class="hover-bar"></span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/pageReestrCalendar" class="nav-link text-white">
-                                <i class="bi bi-calendar-event me-1"></i>
-                                Реестр календарей
-                                <span class="hover-bar"></span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="/reestr-work-orders" class="nav-link text-white">
-                                <i class="bi bi-app-indicator me-1"></i>
-                                Реестр заказов
-                                <span class="hover-bar"></span>
-                            </a>
-                        </li>
-                    </ul>
-
-                    <ul class="navbar-nav ms-auto d-flex flex-row gap-3 text-white">
-                        <!-- Authentication Links -->
-                        @guest
-                            @if (Route::has('login'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Вход') }}</a>
-                                </li>
-                            @endif
-
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Регистрация') }}</a>
-                                </li>
-                            @endif
-                        @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
-                                   data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="/home/profile" target="_blank">
-                                        Личный кабинет
-                                    </a>
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Выход') }}
-                                    </a>
-
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
-                        @endguest
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </header>
+        @include('layouts.header')
     @endif
     <main>
-{{--        <ul class="breadcrumbs container">--}}
-{{--            @if(Route::currentRouteName() !== 'register')--}}
-{{--                @foreach ($breadcrumbs as $crumb)--}}
-{{--                    <li>--}}
-{{--                        @if ($loop->last)--}}
-{{--                            <span style="color: grey;">{{ $crumb->title }}</span>--}}
-{{--                        @else--}}
-{{--                            <a href="{{ $crumb->url }}">{{ $crumb->title }}</a>--}}
-{{--                        @endif--}}
-{{--                    </li>--}}
-{{--                @endforeach--}}
-{{--            @endif--}}
-{{--        </ul>--}}
+        {{--        <ul class="breadcrumbs container">--}}
+        {{--            @if(Route::currentRouteName() !== 'register')--}}
+        {{--                @foreach ($breadcrumbs as $crumb)--}}
+        {{--                    <li>--}}
+        {{--                        @if ($loop->last)--}}
+        {{--                            <span style="color: grey;">{{ $crumb->title }}</span>--}}
+        {{--                        @else--}}
+        {{--                            <a href="{{ $crumb->url }}">{{ $crumb->title }}</a>--}}
+        {{--                        @endif--}}
+        {{--                    </li>--}}
+        {{--                @endforeach--}}
+        {{--            @endif--}}
+        {{--        </ul>--}}
 
         @yield('content')
     </main>
@@ -162,8 +75,8 @@
         });
     });
 
-    $(function() {
-        ToolTipStyling = function() {
+    $(function () {
+        ToolTipStyling = function () {
             $('.tool-tip,[data-toggle="tooltip"]').tooltip({
                 container: 'body',
                 animation: true,
@@ -174,14 +87,14 @@
             });
         };
         ToolTipStyling();
-        $('table').on('post-body.bs.table', function() {
+        $('table').on('post-body.bs.table', function () {
             ToolTipStyling();
         });
-        tooltipTitleSetter = function(that) {
+        tooltipTitleSetter = function (that) {
             return $(that).val() === "" ? ' ' : $(that).val();
         };
     });
-    $('textarea.tool-tip').hover(function() {
+    $('textarea.tool-tip').hover(function () {
         $(this).attr("title", tooltipTitleSetter(this))
             .tooltip('fixTitle');
     });
@@ -201,6 +114,69 @@
         }
     });
 </script>
+{{-- intro.js --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Проверяем, было ли уже пройдено обучение
+        var tutorialCompleted = localStorage.getItem('tutorialCompleted');
+
+        if (!tutorialCompleted) {
+            // Устанавливаем массив URL-адресов страниц
+            var pages = [
+                '/home',
+                '/pageReestrGraph',
+                '/pageReestrCalendar',
+                '/reestr-work-orders',
+                '/home/profile',
+            ];
+            // Устанавливаем начальный индекс страницы (в данном случае это текущая страница)
+            var currentPageIndex = pages.indexOf(window.location.pathname);
+
+            // Создаем тур
+            var tour = introJs()
+                .setOptions({
+                    nextLabel: 'Далее',
+                    prevLabel: 'Назад',
+                    doneLabel: 'Завершить',
+                })
+                .oncomplete(function () {
+                    // Увеличиваем индекс страницы для перехода на следующую страницу
+                    currentPageIndex++;
+                    if (currentPageIndex < pages.length) {
+                        // Перенаправляем пользователя на следующую страницу
+                        window.location.href = pages[currentPageIndex];
+                    } else {
+                        // Если это последняя страница в массиве, завершаем тур и сохраняем информацию о завершении обучения
+                        localStorage.setItem('tutorialCompleted', 'true');
+                        tour.addStep({
+                            title: 'Обучение завершено',
+                            intro: 'При необходимости повторного прохождения нужно будет нажать на кнопку вопроса "?" на панели навигации и обучение запустится повторно. Также на всех страницах присутствуют доп. подсказки, которые появляются при наведении на элемент.',
+                            position: 'bottom-middle-aligned'
+                        });
+                        tour.oncomplete(function() {
+                            // Перенаправляем пользователя на главную страницу
+                            window.location.href = '/home';
+                        });
+                        tour.start();
+                    }
+                });
+
+            tour.start();
+        }
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        // Получаем кнопку по ее ID
+        var restartTutorialBtn = document.getElementById('restartTutorialBtn');
+
+        // Добавляем обработчик события на клик кнопки
+        restartTutorialBtn.addEventListener('click', function () {
+            // Запускаем обучение заново
+            introJs().start();
+        });
+    });
+
+</script>
+
 
 </body>
 </html>
