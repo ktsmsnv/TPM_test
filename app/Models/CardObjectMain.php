@@ -23,7 +23,7 @@ class CardObjectMain extends Eloquent
     }
     public function calendar()
     {
-        return $this->hasMany(cardcalendar::class, 'card_id', '_id');
+        return $this->hasMany(cardCalendar::class, 'card_id', '_id');
     }
     public function graph()
     {

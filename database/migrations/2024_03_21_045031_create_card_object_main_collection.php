@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::connection('mongodb')->create('card_object_main', function (Blueprint $collection) {
             $collection->index('id');
             $collection->string('infrastructure');
+            $collection->string('curator');
             $collection->string('name');
             $collection->string('number');
             $collection->string('location');

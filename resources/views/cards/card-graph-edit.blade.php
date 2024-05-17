@@ -9,12 +9,12 @@
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
-                <h1 class="mb-4"><strong>Карточка графика: "{{ $data_CardGraph->name ?? 'Название объекта не найдено' }}"</strong></h1>
+                <h1 class="mb-4"><strong>Редактирование карточки графика: "{{ $data_CardGraph->name ?? 'Название объекта не найдено' }}"</strong></h1>
             </div>
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-success saveEditGraph">Сохранить изменения</button>
-                    <a href="{{ route('cardObject', ['id' => $data_CardGraph->_id]) }}" type="button" class="btn btn-secondary me-5">Отменить изменения</a>
+                    <a href="{{ route('cardGraph', ['id' => $data_CardGraph->_id]) }}" type="button" class="btn btn-secondary me-5">Отменить изменения</a>
                     <button type="button" class="btn btn-success" data-toggle="tooltip"
                             title="ДАННАЯ КНОПКА ПОКА НЕ РАБОТАЕТ">Выгрузить PDF</button>
                 </div>
@@ -37,7 +37,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    {{--                                    <button class="btn btn-primary">Заархивировать</button>--}}
+                                    <button class="btn btn-primary" id="confirmArchiveGraph">Заархивировать</button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
@@ -167,6 +167,35 @@
                 </div>
             </div>
         </div>
+
+        <script>
+            $('#confirmArchiveGraph').click(function () {
+                // Устанавливаем текущую дату в поле "Фактическая дата"
+                const currentDate = new Date();
+                const formattedDate = currentDate.toLocaleDateString('ru-RU').split('.').reverse().join('-'); // Форматируем дату в формат dd-mm-yyyy
+                $('input[name="date_archive"]').val(formattedDate);
+                // Отправляем данные в контроллер для сохранения изменений в базе данных
+                $.ajax({
+                    type: "POST",
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: "{{ route('archiveGraphDateButt') }}",
+                    data: {
+                        id: "{{ $data_CardGraph->_id }}", // Здесь нужно передать ID текущего заказа-наряда
+                        date_archive: formattedDate, // Передаем текущую дату
+                    },
+                    success: function (response) {
+                        // Обработка успешного завершения запроса
+                        console.log(response);
+                    },
+                    error: function (error) {
+                        // Обработка ошибки
+                        console.log(error);
+                    }
+                });
+            });
+        </script>
 
     <script>
 

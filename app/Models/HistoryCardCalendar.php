@@ -26,6 +26,6 @@ class HistoryCardCalendar extends Eloquent
 
     public function originalCardCalendar()
     {
-        return $this->belongsTo(cardcalendar::class, 'card_calendar_id', '_id');
+        return $this->belongsTo(cardCalendar::class, 'card_calendar_id', '_id');
     }
 }

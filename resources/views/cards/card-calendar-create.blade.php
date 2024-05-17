@@ -6,7 +6,7 @@
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
-                <h2 class="mb-4"><strong>Создание картчоки календаря для объекта {{ $cardObjectMain->name }}</strong></h2>
+                <h2 class="mb-4"><strong>Создание карточки календаря для объекта {{ $cardObjectMain->name }}</strong></h2>
             </div>
             <input type="hidden" name="card_id" value="{{ $cardObjectMain->id }}">
             <div class="btns d-flex mb-5">
@@ -80,7 +80,8 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата создания</label>
-                                            <input type="date" name="date_create" value="{{ date('Y-m-d') }}" style="opacity: 0.5;" class="form-control w-100" placeholder="Введите дату создания" readonly>
+                                            <input type="date" name="date_create" value="{{ date('Y-m-d') }}" style="opacity: 0.5;"
+                                                   class="form-control w-100" placeholder="Введите дату создания" readonly>
                                         </div>
 {{--                                        <div class="d-flex justify-content-between align-items-center gap-3">--}}
 {{--                                            <label class="w-100">Дата последнего сохранения</label>--}}
