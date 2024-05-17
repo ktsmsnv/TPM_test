@@ -10,7 +10,7 @@ return [
             'url' => env('MAIL_URL'),
             'host' => env('MAIL_HOST', 'mail.kst-energo.ru'),
             'port' => env('MAIL_PORT', 465),
-            'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+            'encryption' => env('MAIL_ENCRYPTION', 'ssl'),
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
             'timeout' => null,
