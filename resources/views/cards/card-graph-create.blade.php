@@ -36,8 +36,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    <input type="" name="cards_ids" value="{{ implode(',', $selectedIds) }}">
-                                    <button class="btn btn-primary">Заархивировать</button>
+                                    <input type="hidden" name="cards_ids" value="{{ implode(',', $selectedIds) }}">
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
@@ -53,8 +52,10 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Куратор</label>
-                                            <input name="curator" placeholder="Введите куратора"
-                                                   class="form-control w-100">
+                                            <input name="curator" class="form-control w-100"
+                                                   placeholder="Введите куратора">
+                                            {{--                                            <input name="curator" value="{{ $selectedObjectMain->first()->curator }}"--}}
+{{--                                                   class="form-control w-100" readonly>--}}
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Год действия</label>
@@ -67,17 +68,20 @@
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата создания</label>
                                             <input type="date" class="form-control w-100" name="date_create"
-                                                   placeholder="Введите дату создания">
+                                                   placeholder="Дата создания" value="{{ date('Y-m-d') }}"
+                                                   data-toggle="tooltip" style="opacity: 0.5;" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата последнего сохранения</label>
-                                            <input type="date" class="form-control w-100" name="date_last_save"
-                                                   placeholder="Введите дату последнего сохранения">
+                                            <input type="" class="form-control w-100" name="date_last_save"
+                                                   data-toggle="tooltip" title="Дата последнего сохранения появляется и меняется автоматически, после сохранения"
+                                                   placeholder="Дата последнего сохранения" readonly style="opacity: 0.5;">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата архивации</label>
-                                            <input type="date" class="form-control w-100" name="date_archive"
-                                                   placeholder="Введите дату архивации">
+                                            <input type="" class="form-control w-100" name="date_archive" data-toggle="tooltip"
+                                                   title="Дата архивации появится после нажатия на кнопку архивация в карточке графика"
+                                                   placeholder="Дата архивации" readonly style="opacity: 0.5;">
                                         </div>
                                     </div>
                                 </div>
@@ -243,19 +247,19 @@
                     $('#locale').change(initTable);
                 });
 
-                let formData = new FormData();``
+                var currentDate = new Date().toISOString().split('T')[0];
+
 
                 $(".saveCardGraph").click(function () {
+                    let formData = new FormData();
                     // Собираем данные с основной формы
-                    // Получаем данные с элементов формы
                     formData.append('name', $("input[name=name]").val());
                     formData.append('infrastructure_type', $("input[name=infrastructure]").val());
                     formData.append('cards_ids', $("input[name=cards_ids]").val());
-
                     formData.append('curator', $("input[name=curator]").val());
                     formData.append('year_action', $("input[name=year_action]").val());
                     formData.append('date_create', $("input[name=date_create]").val());
-                    formData.append('date_last_save', $("input[name=date_last_save]").val());
+                    formData.append('date_last_save', currentDate);
                     formData.append('date_archive', $("input[name=date_archive]").val());
 
                     // Отправляем данные на сервер
@@ -270,8 +274,9 @@
                         contentType: false, // Не устанавливать тип содержимого
                         success: function (response) {
                             // Обработка успешного ответа от сервера (например, отображение сообщения об успешном сохранении)
-                            alert("Данные успешно сохранены!");
+                            // alert("Данные успешно сохранены!");
                             console.log(formData);
+                            window.location.href = "/pageReestrGraph";
                         },
                         error: function (error) {
                             // Обработка ошибки при сохранении данных
