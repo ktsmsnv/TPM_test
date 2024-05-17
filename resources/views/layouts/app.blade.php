@@ -120,19 +120,18 @@
         // Проверяем, было ли уже пройдено обучение
         var tutorialCompleted = localStorage.getItem('tutorialCompleted');
 
-        if (!tutorialCompleted) {
-            // Устанавливаем массив URL-адресов страниц
-            var pages = [
-                '/home',
-                '/pageReestrGraph',
-                '/pageReestrCalendar',
-                '/reestr-work-orders',
-                '/home/profile',
-            ];
-            // Устанавливаем начальный индекс страницы (в данном случае это текущая страница)
-            var currentPageIndex = pages.indexOf(window.location.pathname);
+        // Устанавливаем массив URL-адресов страниц
+        var pages = [
+            '/home',
+            '/pageReestrGraph',
+            '/pageReestrCalendar',
+            '/reestr-work-orders',
+            '/home/profile',
+        ];
 
-            // Создаем тур
+        // Функция запуска тура
+        function startTour() {
+            var currentPageIndex = pages.indexOf(window.location.pathname);
             var tour = introJs()
                 .setOptions({
                     nextLabel: 'Далее',
@@ -148,34 +147,31 @@
                     } else {
                         // Если это последняя страница в массиве, завершаем тур и сохраняем информацию о завершении обучения
                         localStorage.setItem('tutorialCompleted', 'true');
-                        tour.addStep({
-                            title: 'Обучение завершено',
-                            intro: 'При необходимости повторного прохождения нужно будет нажать на кнопку вопроса "?" на панели навигации и обучение запустится повторно. Также на всех страницах присутствуют доп. подсказки, которые появляются при наведении на элемент.',
-                            position: 'bottom-middle-aligned'
-                        });
-                        tour.oncomplete(function() {
-                            // Перенаправляем пользователя на главную страницу
-                            window.location.href = '/home';
-                        });
-                        tour.start();
+                        alert('Обучение завершено');
+                        window.location.href = '/home';
                     }
                 });
-
             tour.start();
         }
-    });
-    document.addEventListener('DOMContentLoaded', function () {
+
+        // Если обучение не завершено, запускаем тур
+        if (!tutorialCompleted) {
+            startTour();
+        }
+
         // Получаем кнопку по ее ID
         var restartTutorialBtn = document.getElementById('restartTutorialBtn');
-
-        // Добавляем обработчик события на клик кнопки
-        restartTutorialBtn.addEventListener('click', function () {
-            // Запускаем обучение заново
-            introJs().start();
-        });
+        if (restartTutorialBtn) {
+            // Добавляем обработчик события на клик кнопки
+            restartTutorialBtn.addEventListener('click', function () {
+                // Сбрасываем флаг завершения обучения и запускаем тур заново
+             //   localStorage.removeItem('tutorialCompleted');
+                startTour();
+            });
+        }
     });
-
 </script>
+
 
 
 </body>

@@ -3,6 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
+use App\Models\CardObjectMain;
+use App\Models\CardWorkOrder;
+use App\Models\CardObjectServices;
+
 Auth::routes();
 
 // Маршрут для главной страницы входа доступен только неаутентифицированным пользователям
@@ -104,6 +108,27 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/archive',  [App\Http\Controllers\CalendarController::class, 'archiveCalendar'])->name('archiveCalendar');
     // ----------------------------------------------------------------------------------------------------------------
+
+
+// routes/web.php
+    Route::get('/send-test-email', function () {
+        $user = \App\Models\User::first(); // Получаем первого пользователя из базы данных
+        try {
+            if ($user) {
+                $workOrder = CardWorkOrder::first(); // Получаем первый заказ-наряд
+                $object = CardObjectMain::first(); // Получаем первый объект
+                $service = CardObjectServices::first(); // Получаем первую услугу
+                \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\WorkOrderNotification($workOrder, $object, $service));
+                return 'Письмо отправлено на адрес: ' . $user->email;
+            } else {
+                return 'Нет доступных пользователей с адресом электронной почты.';
+            }
+        } catch (\Exception $e) {
+            return 'Ошибка: ' . $e->getMessage();
+        }
+    });
+
+
 
 });
 
