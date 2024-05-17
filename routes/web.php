@@ -42,21 +42,21 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/get-work-orders',  [App\Http\Controllers\workOrderController::class, 'index'])->name('get-work-orders');
         Route::post('/delete-cardWorkOrder', [App\Http\Controllers\workOrderController::class,'deleteWorkOrder'])->name('delete-cardWorkOrder');
 
-    //----РЕЕСТР ГРАФИКОВ----------------------------------------------------------------------------------------------------------------------------
-    //-----------------------------------------------------------------------------------------------------------------------------------------------
-        Route::get('/pageReestrGraph', [App\Http\Controllers\HomeController::class, 'reestrGraphView'])->name('reestr-Graph');
+        //----РЕЕСТР ГРАФИКОВ----------------------------------------------------------------------------------------------------------------------------
+        Route::get('/pageReestrGraph', [App\Http\Controllers\GraphController::class, 'reestrGraphView'])->name('reestr-Graph');
         // Передача данных таблиц в реестр bootstraptable
-        Route::get('/get-cardGraph',  [App\Http\Controllers\HomeController::class, 'getCardGraph'])->name('get-cardGraph');
+        Route::get('/get-cardGraph',  [App\Http\Controllers\GraphController::class, 'getCardGraph'])->name('get-cardGraph');
         Route::post('/delete-cardGraph', [App\Http\Controllers\GraphController::class,'deleteCardGraph'])->name('delete-cardGraph');
-        //Route::get('/get-reestrGraph-details/{id}', 'App\Http\Controllers\pageReestrGraphController@getReestrGraphDetails')->name('get-reestrGraph-details');
-    //-----------------------------------------------------------------------------------------------------------------------------------------------
+        //-----------------------------------------------------------------------------------------------------------------------------------------------
+        //----РЕЕСТР КАЛЕНДАРЕЙ--------------------------------------------------------------------------------------------------------------------------
+        Route::get('/pageReestrCalendar', [App\Http\Controllers\CalendarController::class, 'view'])->name('reestr-Calendar');
+        // Передача данных таблиц в реестр bootstraptable
+        Route::get('/get-cardCalendar',  [App\Http\Controllers\CalendarController::class, 'reestrCalendarView'])->name('get-cardCalendar');
+        Route::post('/delete-cardCalendar', [App\Http\Controllers\CalendarController::class,'deleteCardCalendar'])->name('delete-cardCalendar');
+        //-----------------------------------------------------------------------------------------------------------------------------------------------
 
-    //----РЕЕСТР КАЛЕНДАРЕЙ--------------------------------------------------------------------------------------------------------------------------
-    //-----------------------------------------------------------------------------------------------------------------------------------------------
-        Route::get('/pageReestrCalendar', [App\Http\Controllers\pageReestrCalendarController::class, 'reestrCalendarView'])->name('reestr-Calendar');
-    //-----------------------------------------------------------------------------------------------------------------------------------------------
 
-    // ---------------------------- КАРТОЧКА ОБЪЕКТА ------------------------------------------------------------------
+        // ---------------------------- КАРТОЧКА ОБЪЕКТА ------------------------------------------------------------------
         Route::get('/home/card-object/{id}', [App\Http\Controllers\ObjectController::class, 'index'])->name('cardObject');
         // передача изображения и документов карточки объекта
         Route::get('/getImage/{id}', [App\Http\Controllers\ObjectController::class, 'getImage'])->name('getImage');
@@ -86,7 +86,9 @@ Route::middleware(['auth'])->group(function () {
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    // ---------------------------- КАРТОЧКА ГРАФИКА ------------------------------------------------------------------
+
+
+    //---------------------------- КАРТОЧКА ГРАФИКА -------------------------------------------------------------------------------------------------
         Route::get('/pageReestrGraph/card-graph/{id}', [App\Http\Controllers\GraphController::class, 'index'])->name('cardGraph');
         //СОЗДАНИЕ новой карточки графика TPM
         Route::get('/pageReestrGraph/card-graph-create', [App\Http\Controllers\GraphController::class, 'createGraphPage'])->name('cardGraph-create');
@@ -94,9 +96,15 @@ Route::middleware(['auth'])->group(function () {
         // РЕДАКТИРОВАНИЕ существующей карточки графика TPM
         Route::get('/pageReestrGraph/card-graph/edit/{id}', [App\Http\Controllers\GraphController::class, 'edit'])->name('cardGraph-edit');
         Route::post('/edit-card-graph/save/{id}', [App\Http\Controllers\GraphController::class, 'editSave'])->name('cardGraph-editSave');
+        Route::post('/archiveGraphDateButt',  [App\Http\Controllers\GraphController::class, 'archiveGraphDateButt'])->name('archiveGraphDateButt');
 
-    Route::post('/archiveGraphDateButt',  [App\Http\Controllers\GraphController::class, 'archiveGraphDateButt'])->name('archiveGraphDateButt');
-    // ----------------------------------------------------------------------------------------------------------------
+        // Маршрут для получения списка карточек объектов, которые не привязаны к другим карточкам графика
+        Route::get('/get-unlinked-object-cards', [App\Http\Controllers\GraphController::class, 'getUnlinkedObjectCards'])->name('getUnlinkedObjectCards');
+
+        // Маршрут для добавления выбранных карточек объектов к карточке графика
+        Route::post('/add-object-cards', [App\Http\Controllers\GraphController::class, 'addObjectCards'])->name('addObjectCards');
+    // -----------------------------------------------------------------------------------------------------------------------------------------------
+
 
     // ---------------------------- КАРТОЧКА КАЛЕНДАРЯ ----------------------------------------------------------------
         Route::get('/pageReestrCalendar/card-calendar/{id}', [App\Http\Controllers\CalendarController::class, 'index'])->name('cardCalendar');

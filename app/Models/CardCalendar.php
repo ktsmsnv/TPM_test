@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use MongoDB\Laravel\Eloquent\Model as Eloquent;
-class cardcalendar extends Eloquent
+class CardCalendar extends Eloquent
 {
     protected $connection = 'mongodb';
     protected $collection = 'card_calendar';
@@ -21,4 +21,15 @@ class cardcalendar extends Eloquent
         'date_archive' => null,
         'year' => null,
     ];
+
+    public function objects()
+    {
+        return $this->hasMany(CardObjectMain::class, '_id', 'card_id');
+//        return $this->hasMany(CardObjectServices::class, 'card_object_main_id', 'card_id');
+    }
+
+    public function services()
+    {
+        return $this->hasMany(CardObjectServices::class, 'card_object_main_id', 'card_id');
+    }
 }

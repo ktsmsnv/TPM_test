@@ -47,7 +47,6 @@ class workOrderController extends Controller
 
             // Получаем все заказы-наряды с отношениями к объектам обслуживания и главным объектам
             $workOrders = CardWorkOrder::with('cardObjectServices.cardObjectMain')->get();
-
             // Создаем массив для хранения всех данных
             $formattedWorkOrders = [];
 

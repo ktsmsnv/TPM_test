@@ -7,11 +7,46 @@ use App\Models\HistoryCardCalendar;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
-use App\Models\cardcalendar;
+use App\Models\CardCalendar;
 
 //контроллер для отображения данных на страницы
 class CalendarController extends Controller
 {
+
+    public function reestrCalendarView()
+    {
+        // Получаем объекты инфраструктуры с их сервисами
+        $calendars = CardCalendar::with('objects.services')->get();
+//        dd($calendars);
+        // Создаем массив для хранения всех данных
+        $formattedCalendars = [];
+
+        foreach ($calendars as $cardCalendar) {
+            // Проходим по каждому объекту в коллекции объектов
+            foreach ($cardCalendar->objects as $object) {
+                $shortNames = $object->services->pluck('short_name')->toArray();
+                // Формируем данные для одного объекта инфраструктуры и его сервисов
+                $formattedCalendar = [
+                    'id' => $cardCalendar->id,
+                    'infrastructure' => $object->infrastructure,
+                    'name' => $object->name,
+                    'number' => $object->number,
+                    'location' => $object->location,
+                    'short_name' => implode(', ', $shortNames),
+                    'year' => $cardCalendar->year,
+                    'date_create' => $cardCalendar->date_create,
+                    'date_archive' => $cardCalendar->date_archive,
+                    'curator' => $object->curator,
+                ];
+
+                // Добавляем данные объекта к массиву с отформатированными данными
+                $formattedCalendars[] = $formattedCalendar;
+            }
+        }
+
+        return response()->json($formattedCalendars);
+    }
+
 
     public function create($id)
     {
@@ -24,7 +59,7 @@ class CalendarController extends Controller
     {
 
         // Создание новой записи карточки календаря
-        $calendar = new cardcalendar();
+        $calendar = new cardCalendar();
         $calendar->card_id = $request->input('card_id');
         $calendar->date_create = $request->input('date_create');
         $calendar->date_archive = $request->input('date_archive');
@@ -50,7 +85,7 @@ class CalendarController extends Controller
     public function index($id)
     {
         // Находим карточку календаря по переданному ID
-        $cardCalendar = cardcalendar::find($id);
+        $cardCalendar = CardCalendar::find($id);
 
         // Проверяем, найдена ли карточка
         if (!$cardCalendar) {
@@ -75,10 +110,28 @@ class CalendarController extends Controller
         $calendarId = $request->id;
         $dateArchive = Carbon::now()->format('Y-m-d');
 
-        $calendar = cardcalendar::findOrFail($calendarId);
+        $calendar = cardCalendar::findOrFail($calendarId);
         $calendar->date_archive = $dateArchive;
         $calendar->save();
 
         return response()->json(['message' => 'Календарь успешно заархивирован'], 200);
+    }
+    public function view()
+    {
+        // Возвращение представления с передачей хлебных крошек
+        return view('reestrs/reestrCalendar');
+    }
+
+    // --------------- удаление карточки заказ-наряда ---------------
+    public function deleteCardCalendar(Request $request)
+    {
+        $ids = $request->ids;
+        // Обновляем записи, устанавливая значение deleted в 1
+        foreach ($ids as $id) {
+            // Удалить записи из связанных таблиц
+            CardCalendar::find($id)->delete();
+        }
+
+        return response()->json(['success' => true], 200);
     }
 }

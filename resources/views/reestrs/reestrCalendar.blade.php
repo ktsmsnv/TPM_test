@@ -4,13 +4,30 @@
     <div class="container">
         <div class="reestrCalendar">
             <div class="reestrCalendar__btns d-flex justify-content-between">
-                <button type="button" class="btn btn-secondary">Обновить реестр</button>
+                <button type="button" class="btn btn-secondary refreshTable" data-toggle="tooltip"
+                        title="показать последние данные">Обновить реестр</button>
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-success">Выбрать период действия</button>
-                    <button type="button" class="btn btn-success">Показать активные календари</button>
-                    <button type="button" class="btn btn-primary">Реестр календарей ТРМ</button>
+                    <button type="button" class="btn btn-success" id="togglePeriodSelection" data-toggle="tooltip" title="показать записи за период">Выбрать период действия</button>
+                    <button id="showActiveBtn" type="button" class="btn btn-success"
+                            data-toggle="tooltip" title="статус 'в работе'">Показать активные календари</button>
                 </div>
             </div>
+            <div class="collapse" id="periodSelection">
+                <div class="card card-body position-absolute" style="top: 50px;left: 1350px;z-index: 99;">
+                    <!-- диапазон дат -->
+                    <div class="form-group mb-3">
+                        <label for="startDate">Начальная дата:</label>
+                        <input type="date" class="form-control" id="startDate">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="endDate">Конечная дата:</label>
+                        <input type="date" class="form-control" id="endDate">
+                    </div>
+                    <button type="button" class="btn btn-primary" id="applyButton">Применить</button>
+                </div>
+            </div>
+            <div id="selectedPeriod" class="mt-3"></div>
+
             <select class="form-control d-none" id="locale">
                 <option value="ru-RU">ru-RU</option>
             </select>
@@ -23,78 +40,13 @@
                                 <i class="fa fa-trash"></i> Удалить
                             </button>
                         </div>
-                        <table id="reestrCalendar"
-                               data-toolbar="#toolbar"
-                               data-search="true"
-                               data-show-refresh="true"
-                               data-show-toggle="true"
-                               data-show-fullscreen="true"
-                               data-show-columns="true"
-                               data-show-columns-toggle-all="true"
-                               data-detail-view="true"
-                               data-show-export="true"
-                               data-click-to-select="true"
-                               data-detail-formatter="detailFormatter"
-                               data-minimum-count-columns="2"
-                               data-show-pagination-switch="true"
-                               data-pagination="true"
-                               data-id-field="id"
-                               data-show-footer="true"
-                               data-side-pagination="server"
-                               data-response-handler="responseHandler">
-                            <thead>
-                            <tr>
-                                <th></th>
-                                <th colspan="8"></th>
-                                <th colspan="1"></th>
-                                <th colspan="1"></th>
-                            </tr>
-                            <tr>
-                                <th>Вид инфраструктуры</th>
-                                <th>Наименование объекта</th>
-                                <th>Инв./заводской номер</th>
-                                <th>Место установки</th>
-                                <th>Виды обслуживания</th>
-                                <th>Год действия календаря</th>
-                                <th>Дата создания</th>
-                                <th>Дата последнего сохранения</th>
-                                <th>Дата архивации</th>
-                                <th>Куратор</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr data-id="1">
-                                <td></td>
-                                <td>из карточки календаря</td>
-                                <td class="tool-tip" title="открыть карточку календаря">
-                                    <a href="/pageReestrCalendar/card-calendar" >
-                                    Сварочное оборудование JASIC MIG 3500 TECH N222</a>
-                                </td>
-                                <td>из карточки объекта</td>
-                                <td>из карточки календаря</td>
-                                <td>из карточки календаря</td>
-                                <td>из карточки календаря</td>
-                                <td>из карточки календаря</td>
-                                <td>из карточки календаря</td>
-                                <td>из карточки календаря</td>
-                                <td>из карточки календаря</td>
-                            </tr>
-{{--                            @foreach ($pageReestrCalendar as $item)--}}
-{{--                                <tr class="editable-row" data-id="{{ $item->id }}">--}}
-{{--                                            <td>{{ $item->id }}</td>--}}
-{{--                                    <td>{{ $item->typeInfrastructCalend }}</td>--}}
-{{--                                    <td>{{ $item->nameObjectCalend }}</td>--}}
-{{--                                    <td>{{ $item->invFactNum }}</td>--}}
-{{--                                    <td>{{ $item->instPlace }}</td>--}}
-{{--                                    <td>{{ $item->typeServ }}</td>--}}
-{{--                                    <td>{{ year($item->calendarYear) }}</td>--}}
-{{--                                    <td>{{ date('d.m.Y', strtotime($item->dateCreationCalend)) }}</td>--}}
-{{--                                    <td>{{ date('d.m.Y', strtotime($item->dateLastSaveCalend)) }}</td>--}}
-{{--                                    <td>{{ date('d.m.Y', strtotime($item->dateArchivCalend)) }}</td>--}}
-{{--                                    <td>{{ $item->curatorCalend }}</td>--}}
-{{--                                </tr>--}}
-{{--                            @endforeach--}}
-                            </tbody>
+                        <table id="reestrCalendar" data-url="/get-cardCalendar"
+                               data-toolbar="#toolbar" data-search="true"
+                               data-show-refresh="true" data-show-toggle="true" data-show-fullscreen="true"
+                               data-show-columns="true" data-show-columns-toggle-all="true"
+                               data-show-export="true" data-click-to-select="true" data-minimum-count-columns="11"
+                               data-show-pagination-switch="true" data-pagination="true"
+                               data-id-field="id" data-response-handler="responseHandler">
                         </table>
                     </div>
                 </div>
@@ -135,36 +87,103 @@
                 });
             }
 
-            function responseHandler(res) {
-                $.each(res.rows, function (i, row) {
-                    row.state = $.inArray(row.id, selections) !== -1;
-                });
-                return res;
+            // ------------------------------------ Функция для получения данных с сервера ------------------------------------
+            function getObjectsFromServer() {
+                return $.get('/get-cardCalendar'); // Возвращаем Promise
             }
 
-            function detailFormatter(index, row) {
-                var html = [];
-                $.each(row, function (key, value) {
-                    html.push('<p><b>' + key + ':</b> ' + value + '</p>');
+            // ------------------------------------ Функция для обновления таблицы ------------------------------------
+            function refreshTable() {
+                getObjectsFromServer().done(function(data) {
+                    // Фильтруем записи с deleted = 0
+                    let filteredData = data.filter(function(item) {
+                        return item.deleted !== 1;
+                    });
+                    initTable(filteredData); // Инициализируем таблицу с новыми данными
                 });
-                return html.join('');
             }
 
-            function initTable() {
+            $('.refreshTable').click(function () {
+                refreshTable();
+            });
+
+            function initTable(data) {
+                console.log('Данные:', data);
                 $table.bootstrapTable('destroy').bootstrapTable({
                     locale: $('#locale').val(),
+                    pagination: true,
+                    pageNumber: 1,
+                    pageSize: 10,
+                    pageList: [10, 25, 50, 'all'],
                     columns: [
-                        {
-                            field: 'state',
-                            checkbox: true,
-                            rowspan: 2,
-                            align: 'center',
-                            valign: 'middle'
+                        [
+                            {colspan: 9, title: 'Календари ТРМ', align: 'center'},
+                            {colspan: 1, title: ' ', align: 'center'},
+                            {colspan: 1, title: ' ', align: 'center'},
+                        ],
+                        [
+                            {field: 'state', checkbox: true,  align: 'center', valign: 'middle'},
+                            {title: 'Item ID', field: 'id', align: 'center', valign: 'middle', visible: false},
+                            {
+                                title: 'Вид инфраструктуры',
+                                field: 'infrastructure',
+                                align: 'center',
+                            },
+                            {
+                                title: 'Наименование объекта',
+                                field: 'name',
+                                align: 'center',
+                                formatter: function (value, row) {
+                                    // Создаем ссылку с помощью значения поля "name"
+                                    return '<a href="/pageReestrCalendar/card-calendar/' + row.id + '" target="_blank"' +
+                                        'data-toggle="tooltip" title="открыть карточку календаря">' + value + '</a>';
+                                }
+                            },
+                            {
+                                title: 'Инв./заводской номер',
+                                field: 'number',
+                                align: 'center',
+                            },
+                            {
+                                title: 'Место установки',
+                                field: 'location',
+                                align: 'center',
+                            },
+                            {
+                                title: 'Виды обслуживания',
+                                field: 'short_name',
+                                align: 'center'
+                            },
+                            {title: 'Год действия', field: 'year', align: 'center'},
+                            {title: 'Дата создания', field: 'date_create', align: 'center',
+                                formatter: function(value, row) {
+                                    // Преобразование даты в нужный формат (день-месяц-год)
+                                    return new Date(value).toLocaleDateString('ru-RU');
+                                }
+                            },
+                            {title: 'Дата архивации', field: 'date_archive', align: 'center',
+                                formatter: function(value, row) {
+                                    if (value === null) {
+                                        return null;
+                                    }
+                                    else {
+                                        // Преобразование даты в нужный формат (день-месяц-год)
+                                        return new Date(value).toLocaleDateString('ru-RU');
+                                    }
+                                }
+                            },
+                            {title: 'Куратор', field: 'curator', align: 'center'},
+                        ],
+                    ],
+                    data: data,
+                        ajaxOptions: {
+                        success: function (data) {
+                            $table.bootstrapTable('load', data);
                         },
-                        { field: 'calendTRM', title: 'Календари ТРМ', align: 'center' },
-                        { field: 'empty1', title: ' ', align: 'center' },
-                        { field: 'empty2', title: ' ', align: 'center' },
-                    ]
+                        error: function (xhr, error) {
+                            console.error(xhr.responseText);
+                        }
+                    }
                 });
 
                 $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
@@ -174,12 +193,9 @@
 
                 $remove.click(function () {
                     let ids = getIdSelections();
-                    $table.bootstrapTable('remove', {
-                        field: 'id',
-                        values: ids
-                    });
-                    $remove.prop('disabled', true);
-                    showConfirmDeleteRCModal();
+                    if (ids.length > 0) {
+                        showConfirmDeleteRCModal();
+                    }
                 });
 
                 // Функция для отображения модального окна удаления
@@ -188,98 +204,113 @@
                 }
                 // Обработчик события нажатия на кнопку "Удалить" в модальном окне
                 $confirmDeleteRCButton.click(function () {
-                    // добавить логику для удаления элементов
+                    let ids = getIdSelections();
+                    $.ajax({
+                        type: "POST",
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        url: "{{ route('delete-cardCalendar') }}",
+                        data: {ids: ids},
+                        success: function (response) {
+                            // Обновить таблицу после успешного удаления
+                            refreshTable();
+                        },
+                        error: function (error) {
+                            console.log(error);
+                        }
+                    });
                     $confirmDeleteRC.modal('hide');
                 });
             }
+
+            //Вызов функции для получения данных с сервера
+            getObjectsFromServer().done(function(data) {
+                initTable(data); // Инициализируем таблицу с новыми данными
+            });
 
             $(function () {
                 initTable();
                 $('#locale').change(initTable);
             });
 
+            // ------------------------------------ Показать активные объекты ------------------------------------
+            let isActiveFilter = false; // Флаг, указывающий на текущее состояние фильтрации активных объектов
+            // Обработчик события нажатия на кнопку "Показать активные объекты"
+            $('#showActiveBtn').click(function () {
+                if (isActiveFilter) {
+                    resetFilter(); // Если фильтрация активна, сбрасываем её
+                } else {
+                    showActiveObjects(); // Если фильтрация неактивна, применяем фильтр
+                }
+            });
+            // Функция для отображения только активных объектов
+            function showActiveObjects() {
+                let data = $table.bootstrapTable('getData');
+                let activeObjects = data.filter(function (row) {
+                    return row.date_archive === null;
+                });
+                $table.bootstrapTable('load', activeObjects);
+                isActiveFilter = true; // Устанавливаем флаг фильтрации в активное состояние
+            }
+            // Функция для сброса фильтрации и отображения всех объектов
+            function resetFilter() {
+                refreshTable(); // Перезагружаем таблицу, чтобы сбросить фильтр
+                isActiveFilter = false; // Устанавливаем флаг фильтрации в неактивное состояние
+            }
 
-            //
-            // var $table = $('#reestrCalendarTable');
-            // initTable($table);
-            // // инициализация таблицы и ее настроек
-            // function initTable($table) {
-            //     $table.bootstrapTable({
-            //         locale: $('#locale').val(),
-            //         pagination: true,
-            //         pageNumber: 1,
-            //         pageSize: 5,
-            //         pageList: [5, 15, 50, 'all'],
-            //         columns: [
-            //             // {
-            //             //     field: 'id',
-            //             //     title: '№',
-            //             //     valign: 'middle',
-            //             //     sortable: true,
-            //             // },
-            //             {
-            //                 field: 'typeInfrastructCalend',
-            //                 title: 'Вид инфраструктуры',
-            //                 valign: 'middle',
-            //                 sortable: true,
-            //             },
-            //             {
-            //                 field: 'nameObjectCalend',
-            //                 title: 'Наименование объекта',
-            //                 valign: 'middle',
-            //                 sortable: true
-            //             },
-            //             {
-            //                 field: 'invFactNum',
-            //                 title: 'Инв./заводской номер',
-            //                 valign: 'middle',
-            //                 sortable: true
-            //             },
-            //             {
-            //                 field: 'instPlace',
-            //                 title: 'Место установки',
-            //                 valign: 'middle',
-            //                 sortable: true
-            //             },
-            //             {
-            //                 field: 'typeServ',
-            //                 title: 'Год действия календаря',
-            //                 valign: 'middle',
-            //                 sortable: true
-            //             },
-            //             {
-            //                 field: 'calendarYear',
-            //                 title: 'Год действия календаря',
-            //                 valign: 'middle',
-            //                 sortable: true
-            //             },
-            //             {
-            //                 field: 'dateCreationCalend',
-            //                 title: 'Дата создания',
-            //                 valign: 'middle',
-            //                 sortable: true
-            //             },
-            //             {
-            //                 field: 'dateLastSaveCalend',
-            //                 title: 'Дата последнего сохранения',
-            //                 valign: 'middle',
-            //                 sortable: true
-            //             },
-            //             {
-            //                 field: 'dateArchivCalend',
-            //                 title: 'Дата архивации',
-            //                 valign: 'middle',
-            //                 sortable: true
-            //             },
-            //             {
-            //                 field: 'curatorCalend',
-            //                 title: 'Куратор',
-            //                 valign: 'middle',
-            //                 sortable: true
-            //             }
-            //         ]
-            //     });
-            // }
+
+            // ------------------------------------ Показать за выбранный период ------------------------------------
+            const periodSelection = document.getElementById('periodSelection');
+            const togglePeriodSelection = document.getElementById('togglePeriodSelection');
+            const applyButton = document.getElementById('applyButton');
+            const selectedPeriod = document.getElementById('selectedPeriod');
+            // Скрыть блок выбора периода при нажатии вне его области
+            document.addEventListener('click', function (event) {
+                if (!periodSelection.contains(event.target) && event.target !== togglePeriodSelection) {
+                    periodSelection.classList.remove('show');
+                }
+            });
+            // Переключение видимости блока выбора периода при нажатии на кнопку
+            togglePeriodSelection.addEventListener('click', function () {
+                if (periodSelection.classList.contains('show')) {
+                    periodSelection.classList.remove('show');
+                } else {
+                    periodSelection.classList.add('show');
+                }
+            });
+            // Обработка нажатия на кнопку "Применить"
+            applyButton.addEventListener('click', function () {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+
+                // Преобразуем даты в объекты Date
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                // Фильтруем записи по выбранному периоду
+                let data = $table.bootstrapTable('getData');
+                let filteredData = data.filter(function (row) {
+                    // Преобразуем плановую дату обслуживания в объект Date
+                    const plannedDate = new Date(row.planned_maintenance_date);
+                    // Проверяем, попадает ли плановая дата в выбранный период
+                    return plannedDate >= start && plannedDate <= end;
+                });
+                // Обновляем таблицу, отображая только записи из отфильтрованных данных
+                $table.bootstrapTable('load', filteredData);
+
+                // Отобразить выбранный период под блоком с кнопками
+                selectedPeriod.innerHTML = `
+                <div class="alert alert-info" role="alert">
+                    Выбранный период: с ${endDate.split('-').reverse().join('-')} по ${startDate.split('-').reverse().join('-')}
+                    <button type="button" class="btn btn-danger ms-3" id="resetPeriodButton">Сбросить период</button>
+                </div>`;
+                // Добавляем обработчик клика на кнопку "Сбросить период"
+                document.getElementById('resetPeriodButton').addEventListener('click', function () {
+                    selectedPeriod.innerHTML = '';
+                    refreshTable(); // После сброса периода обновляем таблицу, чтобы отобразить все записи
+                });
+            });
+
         });
 
     </script>

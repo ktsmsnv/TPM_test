@@ -52,8 +52,10 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Куратор</label>
-                                            <input name="curator" placeholder="Введите куратора"
-                                                   class="form-control w-100">
+                                            <input name="curator" class="form-control w-100"
+                                                   placeholder="Введите куратора">
+                                            {{--                                            <input name="curator" value="{{ $selectedObjectMain->first()->curator }}"--}}
+{{--                                                   class="form-control w-100" readonly>--}}
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Год действия</label>
@@ -246,11 +248,11 @@
                 });
 
                 var currentDate = new Date().toISOString().split('T')[0];
-                let formData = new FormData();``
+
 
                 $(".saveCardGraph").click(function () {
+                    let formData = new FormData();
                     // Собираем данные с основной формы
-                    // Получаем данные с элементов формы
                     formData.append('name', $("input[name=name]").val());
                     formData.append('infrastructure_type', $("input[name=infrastructure]").val());
                     formData.append('cards_ids', $("input[name=cards_ids]").val());
@@ -272,8 +274,9 @@
                         contentType: false, // Не устанавливать тип содержимого
                         success: function (response) {
                             // Обработка успешного ответа от сервера (например, отображение сообщения об успешном сохранении)
-                            alert("Данные успешно сохранены!");
+                            // alert("Данные успешно сохранены!");
                             console.log(formData);
+                            window.location.href = "/pageReestrGraph";
                         },
                         error: function (error) {
                             // Обработка ошибки при сохранении данных
