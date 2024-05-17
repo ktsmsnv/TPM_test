@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Mail\WorkOrderNotification;
+use App\Models\User;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -9,6 +11,7 @@ use App\Models\CardObjectMain;
 use App\Models\CardWorkOrder;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 
 class Kernel extends ConsoleKernel
@@ -39,14 +42,38 @@ class Kernel extends ConsoleKernel
                             $newWorkOrder->status = 'В работе';
                             // Также можно добавить другие поля, например, номер заказа
                             $newWorkOrder->save();
+                            // Отправляем уведомления
+                            $this->sendNotifications($object, $service, $newWorkOrder);
                         }
                     }
                 }
             }
            // Log::info('Планировщик Laravel выполняется каждую секунду');
+            Log::info('Планировщик выполнен');
         })->everySecond();
 
     }
+
+    protected function sendNotifications($object, $service, $workOrder)
+    {
+        $performer = User::where('name', $service->performer)->first();
+        $responsible = User::where('name', $service->responsible)->first();
+        $curator = User::where('name', $object->curator)->first();
+
+        $recipients = collect([$performer, $responsible, $curator])->filter();
+
+        foreach ($recipients as $recipient) {
+            if ($recipient && $recipient->email) {
+                try {
+                    Mail::to($recipient->email)->send(new WorkOrderNotification($workOrder, $object, $service));
+                    Log::info("Уведомление отправлено на {$recipient->email} для объекта {$object->name}");
+                } catch (\Exception $e) {
+                    Log::error("Ошибка при отправке почты на {$recipient->email}: " . $e->getMessage());
+                }
+            }
+        }
+    }
+
 
     /**
      * Register the commands for the application.

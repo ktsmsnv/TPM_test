@@ -171,7 +171,13 @@
         // Добавляем обработчик события на клик кнопки
         restartTutorialBtn.addEventListener('click', function () {
             // Запускаем обучение заново
-            introJs().start();
+            var tour = introJs()
+                .setOptions({
+                    nextLabel: 'Далее',
+                    prevLabel: 'Назад',
+                    doneLabel: 'Завершить',
+                })
+            tour.start();
         });
     });
 
