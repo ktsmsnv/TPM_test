@@ -9,6 +9,7 @@ use App\Models\CardObjectMain;
 use App\Models\CardObjectServicesTypes;
 use App\Models\HistoryCardGraph;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use MongoDB\BSON\Binary;
@@ -298,7 +299,7 @@ class GraphController extends Controller
         // Проверяем, найдена ли карточка
         if (!$card) {
             // Если карточка не найдена, возвращаем ошибку или редирект на страницу ошибки
-            return response()->json(['error' => 'Карточка объекта не найдена'], 404);
+            return response()->json(['error' => 'Карточка графика не найдена'], 404);
         }
 
         // Обновляем основные данные карточки объекта
@@ -337,7 +338,7 @@ class GraphController extends Controller
         // Проверяем, найдена ли карточка
         if (!$card) {
             // Если карточка не найдена, возвращаем ошибку или редирект на страницу ошибки
-            return response()->json(['error' => 'Карточка объекта не найдена'], 404);
+            return response()->json(['error' => 'Карточка графика не найдена'], 404);
         }
 
         // Найдите заказ-наряд по его ID и обновите фактическую дату и статус

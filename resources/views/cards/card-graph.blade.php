@@ -45,7 +45,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    <button class="btn btn-primary" id="confirmArchiveGraph">Заархивировать</button>
+                                    <button class="btn btn-primary archive_graph {{ $data_CardGraph->date_archive != null ? 'disabled' : '' }}">Заархивировать</button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
@@ -79,13 +79,9 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата архивации</label>
-                                            @if ($data_CardGraph && $data_CardGraph->date_archive)
-                                                <input name="date_archive" placeholder="Введите дату архивации" class="form-control w-100"
-                                                   readonly value="{{ date('d.m.Y', strtotime($data_CardGraph->date_archive)) ?? 'нет данных'  }}">
-                                            @else
-                                                <input name="date_archive" class="form-control w-100" value="Дата архивации"
-                                                       readonly style="opacity: 0.5;" data-toggle="tooltip" title="Дата архивации появится после нажатия на кнопку Заархивировать">
-                                            @endif
+                                            <input type="date" name="date_archive" placeholder="Введите дату архивации" class="form-control w-100"
+                                                   readonly style="opacity: 0.5;"
+                                                   value="{{ isset($data_CardGraph->date_archive) ?$data_CardGraph->date_archive : 'нет данных' }}">
                                         </div>
                                     </div>
                                 </div>
@@ -179,8 +175,34 @@
             </div>
         </div>
 
+
+        <!-- Модальное окно подтверждения архивации графика -->
+        <div class="modal fade" id="confirmArchiveModal" tabindex="-1" aria-labelledby="confirmArchiveModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmArchiveModalLabel">Подтверждение архивации графика</h5>
+                        <button type="button" class="btn-close" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Вы уверены, что хотите архивировать данный график объекта
+                        "{{$data_CardGraph->name}}" ?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="button" class="btn btn-danger" id="confirmArchiveButton">Заархивировать</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script>
-            $('#confirmArchiveGraph').click(function () {
+            // Обработчик события нажатия на кнопку "Завершить заказ"
+            $('.archive_graph').click(function () {
+                // Открываем модальное окно с вопросом о завершении заказа-наряда
+                $('#confirmArchiveModal').modal('show');
+            });
+            $('#confirmArchiveButton').click(function () {
                 // Устанавливаем текущую дату в поле "Фактическая дата"
                 const currentDate = new Date();
                 const formattedDate = currentDate.toLocaleDateString('ru-RU').split('.').reverse().join('-'); // Форматируем дату в формат dd-mm-yyyy
@@ -199,6 +221,7 @@
                     success: function (response) {
                         // Обработка успешного завершения запроса
                         console.log(response);
+                        location.reload();
                     },
                     error: function (error) {
                         // Обработка ошибки

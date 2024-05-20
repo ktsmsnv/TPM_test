@@ -37,7 +37,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    <button class="btn btn-primary" id="confirmArchiveGraph">Заархивировать</button>
+                                    <button class="btn btn-primary" id="confirmArchiveButton">Заархивировать</button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
@@ -74,6 +74,7 @@
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата архивации</label>
                                             <input type="date" name="date_archive" placeholder="Введите дату архивации" class="form-control w-100"
+                                                   readonly style="opacity: 0.5;"
                                                    value="{{ isset($data_CardGraph->date_archive) ?$data_CardGraph->date_archive : 'нет данных' }}">
                                         </div>
                                     </div>
@@ -169,7 +170,7 @@
         </div>
 
         <script>
-            $('#confirmArchiveGraph').click(function () {
+            $('#confirmArchiveButton').click(function () {
                 // Устанавливаем текущую дату в поле "Фактическая дата"
                 const currentDate = new Date();
                 const formattedDate = currentDate.toLocaleDateString('ru-RU').split('.').reverse().join('-'); // Форматируем дату в формат dd-mm-yyyy

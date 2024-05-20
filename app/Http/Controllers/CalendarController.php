@@ -106,15 +106,20 @@ class CalendarController extends Controller
         return view('cards/card-calendar', compact('cardCalendar', 'cardObjectMain'));
     }
 
-    public function archiveCalendar(Request $request) {
-        $calendarId = $request->id;
-        $dateArchive = Carbon::now()->format('Y-m-d');
+    public function archiveCalendarDateButt(Request $request) {
 
-        $calendar = cardCalendar::findOrFail($calendarId);
+        $dateArchive = Carbon::now()->format('Y-m-d');
+        $calendarId = $request->id;
+        $calendar = cardCalendar::find($calendarId);
+        // Проверяем, найдена ли карточка
+        if (!$calendar) {
+            // Если карточка не найдена, возвращаем ошибку или редирект на страницу ошибки
+            return response()->json(['error' => 'Карточка календаря не найдена'], 404);
+        }
         $calendar->date_archive = $dateArchive;
         $calendar->save();
 
-        return response()->json(['message' => 'Календарь успешно заархивирован'], 200);
+        return response()->json(['message' => 'Карточка календаря успешно заархивирована'], 200);
     }
     public function view()
     {
@@ -133,5 +138,66 @@ class CalendarController extends Controller
         }
 
         return response()->json(['success' => true], 200);
+    }
+
+    // ------------------  РЕДАКТИРОВАНИЕ карточки графика TPM (переход на страницу) ------------------
+    public function edit($id)
+    {
+        $cardCalendar = CardCalendar::find($id);
+
+        // Проверяем, найдена ли карточка
+        if (!$cardCalendar) {
+            // Если карточка не найдена, возвращаем ошибку или редирект
+            return response()->json(['error' => 'Карточка календаря не найдена'], 404);
+        }
+
+        // Находим связанную с карточкой календаря карточку объекта
+        $cardObjectMain = CardObjectMain::find($cardCalendar->card_id);
+
+        // Проверяем, найдена ли карточка объекта
+        if (!$cardObjectMain) {
+            // Если карточка объекта не найдена, возвращаем ошибку или редирект
+            return response()->json(['error' => 'Карточка объекта не найдена'], 404);
+        }
+
+
+        // Передаем данные в представление
+        return view('cards/card-calendar-edit', compact('cardCalendar', 'cardObjectMain'));
+    }
+
+    public function editSave(Request $request, $id)
+    {
+        // Находим карточку календаря по переданному идентификатору
+        $cardCalendar = CardCalendar::find($id);
+        // Проверяем, найдена ли карточка
+        if (!$cardCalendar) {
+            // Если карточка не найдена, возвращаем ошибку или редирект на страницу ошибки
+            return response()->json(['error' => 'Карточка календаря не найдена'], 404);
+        }
+
+        // Обновляем основные данные карточки календаря
+        $cardCalendar->date_create = $request->date_create;
+        $cardCalendar->date_archive = $request->date_archive;
+        $cardCalendar->year = $request->year;
+
+
+        // Сохраняем изменения
+        $cardCalendar->save();
+
+//        $history_card = new HistoryCardCalendar();
+//        $history_card->name =  $cardCalendar->name;
+//        $history_card->infrastructure_type = $cardCalendar->infrastructure_type;
+//        $history_card->curator = $request->curator;
+//        $history_card->year_action = $request->year_action;
+//        $history_card->date_create = $request->date_create;
+//        $history_card->date_last_save = $request->date_last_save;
+//        $history_card->date_archive = $request->date_archive;
+//        $history_card->cards_ids =  $cardCalendar->cards_ids;
+//        $history_card->card_graph_id = $cardCalendar->card_graph_id;
+//        $history_card->save();
+
+
+        // Возвращаем успешный ответ или редирект на страницу карточки объекта
+        return response()->json(['success' => 'Данные карточки календаря успешно обновлены'], 200);
     }
 }

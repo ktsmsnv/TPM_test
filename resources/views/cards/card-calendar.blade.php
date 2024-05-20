@@ -11,7 +11,8 @@
             <input type="hidden" name="card_id" value="{{ $cardObjectMain->id }}">
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-danger editCard">Редактировать</button>
+                    <a href="{{ route('cardCalendar-edit', ['id' => $cardCalendar->_id]) }}"
+                       target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
                     <a href="/pageReestrCalendar" type="button" class="btn btn-secondary me-5">Назад</a>
 
                     <button type="button" class="btn btn-success">Выгрузить WORD</button>
@@ -85,7 +86,8 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата создания</label>
-                                            <input type="date" name="date_create" class="form-control w-100" value="{{ $cardCalendar -> date_create }}" readonly
+                                            <input type="date" name="date_create" class="form-control w-100"
+                                                   value="{{ $cardCalendar -> date_create }}" readonly style="opacity: 0.5;"
                                                    data-toggle="tooltip" title="дата создания календаря">
                                         </div>
                                         {{--                                        <div class="d-flex justify-content-between align-items-center gap-3">--}}
@@ -95,13 +97,9 @@
                                         {{--                                        </div>--}}
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата архивации</label>
-                                            @if ($cardCalendar && $cardCalendar->date_archive !== null)
-                                                <input name="date_archive" class="form-control w-100" value="{{ $cardCalendar->date_archive }}" readonly
-                                                       data-toggle="tooltip" aria-label="дата архивации" title="дата архивации">
-                                            @else
-                                                <input name="date_archive" class="form-control w-100" value="дата архивации"
-                                                       readonly style="opacity: 0.5;" data-toggle="tooltip" aria-label="дата архивации" title="дата архивации">
-                                            @endif
+                                            <input type="date" name="date_archive" placeholder="Дата архивации" class="form-control w-100"
+                                                   readonly style="opacity: 0.5;"
+                                                   value="{{ isset($cardCalendar->date_archive) ?$cardCalendar->date_archive : 'нет данных' }}">
                                         </div>
                                     </div>
                                 </div>
@@ -272,7 +270,7 @@
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
-                        url: "{{ route('archiveCalendar') }}",
+                        url: "{{ route('archiveCalendarDateButt') }}",
                         data: {
                             id: "{{ $cardCalendar->_id }}", // Здесь нужно передать ID текущего заказа-наряда
                             date_archive: formattedDate, // Передаем текущую дату
@@ -280,6 +278,7 @@
                         success: function (response) {
                             // Обработка успешного завершения запроса
                             console.log(response);
+                            location.reload();
                         },
                         error: function (error) {
                             // Обработка ошибки
