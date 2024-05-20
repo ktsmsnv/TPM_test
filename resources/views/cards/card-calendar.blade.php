@@ -317,11 +317,13 @@
         </style>
 
         <script>
+            const services = @json($services);
+            console.log(services);
             // Инициализация календаря при загрузке страницы
-            generateCalendar();
+            generateCalendar(services);
 
             // Функция для генерации календаря
-            function generateCalendar() {
+            function generateCalendar(services) {
                 const currentDate = new Date();
                 const year = currentDate.getFullYear(); // Получаем текущий год
                 // const year = 2024;
@@ -358,7 +360,15 @@
                         }
                         // Проверяем, что день недели не суббота или воскресенье
                         if (j % 7 !== 0 && j % 7 !== 6) {
-                            row += `<td>${dayCounter}</td>`;
+                            let service = services.find(s => {
+                                let serviceDate = new Date(s.planned_maintenance_date);
+                                return serviceDate.getDate() === dayCounter && serviceDate.getMonth() === i;
+                            });
+                            if (service) {
+                                row += `<td style="background-color: ${service.calendar_color}">${dayCounter}</td>`;
+                            } else {
+                                row += `<td>${dayCounter}</td>`;
+                            }
                             dayCounter++;
                         } else {
                           //  row += `<td></td>`;

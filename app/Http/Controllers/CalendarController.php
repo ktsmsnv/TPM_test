@@ -110,6 +110,7 @@ class CalendarController extends Controller
                 $services[] = [
                     'planned_maintenance_date' => $service->planned_maintenance_date,
                     'short_name' => $service->short_name,
+                    'calendar_color' => $service->calendar_color,
                 ];
             }
         }
