@@ -202,24 +202,24 @@
                     });
                 });
 
-                // После загрузки страницы
-                $('#service_1-tab').on('shown.bs.tab', function (e) {
-                    // Если вкладка с календарем стала активной
-                    if (e.target.id === 'service_1-tab') {
-                        // Инициализируем календарь
-                        var calendarEl = document.getElementById('calendar');
-                        var calendar = new FullCalendar.Calendar(calendarEl, {
-                            timeZone: 'UTC',
-                            initialView: 'multiMonthYear',
-                            locale: 'ru',
-                            editable: true
-                        });
-                        // Рендерим календарь
-                        calendar.render();
-                        // Пересчитываем размеры календаря после рендеринга
-                        calendar.updateSize();
-                    }
-                });
+                // // После загрузки страницы
+                // $('#service_1-tab').on('shown.bs.tab', function (e) {
+                //     // Если вкладка с календарем стала активной
+                //     if (e.target.id === 'service_1-tab') {
+                //         // Инициализируем календарь
+                //         var calendarEl = document.getElementById('calendar');
+                //         var calendar = new FullCalendar.Calendar(calendarEl, {
+                //             timeZone: 'UTC',
+                //             initialView: 'multiMonthYear',
+                //             locale: 'ru',
+                //             editable: true
+                //         });
+                //         // Рендерим календарь
+                //         calendar.render();
+                //         // Пересчитываем размеры календаря после рендеринга
+                //         calendar.updateSize();
+                //     }
+                // });
 
                 $(".saveCard").click(function () {
                     let formData = new FormData();

@@ -200,4 +200,5 @@ class CalendarController extends Controller
         // Возвращаем успешный ответ или редирект на страницу карточки объекта
         return response()->json(['success' => 'Данные карточки календаря успешно обновлены'], 200);
     }
+
 }
