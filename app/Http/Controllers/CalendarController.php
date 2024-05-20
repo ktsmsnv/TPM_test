@@ -50,8 +50,34 @@ class CalendarController extends Controller
 
     public function create($id)
     {
-        $cardObjectMain = CardObjectMain::findOrFail($id);
-        return view('cards/card-calendar-create', compact('cardObjectMain'));
+        $cardObjectMain = CardObjectMain::with('services')->find($id);
+        // Находим карточку календаря по переданному ID
+//        $cardCalendar = CardCalendar::with('objects.services')->find($id);
+
+//        // Проверяем, найдена ли карточка
+//        if (!$cardCalendar) {
+//            // Если карточка не найдена, возвращаем ошибку или редирект
+//            return response()->json(['error' => 'Карточка объекта не найдена'], 404);
+//        }
+
+//        dd($cardObjectMain);
+        // Определяем массив месяцев
+        $months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+
+        // Собираем все услуги для календаря
+        $services = [];
+        foreach ($cardObjectMain as $object) {
+            foreach ($object->services as $service) {
+                $services[] = [
+                    'planned_maintenance_date' => $service->planned_maintenance_date,
+                    'short_name' => $service->short_name,
+                    'calendar_color' => $service->calendar_color,
+                ];
+//                dd($services);
+            }
+        }
+    dd($services);
+        return view('cards/card-calendar-create', compact('cardObjectMain', 'services', 'months'));
     }
 
 
@@ -172,6 +198,21 @@ class CalendarController extends Controller
         if (!$cardObjectMain) {
             // Если карточка объекта не найдена, возвращаем ошибку или редирект
             return response()->json(['error' => 'Карточка объекта не найдена'], 404);
+        }
+
+        // Определяем массив месяцев
+        $months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+
+        // Собираем все услуги для календаря
+        $services = [];
+        foreach ($cardCalendar->objects as $object) {
+            foreach ($object->services as $service) {
+                $services[] = [
+                    'planned_maintenance_date' => $service->planned_maintenance_date,
+                    'short_name' => $service->short_name,
+                    'calendar_color' => $service->calendar_color,
+                ];
+            }
         }
 
 
