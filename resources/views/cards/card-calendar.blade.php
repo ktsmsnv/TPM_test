@@ -167,7 +167,11 @@
                                 <h4>Календарь ТРМ</h4>
                                 <div class="member-info--inputs">
                                     {{-- КАЛЕНДАРЬ --}}
-                                    <div id='calendar'></div>
+                                    <div id="calendar-container">
+                                        <table class="calendar">
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -214,7 +218,6 @@
         </div>
 
         <script>
-
             $(document).ready(function () {
                 $("#cardCalendarTab").show;
 
@@ -289,5 +292,92 @@
                     $('#confirmArchiveModal').modal('hide');
                 });
             });
+        </script>
+
+        <style>
+            .calendar {
+                border-collapse: collapse;
+                width: 100%;
+            }
+            .calendar th, .calendar td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: center;
+            }
+            .calendar th {
+                background-color: #f2f2f2;
+            }
+            .holiday {
+                background-color: red;
+            }
+            .service {
+                background-color: blue;
+            }
+        </style>
+
+        <script>
+            const services = @json($services);
+            console.log(services);
+            // Инициализация календаря при загрузке страницы
+            generateCalendar(services);
+
+            // Функция для генерации календаря
+            function generateCalendar(services) {
+                const currentDate = new Date();
+                const year = currentDate.getFullYear(); // Получаем текущий год
+                // const year = 2024;
+                const months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+                const daysOfWeek = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт'];
+
+                // Добавляем заголовки для дней недели
+                let headerRow = '<tr><th class="daysMonths"></th>';
+                for (let i = 0; i < 5; i++) {
+                    daysOfWeek.forEach(day => {
+                        headerRow += `<th>${day}</th>`;
+                    });
+                }
+                headerRow += '</tr>';
+                $('.calendar tbody').append(headerRow);
+
+                // Заполнение ячеек днями месяца
+                for (let i = 0; i < months.length; i++) {
+                    let month = months[i];
+                    let firstDayOfMonth = new Date(year, i, 1).getDay(); // Получаем день недели первого дня месяца
+                    let daysInMonth = new Date(year, i + 1, 0).getDate(); // Получаем количество дней в месяце
+                    let row = `<tr><th class="${month.toLowerCase()}">${month}</th>`;
+                    console.log(firstDayOfMonth);
+                    // Добавляем пустые ячейки для смещения
+                    for (let j = 0; j < firstDayOfMonth - 1; j++) {
+                        row += `<td></td>`;
+                    }
+
+                    // Заполняем ячейки днями месяца, пропуская выходные дни
+                    let dayCounter = 1;
+                    for (let j = firstDayOfMonth; j <= 5 * 7; j++) {
+                        if (dayCounter > daysInMonth) {
+                            break;
+                        }
+                        // Проверяем, что день недели не суббота или воскресенье
+                        if (j % 7 !== 0 && j % 7 !== 6) {
+                            let service = services.find(s => {
+                                let serviceDate = new Date(s.planned_maintenance_date);
+                                return serviceDate.getDate() === dayCounter && serviceDate.getMonth() === i;
+                            });
+                            if (service) {
+                                row += `<td style="background-color: ${service.calendar_color}">${dayCounter}</td>`;
+                            } else {
+                                row += `<td>${dayCounter}</td>`;
+                            }
+                            dayCounter++;
+                        } else {
+                          //  row += `<td></td>`;
+                            dayCounter++;// Если суббота или воскресенье, добавляем пустую ячейку
+                        }
+                    }
+
+                    row += '</tr>';
+                    $('.calendar tbody').append(row);
+                }
+            }
         </script>
 @endsection
