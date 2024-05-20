@@ -15,7 +15,6 @@
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-success saveCardGraph">Сохранить</button>
                     <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
-                    <button type="button" class="btn btn-success d-none">Выгрузить PDF</button>
                 </div>
             </div>
 

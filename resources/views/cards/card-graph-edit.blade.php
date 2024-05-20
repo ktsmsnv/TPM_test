@@ -16,7 +16,7 @@
                     <button type="button" class="btn btn-success saveEditGraph">Сохранить изменения</button>
                     <a href="{{ route('cardGraph', ['id' => $data_CardGraph->_id]) }}" type="button" class="btn btn-secondary me-5">Отменить изменения</a>
                     <button type="button" class="btn btn-success" data-toggle="tooltip"
-                            title="ДАННАЯ КНОПКА ПОКА НЕ РАБОТАЕТ">Выгрузить PDF</button>
+                            title="ДАННАЯ КНОПКА ПОКА НЕ РАБОТАЕТ">Выгрузить WORD</button>
                 </div>
             </div>
 

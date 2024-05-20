@@ -12,14 +12,31 @@
                     Обновить реестр
                 </button>
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-success" data-title="Работа с реестром графиков" data-step="16"
+                    <button type="button" class="btn btn-success"
+                            id="togglePeriodSelection" data-title="Работа с реестром графиков" data-step="16"
                             data-intro="Обновлять данные в реестре в зависимости от выбранного периода и «Года действия» графика.">
                         Выбрать период действия</button>
-                    <button type="button" class="btn btn-success" data-title="Работа с реестром графиков" data-step="17"
+                    <button type="button" class="btn btn-success"
+                            id="showActiveBtn" data-title="Работа с реестром графиков" data-step="17"
                             data-intro="Кнопка «Показать активные графики» - отображать только те календари, в карточке которых не заполнена «Дата архивации».">
                         Показать активные графики</button>
                 </div>
             </div>
+            <div class="collapse" id="periodSelection">
+                <div class="card card-body position-absolute" style="top: 50px;left: 1350px;z-index: 99;">
+                    <!-- диапазон дат -->
+                    <div class="form-group mb-3">
+                        <label for="startDate">Начальная дата:</label>
+                        <input type="date" class="form-control" id="startDate">
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="endDate">Конечная дата:</label>
+                        <input type="date" class="form-control" id="endDate">
+                    </div>
+                    <button type="button" class="btn btn-primary" id="applyButton">Применить</button>
+                </div>
+            </div>
+            <div id="selectedPeriod" class="mt-3"></div>
             <select class="form-control d-none" id="locale">
                 <option value="ru-RU">ru-RU</option>
             </select>
@@ -129,22 +146,37 @@
                             {
                                 title: 'Дата создания', field: 'date_create', align: 'center',
                                 formatter: function (value, row) {
-                                    // Преобразование даты в нужный формат (день-месяц-год)
-                                    return new Date(value).toLocaleDateString('ru-RU');
+                                    if (value === null) {
+                                        return null;
+                                    }
+                                    else {
+                                        // Преобразование даты в нужный формат (день-месяц-год)
+                                        return new Date(value).toLocaleDateString('ru-RU');
+                                    }
                                 }
                             },
                             {
                                 title: 'Дата последнего сохранения', field: 'date_last_save', align: 'center',
                                 formatter: function (value, row) {
-                                    // Преобразование даты в нужный формат (день-месяц-год)
-                                    return new Date(value).toLocaleDateString('ru-RU');
+                                    if (value === null) {
+                                        return null;
+                                    }
+                                    else {
+                                        // Преобразование даты в нужный формат (день-месяц-год)
+                                        return new Date(value).toLocaleDateString('ru-RU');
+                                    }
                                 }
                             },
                             {
                                 title: 'Дата архивации', field: 'date_archive', align: 'center',
-                                formatter: function (value, row) {
-                                    // Преобразование даты в нужный формат (день-месяц-год)
-                                    return new Date(value).toLocaleDateString('ru-RU');
+                                formatter: function(value, row) {
+                                    if (value === null) {
+                                        return null;
+                                    }
+                                    else {
+                                        // Преобразование даты в нужный формат (день-месяц-год)
+                                        return new Date(value).toLocaleDateString('ru-RU');
+                                    }
                                 }
                             },
                             {title: 'Исполнитель', field: 'performer', align: 'center', visible: false,
@@ -230,6 +262,17 @@
                 $confirmDeleteRG.modal('hide');
             });
 
+            $(function () {
+                initTable();
+                $('#locale').change(initTable);
+            });
+
+            // $(function () {
+            //     initTable();
+            //     $('#locale').change(initTable);
+            // });
+
+
             // ------------------------------------ Показать активные объекты ------------------------------------
             let isActiveFilter = false; // Флаг, указывающий на текущее состояние фильтрации активных объектов
             // Обработчик события нажатия на кнопку "Показать активные объекты"
@@ -237,24 +280,14 @@
                 if (isActiveFilter) {
                     resetFilter(); // Если фильтрация активна, сбрасываем её
                 } else {
-                    showActiveCardGraphs(); // Если фильтрация неактивна, применяем фильтр
+                    showActiveObjects(); // Если фильтрация неактивна, применяем фильтр
                 }
             });
             // Функция для отображения только активных объектов
-            function showActiveCardGraphs() {
+            function showActiveObjects() {
                 let data = $table.bootstrapTable('getData');
                 let activeObjects = data.filter(function (row) {
-                    return !row.date_usage_end;
-                });
-
-                // Функция для отображения модального окна удаления
-                function showConfirmDeleteModal() {
-                    $confirmDeleteRG.modal('show');
-                }
-                // Обработчик события нажатия на кнопку "Удалить" в модальном окне
-                $confirmDeleteRGButton.click(function () {
-                    // добавить логику для удаления элементов
-                    $confirmDeleteRG.modal('hide');
+                    return row.date_archive === null;
                 });
                 $table.bootstrapTable('load', activeObjects);
                 isActiveFilter = true; // Устанавливаем флаг фильтрации в активное состояние
@@ -266,11 +299,56 @@
             }
 
 
-            // $(function () {
-            //     initTable();
-            //     $('#locale').change(initTable);
-            // });
+            // ------------------------------------ Показать за выбранный период ------------------------------------
+            const periodSelection = document.getElementById('periodSelection');
+            const togglePeriodSelection = document.getElementById('togglePeriodSelection');
+            const applyButton = document.getElementById('applyButton');
+            const selectedPeriod = document.getElementById('selectedPeriod');
+            // Скрыть блок выбора периода при нажатии вне его области
+            document.addEventListener('click', function (event) {
+                if (!periodSelection.contains(event.target) && event.target !== togglePeriodSelection) {
+                    periodSelection.classList.remove('show');
+                }
+            });
+            // Переключение видимости блока выбора периода при нажатии на кнопку
+            togglePeriodSelection.addEventListener('click', function () {
+                if (periodSelection.classList.contains('show')) {
+                    periodSelection.classList.remove('show');
+                } else {
+                    periodSelection.classList.add('show');
+                }
+            });
+            // Обработка нажатия на кнопку "Применить"
+            applyButton.addEventListener('click', function () {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
 
+                // Преобразуем даты в объекты Date
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                // Фильтруем записи по выбранному периоду
+                let data = $table.bootstrapTable('getData');
+                let filteredData = data.filter(function (row) {
+                    // Преобразуем плановую дату обслуживания в объект Date
+                    const plannedDate = new Date(row.planned_maintenance_date);
+                    // Проверяем, попадает ли плановая дата в выбранный период
+                    return plannedDate >= start && plannedDate <= end;
+                });
+                // Обновляем таблицу, отображая только записи из отфильтрованных данных
+                $table.bootstrapTable('load', filteredData);
+
+                // Отобразить выбранный период под блоком с кнопками
+                selectedPeriod.innerHTML = `
+                <div class="alert alert-info" role="alert">
+                    Выбранный период: с ${endDate.split('-').reverse().join('-')} по ${startDate.split('-').reverse().join('-')}
+                    <button type="button" class="btn btn-danger ms-3" id="resetPeriodButton">Сбросить период</button>
+                </div>`;
+                // Добавляем обработчик клика на кнопку "Сбросить период"
+                document.getElementById('resetPeriodButton').addEventListener('click', function () {
+                    selectedPeriod.innerHTML = '';
+                    refreshTable(); // После сброса периода обновляем таблицу, чтобы отобразить все записи
+                });
+            });
 
         });
 
