@@ -28,6 +28,9 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/home/profile/update', [App\Http\Controllers\HomeController::class, 'updateProfile'])->name('profile.update');
         // изменение пароля профиля
         Route::put('/home/profile/change-password', [App\Http\Controllers\HomeController::class, 'changePassword'])->name('profile.change-password');
+
+    Route::get('/profile/notifications',  [App\Http\Controllers\HomeController::class, 'showNotifications'])->name('profile.notifications');
+    Route::post('/profile/notifications/{id}/read', [App\Http\Controllers\HomeController::class, 'markAsRead'])->name('notifications.read');
     // ----------------------------------------------------------------------------------------------------------------
 
 
