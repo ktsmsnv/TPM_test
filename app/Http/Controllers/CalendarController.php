@@ -80,12 +80,10 @@ class CalendarController extends Controller
         // Возвращение ответа с ID созданной записи
         return response()->json(['success' => true, 'id' => $createdId]);
     }
-
-
     public function index($id)
     {
         // Находим карточку календаря по переданному ID
-        $cardCalendar = CardCalendar::find($id);
+        $cardCalendar = CardCalendar::with('objects.services')->find($id);
 
         // Проверяем, найдена ли карточка
         if (!$cardCalendar) {
@@ -102,9 +100,24 @@ class CalendarController extends Controller
             return response()->json(['error' => 'Карточка объекта не найдена'], 404);
         }
 
+        // Определяем массив месяцев
+        $months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+
+        // Собираем все услуги для календаря
+        $services = [];
+        foreach ($cardCalendar->objects as $object) {
+            foreach ($object->services as $service) {
+                $services[] = [
+                    'planned_maintenance_date' => $service->planned_maintenance_date,
+                    'short_name' => $service->short_name,
+                ];
+            }
+        }
+
         // Передаем найденные данные в представление
-        return view('cards/card-calendar', compact('cardCalendar', 'cardObjectMain'));
+        return view('cards.card-calendar', compact('cardCalendar', 'cardObjectMain', 'services', 'months'));
     }
+
 
     public function archiveCalendar(Request $request) {
         $calendarId = $request->id;
