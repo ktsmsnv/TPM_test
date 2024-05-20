@@ -171,6 +171,14 @@
         }
     });
 </script>
+{{--<script>--}}
+{{--    document.addEventListener('DOMContentLoaded', function() {--}}
+{{--        @if(session()->has('flash_notification'))--}}
+{{--        let notification = @json(session('flash_notification'));--}}
+{{--        alert(notification.message);--}}
+{{--        @endif--}}
+{{--    });--}}
+{{--</script>--}}
 
 
 

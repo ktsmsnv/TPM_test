@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use Illuminate\Validation\Rule;
@@ -165,6 +166,20 @@ class HomeController extends Controller
 
         // Возвращение представления с передачей хлебных крошек
         return view('profile', compact('breadcrumbs'));
+    }
+    public function showNotifications()
+    {
+        $notifications = Auth::user()->notifications()->orderBy('created_at', 'desc')->get();
+
+        return view('profile.notifications', compact('notifications'));
+    }
+
+    public function markAsRead($id)
+    {
+        $notification = Notification::findOrFail($id);
+        $notification->update(['read' => true]);
+
+        return redirect()->back();
     }
 
 // Метод для обновления данных пользователя

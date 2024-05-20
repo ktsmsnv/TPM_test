@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Mail\WorkOrderNotification;
+use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -54,6 +55,25 @@ class Kernel extends ConsoleKernel
 
     }
 
+//    protected function sendNotifications($object, $service, $workOrder)
+//    {
+//        $performer = User::where('name', $service->performer)->first();
+//        $responsible = User::where('name', $service->responsible)->first();
+//        $curator = User::where('name', $object->curator)->first();
+//
+//        $recipients = collect([$performer, $responsible, $curator])->filter();
+//
+//        foreach ($recipients as $recipient) {
+//            if ($recipient && $recipient->email) {
+//                try {
+//                    Mail::to($recipient->email)->send(new WorkOrderNotification($workOrder, $object, $service));
+//                    Log::info("Уведомление отправлено на {$recipient->email} для объекта {$object->name}");
+//                } catch (\Exception $e) {
+//                    Log::error("Ошибка при отправке почты на {$recipient->email}: " . $e->getMessage());
+//                }
+//            }
+//        }
+//    }
     protected function sendNotifications($object, $service, $workOrder)
     {
         $performer = User::where('name', $service->performer)->first();
@@ -63,16 +83,16 @@ class Kernel extends ConsoleKernel
         $recipients = collect([$performer, $responsible, $curator])->filter();
 
         foreach ($recipients as $recipient) {
-            if ($recipient && $recipient->email) {
-                try {
-                    Mail::to($recipient->email)->send(new WorkOrderNotification($workOrder, $object, $service));
-                    Log::info("Уведомление отправлено на {$recipient->email} для объекта {$object->name}");
-                } catch (\Exception $e) {
-                    Log::error("Ошибка при отправке почты на {$recipient->email}: " . $e->getMessage());
-                }
+            if ($recipient) {
+                Notification::create([
+                    'user_id' => $recipient->id,
+                    'title' => 'Новый заказ-наряд',
+                    'message' => "Создан новый заказ-наряд для объекта {$object->name} ({$object->location}). Тип работы: {$service->service_type}. Дата обслуживания: {$service->planned_maintenance_date}. Номер заказа-наряда: {$workOrder->number}.",
+                ]);
             }
         }
     }
+
 
 
     /**
