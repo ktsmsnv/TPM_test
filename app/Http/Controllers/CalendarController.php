@@ -61,23 +61,8 @@ class CalendarController extends Controller
 //        }
 
 //        dd($cardObjectMain);
-        // Определяем массив месяцев
-        $months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
 
-        // Собираем все услуги для календаря
-        $services = [];
-        foreach ($cardObjectMain as $object) {
-            foreach ($object->services as $service) {
-                $services[] = [
-                    'planned_maintenance_date' => $service->planned_maintenance_date,
-                    'short_name' => $service->short_name,
-                    'calendar_color' => $service->calendar_color,
-                ];
-//                dd($services);
-            }
-        }
-    dd($services);
-        return view('cards/card-calendar-create', compact('cardObjectMain', 'services', 'months'));
+        return view('cards/card-calendar-create', compact('cardObjectMain'));
     }
 
 
