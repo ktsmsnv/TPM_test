@@ -25,10 +25,12 @@
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <input class="nav-link" id="service_1-tab" data-bs-toggle="tab" data-bs-target="#service_1"
-                    type="button" role="tab" aria-controls="service_1" aria-selected="false" value="КАЛЕНДАРЬ"
-                    readonly placeholder="1111">
-{{--                    <button class="nav-link" id="service_1-tab" data-bs-toggle="tab" data-bs-target="#service_1"--}}
+                    <input  class="nav-link" id="service_1-tab" data-bs-target="#service_1"
+                            role="tab" aria-controls="service_1" aria-selected="false"
+                            value="КАЛЕНДАРЬ" class="form-control w-100" readonly
+                            data-toggle="tooltip" title="Данная вкладка будет доступна после создания
+                             карточки календаря">
+                    {{--                    <button class="nav-link" id="service_1-tab" data-bs-toggle="tab" data-bs-target="#service_1"--}}
 {{--                            type="button" role="tab" aria-controls="service_1" aria-selected="false"--}}
 {{--                            >КАЛЕНДАРЬ--}}
 {{--                    </button>--}}
@@ -160,11 +162,6 @@
                                 <h4>Календарь ТРМ</h4>
                                 <div class="member-info--inputs">
                                     {{-- КАЛЕНДАРЬ --}}
-{{--                                    <div id="calendar-container">--}}
-{{--                                        <table class="calendar">--}}
-{{--                                            <tbody></tbody>--}}
-{{--                                        </table>--}}
-{{--                                    </div>--}}
                                 </div>
                             </div>
                         </div>
@@ -209,25 +206,6 @@
                         document.getElementById('selectedColor').value = selectedColor;
                     });
                 });
-
-                // // После загрузки страницы
-                // $('#service_1-tab').on('shown.bs.tab', function (e) {
-                //     // Если вкладка с календарем стала активной
-                //     if (e.target.id === 'service_1-tab') {
-                //         // Инициализируем календарь
-                //         var calendarEl = document.getElementById('calendar');
-                //         var calendar = new FullCalendar.Calendar(calendarEl, {
-                //             timeZone: 'UTC',
-                //             initialView: 'multiMonthYear',
-                //             locale: 'ru',
-                //             editable: true
-                //         });
-                //         // Рендерим календарь
-                //         calendar.render();
-                //         // Пересчитываем размеры календаря после рендеринга
-                //         calendar.updateSize();
-                //     }
-                // });
 
                 $(".saveCard").click(function () {
                     let formData = new FormData();

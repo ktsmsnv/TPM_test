@@ -54,14 +54,6 @@ class CalendarController extends Controller
         // Находим карточку календаря по переданному ID
 //        $cardCalendar = CardCalendar::with('objects.services')->find($id);
 
-//        // Проверяем, найдена ли карточка
-//        if (!$cardCalendar) {
-//            // Если карточка не найдена, возвращаем ошибку или редирект
-//            return response()->json(['error' => 'Карточка объекта не найдена'], 404);
-//        }
-
-//        dd($cardObjectMain);
-
         return view('cards/card-calendar-create', compact('cardObjectMain'));
     }
 
@@ -200,9 +192,9 @@ class CalendarController extends Controller
             }
         }
 
-
         // Передаем данные в представление
-        return view('cards/card-calendar-edit', compact('cardCalendar', 'cardObjectMain'));
+        return view('cards/card-calendar-edit', compact('cardCalendar',
+            'cardObjectMain', 'services', 'months'));
     }
 
     public function editSave(Request $request, $id)
