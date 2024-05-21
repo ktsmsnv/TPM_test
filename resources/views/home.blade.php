@@ -281,12 +281,17 @@
 
                             {
                                 title: 'Календарь TPM',
-                                field: 'tpm_calendar',
+                                field: 'calendar',
                                 align: 'center',
                                 formatter: function(value, row) {
-                                    return '<a href="" class="tool-tip" title="открыть карточку календаря">' + value + '</a>';
+                                    if (row.calendar) {
+                                        return row.calendar;
+                                    } else {
+                                        return 'Нет календаря';
+                                    }
                                 }
                             }
+
                         ],
 
                     ],
