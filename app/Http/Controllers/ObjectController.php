@@ -472,6 +472,7 @@ class ObjectController extends Controller
         return response()->json(['success' => 'Обслуживание успешно удалено'], 200);
     }
 
+    //------------------ ПОЛЯ ВЫБОРА В ВИДАХ РАБОТЫ -> КАРТЧОКА ОБЪЕКТА ОБСЛУЖИВАНИЕ ------------------
     public function updateChecked(Request $request)
     {
         $typeId = $request->type_id;

@@ -1,7 +1,11 @@
-{{--страница карточка календаря --}}
 @extends('layouts.app')
-
 @section('content')
+    @if($isInCalendar)
+        <!-- Здесь можно добавить дополнительные действия или сообщение, если объект уже существует в календаре -->
+        <div class="alert alert-warning">Выбранный объект <a href="/home/card-object/{{$cardObjectMain->id}}">{{ $cardObjectMain->name }}</a> уже существует в календаре.</div>
+    @else
+        {{--страница карточка календаря --}}
+
     <div class="container custom_tab_style1_outer">
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
@@ -238,4 +242,6 @@
                 });
             });
         </script>
+
+    @endif
 @endsection

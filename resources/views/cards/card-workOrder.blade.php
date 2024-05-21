@@ -6,14 +6,14 @@
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
-                <h2 class="mb-4"><strong>Карточка заказ-наряда №{{$workOrder->number}} объекта "{{$cardObjectMain->name}}"</strong></h2>
+                <h1 class="mb-4"><strong>Карточка заказ-наряда №{{$workOrder->number}} объекта "{{$cardObjectMain->name}}"</strong></h1>
             </div>
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
                     {{-- <button type="button" class="btn btn-success">Сохранить</button>--}}
                     <button type="button" class="btn btn-secondary me-5">Закрыть</button>
 
-                    <a href="{{ route('downloadPDF', ['id' => $workOrder->id]) }}" target="_blank" class="btn btn-success">Выгрузить Word</a>
+                    <a href="{{ route('downloadPDF', ['id' => $workOrder->id]) }}" target="_blank" class="btn btn-success">Выгрузить WORD</a>
 {{--                    <a href="{{ route('downloadWordDocument', ['id' => $workOrder->id]) }}" target="_blank" class="btn btn-success">Выгрузить Word</a>--}}
 
                     <a href="/home/card-object/{{$cardObjectMain->id}}" target="_blank" type="button" class="btn btn-primary me-5">Открыть карточку объекта</a>

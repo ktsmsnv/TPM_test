@@ -6,7 +6,7 @@
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
-                <h2 class="mb-4"><strong>Карточка календаря для объекта {{ $cardObjectMain->name }}</strong></h2>
+                <h1 class="mb-4"><strong>Карточка календаря для объекта {{ $cardObjectMain->name }}</strong></h1>
             </div>
             <input type="hidden" name="card_id" value="{{ $cardObjectMain->id }}">
             <div class="btns d-flex mb-5">

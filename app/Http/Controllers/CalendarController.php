@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use App\Models\CardCalendar;
+use Illuminate\Support\Facades\Auth;
 
 //контроллер для отображения данных на страницы
 class CalendarController extends Controller
@@ -15,47 +16,91 @@ class CalendarController extends Controller
 
     public function reestrCalendarView()
     {
-        // Получаем объекты инфраструктуры с их сервисами
-        $calendars = CardCalendar::with('objects.services')->get();
-//        dd($calendars);
-        // Создаем массив для хранения всех данных
-        $formattedCalendars = [];
+        // Получаем текущего пользователя
+        $currentUser = Auth::user();
 
-        foreach ($calendars as $cardCalendar) {
-            // Проходим по каждому объекту в коллекции объектов
-            foreach ($cardCalendar->objects as $object) {
-                $shortNames = $object->services->pluck('short_name')->toArray();
-                // Формируем данные для одного объекта инфраструктуры и его сервисов
-                $formattedCalendar = [
-                    'id' => $cardCalendar->id,
-                    'infrastructure' => $object->infrastructure,
-                    'name' => $object->name,
-                    'number' => $object->number,
-                    'location' => $object->location,
-                    'short_name' => implode(', ', $shortNames),
-                    'year' => $cardCalendar->year,
-                    'date_create' => $cardCalendar->date_create,
-                    'date_archive' => $cardCalendar->date_archive,
-                    'curator' => $object->curator,
-                ];
+        // Проверяем, авторизован ли пользователь
+        if ($currentUser) {
+            // Получаем роль текущего пользователя
+            $userRole = $currentUser->role;
 
-                // Добавляем данные объекта к массиву с отформатированными данными
-                $formattedCalendars[] = $formattedCalendar;
+            // Получаем календари с их объектами и сервисами
+            $calendars = CardCalendar::with('objects.services')->get();
+
+            // Создаем массив для хранения всех данных
+            $formattedCalendars = [];
+
+            foreach ($calendars as $cardCalendar) {
+                // Проходим по каждому объекту в коллекции объектов
+                foreach ($cardCalendar->objects as $object) {
+                    // Инициализируем флаг для добавления объекта
+                    $shouldAddObject = false;
+
+                    // Проверяем роль текущего пользователя и фильтруем записи соответствующим образом
+                    if ($userRole == 'executor') {
+                        // Проверяем, если текущий пользователь исполнитель
+                        foreach ($object->services as $service) {
+                            if ($service->performer == $currentUser->name) {
+                                $shouldAddObject = true;
+                                break;
+                            }
+                        }
+                    } elseif ($userRole == 'responsible') {
+                        // Проверяем, если текущий пользователь ответственный
+                        foreach ($object->services as $service) {
+                            if ($service->responsible == $currentUser->name) {
+                                $shouldAddObject = true;
+                                break;
+                            }
+                        }
+                    } elseif ($userRole == 'curator' || $userRole == 'admin') {
+                        // Если текущий пользователь куратор или администратор, добавляем все объекты
+                        $shouldAddObject = true;
+                    }
+
+                    // Если объект должен быть добавлен, формируем данные для одного объекта инфраструктуры и его сервисов
+                    if ($shouldAddObject) {
+                        $shortNames = $object->services->pluck('short_name')->toArray();
+                        $formattedCalendar = [
+                            'id' => $cardCalendar->id,
+                            'infrastructure' => $object->infrastructure,
+                            'name' => $object->name,
+                            'number' => $object->number,
+                            'location' => $object->location,
+                            'short_name' => implode(', ', $shortNames),
+                            'year' => $cardCalendar->year,
+                            'date_create' => $cardCalendar->date_create,
+                            'date_archive' => $cardCalendar->date_archive,
+                            'curator' => $object->curator,
+                        ];
+
+                        // Добавляем данные объекта к массиву с отформатированными данными
+                        $formattedCalendars[] = $formattedCalendar;
+                    }
+                }
             }
+
+            return response()->json($formattedCalendars);
         }
 
-        return response()->json($formattedCalendars);
+        // Если пользователь не авторизован, возвращаем пустой ответ или сообщение об ошибке
+        return response()->json([], 403);
     }
 
 
     public function create($id)
     {
+        // Находим выбранный CardObjectMain
         $cardObjectMain = CardObjectMain::with('services')->find($id);
-        // Находим карточку календаря по переданному ID
-//        $cardCalendar = CardCalendar::with('objects.services')->find($id);
 
-        return view('cards/card-calendar-create', compact('cardObjectMain'));
+        $calendarEntries = CardCalendar::where('card_id', $id)->get();
+        $isInCalendar = $calendarEntries->isNotEmpty();
+
+        // Передаем выбранный объект и информацию о его наличии в календаре в представление
+        return view('cards/card-calendar-create', compact('cardObjectMain', 'isInCalendar'));
     }
+
+
 
 
     public function store(Request $request)
@@ -77,12 +122,13 @@ class CalendarController extends Controller
         $history_card->date_create = $request->input('date_create');
         $history_card->date_archive = $request->input('date_archive');
         $history_card->year = $request->input('year');
-        $history_card->card_calendar_id =  $createdId;
+        $history_card->card_calendar_id = $createdId;
         $history_card->save();
 
         // Возвращение ответа с ID созданной записи
         return response()->json(['success' => true, 'id' => $createdId]);
     }
+
     public function index($id)
     {
         // Находим карточку календаря по переданному ID
@@ -123,7 +169,8 @@ class CalendarController extends Controller
     }
 
 
-    public function archiveCalendarDateButt(Request $request) {
+    public function archiveCalendarDateButt(Request $request)
+    {
 
         $dateArchive = Carbon::now()->format('Y-m-d');
         $calendarId = $request->id;
@@ -138,6 +185,7 @@ class CalendarController extends Controller
 
         return response()->json(['message' => 'Карточка календаря успешно заархивирована'], 200);
     }
+
     public function view()
     {
         // Возвращение представления с передачей хлебных крошек
