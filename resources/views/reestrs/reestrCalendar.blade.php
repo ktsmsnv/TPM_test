@@ -167,8 +167,13 @@
                             {title: 'Год действия', field: 'year', align: 'center'},
                             {title: 'Дата создания', field: 'date_create', align: 'center',
                                 formatter: function(value, row) {
-                                    // Преобразование даты в нужный формат (день-месяц-год)
-                                    return new Date(value).toLocaleDateString('ru-RU');
+                                    if (value === null) {
+                                        return null;
+                                    }
+                                    else {
+                                        // Преобразование даты в нужный формат (день-месяц-год)
+                                        return new Date(value).toLocaleDateString('ru-RU');
+                                    }
                                 }
                             },
                             {title: 'Дата архивации', field: 'date_archive', align: 'center',

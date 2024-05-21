@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use Illuminate\Validation\Rule;
@@ -26,17 +27,14 @@ class HomeController extends Controller
     {
         $this->middleware('auth');
     }
-
+    // ------------------ ОТОБРАЖЕНИЕ РЕЕСТРА ОБЪЕКТОВ ------------------
     public function index() {
         $objects = CardObjectMain::with('services')->get();
         $breadcrumbs = Breadcrumbs::generate('home');
         return view('home', compact('breadcrumbs', 'objects'));
     }
+    // ------------------ ОТОБРАЖЕНИЕ РЕЕСТРА ОБЪЕКТОВ -> ПОЛУЧЕНИЕ ЗАПИСЕЙ И ПЕРЕДАЧА В ШАБЛОН ------------------
     public function getObjects() {
-//        // Получаем объекты инфраструктуры с их сервисами
-//        $objects = CardObjectMain::with(['services', 'workOrders'])->get();
-
-        // Получение текущего пользователя и его роли
         $user = Auth::user();
         $role = $user->role;
 
@@ -67,6 +65,14 @@ class HomeController extends Controller
                         '" target="_blank" class="tool-tip" title="открыть карточку заказ-наряда">' . 'открыть' . '</a>';
                 }
             }
+            $calendarLink = '';
+            if ($object->calendar->isNotEmpty()) {
+                // Проходимся по каждому заказу-наряду и создаем ссылки
+                foreach ($object->calendar as $calendar) {
+                    $calendarLink .= '<a href="' . route('cardCalendar', ['id' => $calendar->_id]) .
+                        '" target="_blank" class="tool-tip" title="открыть карточку календарь">' . 'открыть' . '</a>';
+                }
+            }
 
             $formattedObject = [
                 'id' => $object->id,
@@ -78,6 +84,7 @@ class HomeController extends Controller
                 'date_usage' => $object->date_usage,
                 'date_usage_end' => $object->date_usage_end,
                 'date_cert_end' => $object->date_cert_end,
+                'calendar' => $object->calendar()->first() ? route('cardCalendar', ['id' => $object->calendar()->first()->_id]) : null,
                 'services' => $object->services->map(function($service) {
                     return [
                         'service_type' => $service->service_type,
@@ -93,6 +100,7 @@ class HomeController extends Controller
                     ];
                 })->toArray(),
                 'work_order' => $workOrderLink, // Добавляем ссылку на заказ-наряд
+                'calendar' => $calendarLink,
             ];
 
             // Добавляем объект к массиву с отформатированными данными
@@ -102,6 +110,8 @@ class HomeController extends Controller
         return response()->json($formattedObjects);
     }
 
+    // ------------------ КОПИРОВАНИЕ КАРТЧОКИ ОБЪЕКТА------------------
+// ------------------ КОПИРОВАНИЕ КАРТЧОКИ ОБЪЕКТА------------------
     public function copyObject(Request $request)
     {
         $id = $request->id; // Получаем идентификатор карточки объекта, которую нужно скопировать
@@ -109,6 +119,7 @@ class HomeController extends Controller
 
         // Создаем копию карточки объекта
         $copiedObject = $originalObject->replicate();
+        $copiedObject->name = $originalObject->name . ' копия'; // Добавляем слово "копия" в конец имени
         $copiedObject->save();
 
         // Создаем копии связанных сервисов карточки объекта
@@ -133,13 +144,12 @@ class HomeController extends Controller
             $copiedDocument->save();
         }
 
-//        return response()->json(['success' => 'Карточка объекта успешно скопирована'], 200);
+        // Возвращаем URL новой карточки объекта в формате JSON
         return response()->json(['url' => route('cardObject', ['id' => $copiedObject->id])], 200);
     }
 
 
-
-
+    // ------------------ УДАЛЕНИЕ КАРТОЧКИ ОБЪЕКТА ------------------
     public function deleteObject(Request $request)
     {
         $ids = $request->ids;
@@ -158,6 +168,7 @@ class HomeController extends Controller
         return response()->json(['success' => 'Выбранные записи успешно удалены'], 200);
     }
 
+    // ------------------ ОТОБРАЖЕНИЕ ПРОФИЛЯ ПОЛЬЗОВАТЕЛЧ------------------
     public function profile()
     {
         // Генерация хлебных крошек
@@ -167,7 +178,7 @@ class HomeController extends Controller
         return view('profile', compact('breadcrumbs'));
     }
 
-// Метод для обновления данных пользователя
+    // ------------------ ОБНОВЛЕНИЕ ДАННЫХ ПРОФИЛЯ ------------------
     public function updateProfile(Request $request)
     {
         // Проверка входящих данных
@@ -186,7 +197,7 @@ class HomeController extends Controller
         return redirect()->back()->with('success', 'Данные профиля успешно обновлены.');
     }
 
-// Метод для смены пароля пользователя
+    // ------------------ СМЕНА ПАРОЛЯ------------------
     public function changePassword(Request $request)
     {
         // Проверка входящих данных
@@ -203,6 +214,7 @@ class HomeController extends Controller
         return redirect()->back()->with('success', 'Пароль успешно изменен.');
     }
 
+    // ------------------ ОТОБРАЖЕНИЕ РЕЕСТРА ЗАКАЗ-НАРЯДОВ------------------
     public function reestrWorkOrdersView()
     {
         // Генерация хлебных крошек
@@ -210,5 +222,22 @@ class HomeController extends Controller
 
         // Возвращение представления с передачей хлебных крошек
         return view('reestrs/reestr-work-orders', compact('breadcrumbs'));
+    }
+
+
+
+    // ------------------ ОТОБРАЖЕНИЕ УВЕДОМЛЕНИЙ (ДЕМО НЕ РАБОТАЕТ) ------------------
+    public function showNotifications()
+    {
+        $notifications = Auth::user()->notifications()->orderBy('created_at', 'desc')->get();
+
+        return view('profile.notifications', compact('notifications'));
+    }
+    public function markAsRead($id)
+    {
+        $notification = Notification::findOrFail($id);
+        $notification->update(['read' => true]);
+
+        return redirect()->back();
     }
 }

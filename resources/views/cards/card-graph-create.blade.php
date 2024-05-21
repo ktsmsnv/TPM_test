@@ -1,7 +1,19 @@
 {{--страница карточка графа --}}
 @extends('layouts.app')
-
 @section('content')
+    @if(isset($error))
+        <div class="alert alert-warning">
+            {{ $error }}
+            @if(isset($existingGraphs))
+                <ul>
+                    @foreach($existingGraphs as $graph)
+                        <li><a target="_blank" href="{{ $graph['link'] }}">{{ $graph['name'] }}</a></li>
+                    @endforeach
+                </ul>
+            @endif
+            <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
+        </div>
+    @else
     <div class="container custom_tab_style1_outer">
         <select class="form-control d-none" id="locale">
             <option value="ru-RU">ru-RU</option>
@@ -15,7 +27,6 @@
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-success saveCardGraph">Сохранить</button>
                     <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
-                    <button type="button" class="btn btn-success d-none">Выгрузить PDF</button>
                 </div>
             </div>
 
@@ -287,4 +298,5 @@
                 });
             });
         </script>
+    @endif
 @endsection

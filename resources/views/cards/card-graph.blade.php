@@ -15,7 +15,7 @@
                 <div class="d-flex gap-2">
                     <a href="/pageReestrGraph" type="button" class="btn btn-secondary me-5">Закрыть</a>
                     <button type="button" class="btn btn-success" data-toggle="tooltip"
-                            title="ДАННАЯ КНОПКА ПОКА НЕ РАБОТАЕТ">Выгрузить PDF</button>
+                            title="ДАННАЯ КНОПКА ПОКА НЕ РАБОТАЕТ">Выгрузить WORD</button>
                     <a href="{{ route('cardGraph-edit', ['id' => $data_CardGraph->_id]) }}"
                        target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
 {{--                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addObjectCardModal" id="addObjectCardButton">--}}
@@ -45,7 +45,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    <button class="btn btn-primary" id="confirmArchiveGraph">Заархивировать</button>
+                                    <button class="btn btn-primary archive_graph {{ $data_CardGraph->date_archive != null ? 'disabled' : '' }}">Заархивировать</button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
@@ -79,13 +79,9 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата архивации</label>
-                                            @if ($data_CardGraph && $data_CardGraph->date_archive)
-                                                <input name="date_archive" placeholder="Введите дату архивации" class="form-control w-100"
-                                                   readonly value="{{ date('d.m.Y', strtotime($data_CardGraph->date_archive)) ?? 'нет данных'  }}">
-                                            @else
-                                                <input name="date_archive" class="form-control w-100" value="Дата архивации"
-                                                       readonly style="opacity: 0.5;" data-toggle="tooltip" title="Дата архивации появится после нажатия на кнопку Заархивировать">
-                                            @endif
+                                            <input type="date" name="date_archive" placeholder="Введите дату архивации" class="form-control w-100"
+                                                   readonly style="opacity: 0.5;"
+                                                   value="{{ isset($data_CardGraph->date_archive) ?$data_CardGraph->date_archive : 'нет данных' }}">
                                         </div>
                                     </div>
                                 </div>
@@ -180,132 +176,33 @@
         </div>
 
 
-        <!-- Модальное окно для выбора карточек объектов -->
-{{--        <div class="modal fade" id="addObjectCardModal" tabindex="-1" aria-labelledby="addObjectCardModalLabel" aria-hidden="true">--}}
-{{--            <div class="modal-dialog">--}}
-{{--                <div class="modal-content">--}}
-{{--                    <div class="modal-header">--}}
-{{--                        <h5 class="modal-title" id="addObjectCardModalLabel">Выберите карточку объекта</h5>--}}
-{{--                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>--}}
-{{--                    </div>--}}
-{{--                    <div class="modal-body">--}}
-{{--                        <!-- Здесь будет выпадающий список карточек объектов -->--}}
-{{--                    </div>--}}
-{{--                    <div class="modal-footer">--}}
-{{--                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>--}}
-{{--                        <button type="button" class="btn btn-primary" id="addObjectCardBtn">Добавить</button>--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-
-
-        <script>
-            {{--$(document).ready(function () {--}}
-            {{--    // Функция для загрузки карточек объектов в модальное окно--}}
-            {{--function loadObjectCards() {--}}
-            {{--    $.ajax({--}}
-            {{--        type: "GET",--}}
-            {{--        headers: {--}}
-            {{--            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')--}}
-            {{--        },--}}
-            {{--        url: "{{ route('getUnlinkedObjectCards') }}",--}}
-            {{--        success: function(response) {--}}
-            {{--            var modalBody = $('#addObjectCardModal').find('.modal-body');--}}
-            {{--            modalBody.empty();--}}
-            {{--            // Создаем выпадающий список и добавляем опции--}}
-            {{--            var select = $('<select class="form-select" multiple></select>');--}}
-            {{--            response.forEach(function(card) {--}}
-            {{--                select.append('<option value="' + card.id + '">' + card.name + '</option>');--}}
-            {{--            });--}}
-            {{--            // Добавляем выпадающий список в модальное окно--}}
-            {{--            modalBody.append(select);--}}
-            {{--        },--}}
-            {{--        error: function(error) {--}}
-            {{--            console.log(error);--}}
-            {{--        }--}}
-            {{--    });--}}
-            {{--}--}}
-
-            {{--// Обработчик нажатия на кнопку "Добавить карточку объекта"--}}
-            {{--$('#addObjectCardBtn').click(function () {--}}
-            {{--    loadObjectCards(); // Загрузка карточек объектов перед открытием модального окна--}}
-            {{--    $('#addObjectCardModal').modal('show'); // Открытие модального окна--}}
-            {{--});--}}
-
-            {{--// Загрузка карточек объектов при открытии модального окна--}}
-            {{--$('#addObjectCardModal').on('show.bs.modal', function() {--}}
-            {{--    loadObjectCards();--}}
-            {{--});--}}
-
-            {{--// Обработка нажатия кнопки "Добавить"--}}
-            {{--$('#addObjectCardBtn').click(function() {--}}
-            {{--    var selectedCards = [];--}}
-            {{--    $('#addObjectCardModal').find('.form-select option:selected').each(function() {--}}
-            {{--        selectedCards.push($(this).val());--}}
-            {{--    });--}}
-            {{--    // Отправка массива выбранных карточек объектов на сервер для обновления--}}
-            {{--    $.ajax({--}}
-            {{--        type: "POST",--}}
-            {{--        headers: {--}}
-            {{--            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')--}}
-            {{--        },--}}
-            {{--        url: "{{ route('addObjectCards') }}",--}}
-            {{--        data: {--}}
-            {{--            selectedCards: selectedCards,--}}
-            {{--            graphId: "{{ $data_CardGraph->_id }}"--}}
-            {{--        },--}}
-            {{--        success: function(response) {--}}
-            {{--            // Обновление представления после успешного добавления--}}
-            {{--            location.reload();--}}
-            {{--        },--}}
-            {{--        error: function(error) {--}}
-            {{--            console.log(error);--}}
-            {{--        }--}}
-            {{--    });--}}
-            {{--});--}}
-            {{--});--}}
-            // // Обработчик клика на кнопку "Добавить карточку объекта"
-            // $('#addObjectCardButton').click(function () {
-            //     // Открываем модальное окно
-            //     $('#addObjectCardModal').modal('show');
-            // });
-            {{--// Обработчик нажатия кнопки "Добавить"--}}
-            {{--$('#addSelectedObjectCards').click(function () {--}}
-            {{--    // Собираем идентификаторы выбранных карточек объектов--}}
-            {{--    var selectedCards = [];--}}
-            {{--    $('input[name="selectedCardObject"]:checked').each(function() {--}}
-            {{--        selectedCards.push($(this).val());--}}
-            {{--    });--}}
-
-            {{--    // Отправляем выбранные карточки объектов на сервер--}}
-            {{--    $.ajax({--}}
-            {{--        type: "POST",--}}
-            {{--        headers: {--}}
-            {{--            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')--}}
-            {{--        },--}}
-            {{--        url: "{{ route('addObjectCardsToGraph') }}", // Маршрут для обработки выбранных карточек на сервере--}}
-            {{--        data: {--}}
-            {{--            card_graph_id: "{{ $data_CardGraph->_id }}", // ID карточки графика--}}
-            {{--            selected_cards: selectedCards // Выбранные карточки объектов--}}
-            {{--        },--}}
-            {{--        success: function (response) {--}}
-            {{--            // Обработка успешного завершения запроса--}}
-            {{--            console.log(response);--}}
-            {{--            // Возможно, вы захотите обновить интерфейс после успешного добавления карточек--}}
-            {{--        },--}}
-            {{--        error: function (error) {--}}
-            {{--            // Обработка ошибки--}}
-            {{--            console.log(error);--}}
-            {{--        }--}}
-            {{--    });--}}
-
-            {{--    $('#addObjectCardModal').modal('hide'); // Закрыть модальное окно после добавления--}}
-            {{--});--}}
-        </script>
+        <!-- Модальное окно подтверждения архивации графика -->
+        <div class="modal fade" id="confirmArchiveModal" tabindex="-1" aria-labelledby="confirmArchiveModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmArchiveModalLabel">Подтверждение архивации графика</h5>
+                        <button type="button" class="btn-close" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Вы уверены, что хотите архивировать данный график объекта
+                        "{{$data_CardGraph->name}}" ?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="button" class="btn btn-danger" id="confirmArchiveButton">Заархивировать</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <script>
-            $('#confirmArchiveGraph').click(function () {
+            // Обработчик события нажатия на кнопку "Завершить заказ"
+            $('.archive_graph').click(function () {
+                // Открываем модальное окно с вопросом о завершении заказа-наряда
+                $('#confirmArchiveModal').modal('show');
+            });
+            $('#confirmArchiveButton').click(function () {
                 // Устанавливаем текущую дату в поле "Фактическая дата"
                 const currentDate = new Date();
                 const formattedDate = currentDate.toLocaleDateString('ru-RU').split('.').reverse().join('-'); // Форматируем дату в формат dd-mm-yyyy

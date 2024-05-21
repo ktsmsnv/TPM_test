@@ -28,6 +28,9 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/home/profile/update', [App\Http\Controllers\HomeController::class, 'updateProfile'])->name('profile.update');
         // изменение пароля профиля
         Route::put('/home/profile/change-password', [App\Http\Controllers\HomeController::class, 'changePassword'])->name('profile.change-password');
+
+    Route::get('/profile/notifications',  [App\Http\Controllers\HomeController::class, 'showNotifications'])->name('profile.notifications');
+    Route::post('/profile/notifications/{id}/read', [App\Http\Controllers\HomeController::class, 'markAsRead'])->name('notifications.read');
     // ----------------------------------------------------------------------------------------------------------------
 
 
@@ -96,6 +99,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/pageReestrGraph/card-graph/{id}', [App\Http\Controllers\GraphController::class, 'index'])->name('cardGraph');
         //СОЗДАНИЕ новой карточки графика TPM
         Route::get('/pageReestrGraph/card-graph-create', [App\Http\Controllers\GraphController::class, 'createGraphPage'])->name('cardGraph-create');
+    Route::post('/pageReestrGraph/card-graph-create', [App\Http\Controllers\GraphController::class, 'createGraphPage'])->name('cardGraph-create');
+
         Route::post('/save-cardGraph-data/{id}', [App\Http\Controllers\GraphController::class, 'saveCardGraph'])->name('cardGraph-create-save');
         // РЕДАКТИРОВАНИЕ существующей карточки графика TPM
         Route::get('/pageReestrGraph/card-graph/edit/{id}', [App\Http\Controllers\GraphController::class, 'edit'])->name('cardGraph-edit');
@@ -113,10 +118,13 @@ Route::middleware(['auth'])->group(function () {
     // ---------------------------- КАРТОЧКА КАЛЕНДАРЯ ----------------------------------------------------------------
         Route::get('/pageReestrCalendar/card-calendar/{id}', [App\Http\Controllers\CalendarController::class, 'index'])->name('cardCalendar');
 
-    Route::get('/card-calendar-create/{id}', [App\Http\Controllers\CalendarController::class, 'create'])->name('card-calendar.create');
-    Route::post('/card-calendar-store', [App\Http\Controllers\CalendarController::class, 'store'])->name('card-calendar.store');
+        Route::get('/card-calendar-create/{id}', [App\Http\Controllers\CalendarController::class, 'create'])->name('card-calendar.create');
+        Route::post('/card-calendar-store', [App\Http\Controllers\CalendarController::class, 'store'])->name('card-calendar.store');
+        // РЕДАКТИРОВАНИЕ существующей карточки графика TPM
+        Route::get('/pageReestrGraph/card-calendar/edit/{id}', [App\Http\Controllers\CalendarController::class, 'edit'])->name('cardCalendar-edit');
+        Route::post('/edit-card-calendar/save/{id}', [App\Http\Controllers\CalendarController::class, 'editSave'])->name('cardCalendar-editSave');
 
-    Route::post('/archive',  [App\Http\Controllers\CalendarController::class, 'archiveCalendar'])->name('archiveCalendar');
+        Route::post('/archiveCalendarDateButt',  [App\Http\Controllers\CalendarController::class, 'archiveCalendarDateButt'])->name('archiveCalendarDateButt');
     // ----------------------------------------------------------------------------------------------------------------
 
 

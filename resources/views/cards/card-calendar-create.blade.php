@@ -1,7 +1,12 @@
-{{--страница карточка календаря --}}
 @extends('layouts.app')
-
 @section('content')
+    @if($isInCalendar)
+        <!-- Здесь можно добавить дополнительные действия или сообщение, если объект уже существует в календаре -->
+        <div class="alert alert-warning">На выбранный объект <a href="/home/card-object/{{$cardObjectMain->id}}">{{ $cardObjectMain->name }}</a> уже существует календарь.</div>
+        <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
+    @else
+        {{--страница карточка календаря --}}
+
     <div class="container custom_tab_style1_outer">
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
@@ -25,9 +30,15 @@
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="service_1-tab" data-bs-toggle="tab" data-bs-target="#service_1"
-                            type="button" role="tab" aria-controls="service_1" aria-selected="false">КАЛЕНДАРЬ
-                    </button>
+                    <input  class="nav-link" id="service_1-tab" data-bs-target="#service_1"
+                            role="tab" aria-controls="service_1" aria-selected="false"
+                            value="КАЛЕНДАРЬ" class="form-control w-100" readonly
+                            data-toggle="tooltip" title="Данная вкладка будет доступна после создания
+                             карточки календаря">
+                    {{--                    <button class="nav-link" id="service_1-tab" data-bs-toggle="tab" data-bs-target="#service_1"--}}
+{{--                            type="button" role="tab" aria-controls="service_1" aria-selected="false"--}}
+{{--                            >КАЛЕНДАРЬ--}}
+{{--                    </button>--}}
                 </li>
             </ul>
             <div class="tab-content" id="cardCalendarTabContent">
@@ -156,7 +167,6 @@
                                 <h4>Календарь ТРМ</h4>
                                 <div class="member-info--inputs">
                                     {{-- КАЛЕНДАРЬ --}}
-                                    <div id='calendar'></div>
                                 </div>
                             </div>
                         </div>
@@ -202,25 +212,6 @@
                     });
                 });
 
-                // После загрузки страницы
-                $('#service_1-tab').on('shown.bs.tab', function (e) {
-                    // Если вкладка с календарем стала активной
-                    if (e.target.id === 'service_1-tab') {
-                        // Инициализируем календарь
-                        var calendarEl = document.getElementById('calendar');
-                        var calendar = new FullCalendar.Calendar(calendarEl, {
-                            timeZone: 'UTC',
-                            initialView: 'multiMonthYear',
-                            locale: 'ru',
-                            editable: true
-                        });
-                        // Рендерим календарь
-                        calendar.render();
-                        // Пересчитываем размеры календаря после рендеринга
-                        calendar.updateSize();
-                    }
-                });
-
                 $(".saveCard").click(function () {
                     let formData = new FormData();
                     // Собираем данные с основной формы
@@ -252,4 +243,6 @@
                 });
             });
         </script>
+
+    @endif
 @endsection

@@ -6,14 +6,13 @@
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
-                <h1 class="mb-4"><strong>Карточка календаря для объекта {{ $cardObjectMain->name }}</strong></h1>
+                <h2 class="mb-4"><strong>Редактирование карточки календаря для объекта: {{ $cardObjectMain->name }}</strong></h2>
             </div>
             <input type="hidden" name="card_id" value="{{ $cardObjectMain->id }}">
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
-                    <a href="{{ route('cardCalendar-edit', ['id' => $cardCalendar->_id]) }}"
-                       target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
-                    <a href="/pageReestrCalendar" type="button" class="btn btn-secondary me-5">Назад</a>
+                    <button type="button" class="btn btn-success saveEditCalendar">Сохранить изменения</button>
+                    <a href="{{ route('cardCalendar', ['id' => $cardCalendar->_id]) }}" type="button" class="btn btn-secondary me-5">Отменить изменения</a>
 
                     <button type="button" class="btn btn-success">Выгрузить WORD</button>
                     <a href="/home/card-object/{{$cardObjectMain->id}}" target="_blank" type="button" class="btn btn-primary me-5">Открыть карточку объекта</a>
@@ -42,7 +41,8 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    <button class="btn btn-primary archive_calendar {{ $cardCalendar->date_archive != null ? 'disabled' : '' }}">
+                                    <button class="btn btn-primary"
+                                            id="confirmArchiveButton">
                                         Заархивировать
                                     </button>
                                 </div>
@@ -50,27 +50,33 @@
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид инфраструктуры</label>
-                                            <input name="infrastructure" value="{{ $cardObjectMain->infrastructure }}" placeholder="Введите вид инфраструктуры" class="form-control w-100" readonly
+                                            <input name="infrastructure" value="{{ $cardObjectMain->infrastructure }}"
+                                                   class="form-control w-100" readonly style="opacity: 0.5;"
                                                    data-toggle="tooltip" title="изменить можно в карточке объекта 'основная'">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Наименование объекта</label>
-                                            <input name="name" value="{{ $cardObjectMain->name }}" placeholder="Введите наименование объекта" class="form-control w-100" readonly
+                                            <input name="name" value="{{ $cardObjectMain->name }}"
+                                                   class="form-control w-100" readonly style="opacity: 0.5;"
                                                    data-toggle="tooltip" title="изменить можно в карточке объекта 'основная'">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Инв./заводской №</label>
-                                            <input class="form-control w-100" name="number" value="{{ $cardObjectMain->number }}" readonly  data-toggle="tooltip" title="изменить можно в карточке объекта 'основная'"
-                                                   placeholder="Введите инв./заводской №">
+                                            <input class="form-control w-100" name="number" value="{{ $cardObjectMain->number }}"
+                                                   readonly style="opacity: 0.5;"
+                                                   data-toggle="tooltip" title="изменить можно в карточке объекта 'основная'">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Место установки</label>
-                                            <input class="form-control  w-100" name="location" value="{{ $cardObjectMain->location }}" readonly  data-toggle="tooltip" title="изменить можно в карточке объекта 'основная'"
-                                                   placeholder="Введите место установки">
+                                            <input class="form-control  w-100" name="location" value="{{ $cardObjectMain->location }}"
+                                                   readonly style="opacity: 0.5;"
+                                                   data-toggle="tooltip" title="изменить можно в карточке объекта 'основная'">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Куратор</label>
-                                            <input class="form-control  w-100" name="curator" value="{{ $cardObjectMain->curator }}" readonly  data-toggle="tooltip" title="изменить можно в карточке объекта 'основная'">
+                                            <input class="form-control  w-100" name="curator" value="{{ $cardObjectMain->curator }}"
+                                                   readonly style="opacity: 0.5;"
+                                                   data-toggle="tooltip" title="изменить можно в карточке объекта 'основная'">
                                         </div>
                                         {{--                                        <div class="d-flex justify-content-between align-items-center gap-3">--}}
                                         {{--                                            <label class="w-100">Куратор</label>--}}
@@ -81,13 +87,14 @@
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Год действия</label>
-                                            <input type="number" name="year" value="{{ $cardCalendar -> year }}" class="form-control w-100" readonly
+                                            <input type="number" name="year" value="{{ $cardCalendar -> year }}" class="form-control w-100"
                                                    data-toggle="tooltip" title="изменить можно нажав кнопку редактировать">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата создания</label>
                                             <input type="date" name="date_create" class="form-control w-100"
-                                                   value="{{ $cardCalendar -> date_create }}" readonly style="opacity: 0.5;"
+                                                   value="{{ $cardCalendar -> date_create }}"
+                                                   readonly style="opacity: 0.5;"
                                                    data-toggle="tooltip" title="дата создания календаря">
                                         </div>
                                         {{--                                        <div class="d-flex justify-content-between align-items-center gap-3">--}}
@@ -116,23 +123,27 @@
                                         <div class="d-flex justify-content-between gap-3">
                                             <div class="d-flex align-items-center gap-0">
                                                 <label class="w-100">Вид обслуживания {{ $index + 1 }}</label>
-                                                <input name="services[{{ $index }}][service_type]" value="{{ $service->service_type }}" class="form-control w-100" readonly
+                                                <input name="services[{{ $index }}][service_type]" value="{{ $service->service_type }}"
+                                                       class="form-control w-100" readonly style="opacity: 0.5;"
                                                        data-toggle="tooltip" title="{{ $service->service_type }}">
                                             </div>
                                             <div class="d-flex align-items-center gap-0">
                                                 <label class="w-100">Периодичность</label>
-                                                <input name="services[{{ $index }}][frequency]" value="{{ $service->frequency }}"  class="form-control w-100" readonly
+                                                <input name="services[{{ $index }}][frequency]" value="{{ $service->frequency }}"
+                                                       class="form-control w-100" readonly style="opacity: 0.5;"
                                                        data-toggle="tooltip" title="{{ $service->frequency }}">
                                             </div>
                                             <div class="d-flex align-items-center gap-0">
                                                 <label class="w-100">Исполнитель</label>
-                                                <input name="services[{{ $index }}][performer]" value="{{ $service->performer }}"  class="form-control w-100" readonly
-                                                 data-toggle="tooltip" title="{{ $service->performer }}">
+                                                <input name="services[{{ $index }}][performer]" value="{{ $service->performer }}"
+                                                       class="form-control w-100" readonly style="opacity: 0.5;"
+                                                       data-toggle="tooltip" title="{{ $service->performer }}">
                                             </div>
                                             <div class="d-flex align-items-center gap-0">
                                                 <label class="w-100">Ответственный</label>
-                                                <input name="services[{{ $index }}][responsible]" value="{{ $service->responsible }}"  class="form-control w-100" readonly
-                                                 data-toggle="tooltip" title="{{ $service->responsible }}">
+                                                <input name="services[{{ $index }}][responsible]" value="{{ $service->responsible }}"
+                                                       class="form-control w-100" readonly style="opacity: 0.5;"
+                                                       data-toggle="tooltip" title="{{ $service->responsible }}">
                                             </div>
                                         </div>
                                     </div>
@@ -197,27 +208,8 @@
             </div>
         </div>
 
-        <!-- Модальное окно подтверждения завершения архивации -->
-        <div class="modal fade" id="confirmArchiveModal" tabindex="-1" aria-labelledby="confirmArchiveModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="confirmArchiveModalLabel">Подтверждение архивации календаря</h5>
-                        <button type="button" class="btn-close" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Вы уверены, что хотите архивировать данный календарь объекта
-                       "{{$cardObjectMain->name}}" ?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                        <button type="button" class="btn btn-danger" id="confirmArchiveButton">Заархивировать</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <script>
+
             $(document).ready(function () {
                 $("#cardCalendarTab").show;
 
@@ -236,11 +228,6 @@
                     });
                 });
 
-                // Обработчик события нажатия на кнопку "Завершить заказ"
-                $('.archive_calendar').click(function () {
-                    // Открываем модальное окно с вопросом о завершении заказа-наряда
-                    $('#confirmArchiveModal').modal('show');
-                });
                 // Обработчик события нажатия на кнопку "Да" в модальном окне подтверждения
                 $('#confirmArchiveButton').click(function () {
                     // Устанавливаем текущую дату в поле "Фактическая дата"
@@ -261,15 +248,44 @@
                         success: function (response) {
                             // Обработка успешного завершения запроса
                             console.log(response);
-                            location.reload();
                         },
                         error: function (error) {
                             // Обработка ошибки
                             console.log(error);
                         }
                     });
-                    // Закрываем модальное окно подтверждения
-                    $('#confirmArchiveModal').modal('hide');
+                });
+
+                //------------  обработчик сохранения данных  ------------
+                let formData = new FormData();
+                $(".saveEditCalendar").click(function () {
+                    // Собираем данные с основной формы
+                    formData.append('date_create', $("input[name=date_create]").val());
+                    formData.append('date_archive', $("input[name=date_archive]").val());
+                    formData.append('year', $("input[name=year]").val());
+
+                    // Отправляем данные на сервер
+                    $.ajax({
+                        type: "POST",
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        url: "/edit-card-calendar/save/{{ $cardCalendar->_id }}",
+                        data: formData,
+                        processData: false, // Не обрабатывать данные
+                        contentType: false, // Не устанавливать тип содержимого
+                        success: function (response) {
+                            // Обработка успешного ответа от сервера (например, отображение сообщения об успешном сохранении)
+                            // alert("Данные для карточки графика успешно обновлены!");
+                            window.location.href = "{{ route('cardCalendar', ['id' => $cardCalendar->id]) }}";
+                            // console.log(formData);
+                        },
+                        error: function (error) {
+                            // Обработка ошибки при сохранении данных
+                            alert("Ошибка при обновлении данных для карточки календаря!");
+                            // console.log(formData);
+                        }
+                    });
                 });
             });
         </script>
@@ -350,7 +366,7 @@
                             }
                             dayCounter++;
                         } else {
-                          //  row += `<td></td>`;
+                            //  row += `<td></td>`;
                             dayCounter++;// Если суббота или воскресенье, добавляем пустую ячейку
                         }
                     }
