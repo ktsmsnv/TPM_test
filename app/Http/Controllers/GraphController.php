@@ -147,8 +147,8 @@ class GraphController extends Controller
 
     public function index($id, Request $request)
     {
-//        $data_CardGraph = CardGraph::with('object.services')->findOrFail($id);
-        $data_CardGraph =  CardGraph::findOrFail($id);
+        $data_CardGraph = CardGraph::findOrFail($id);
+
         $maintenance = [
             ['id' => 1, 'service_type' => 'Регламентные работы', 'short_name' => 'РР'],
             ['id' => 2, 'service_type' => 'Техническое обслуживание', 'short_name' => 'ТО'],
@@ -159,7 +159,7 @@ class GraphController extends Controller
 
         // Преобразуем строку cards_ids в массив
         $objectIds = explode(',', $data_CardGraph->cards_ids);
-//        dd($objectIds);
+
         // Создаем массив для хранения данных объектов
         $allObjectsData = [];
 
@@ -171,13 +171,18 @@ class GraphController extends Controller
             // Получаем объект по идентификатору
             $cardObject = CardObjectMain::with('services')->findOrFail($objectId);
 
+            // Фильтруем услуги с checked = true
+            $cardObject->services = $cardObject->services->filter(function($service) {
+                return !$service->checked;
+            });
+
             // Добавляем данные объекта в массив
             $allObjectsData[] = $cardObject;
         }
-//dd($data_CardGraph);
-        // Переда ем данные в представление
+
         return view('cards/card-graph', compact('data_CardGraph','allObjectsData', 'maintenance'));
     }
+
 
     public function getUnlinkedObjectCards()
     {
@@ -220,7 +225,10 @@ class GraphController extends Controller
     {
         // Получаем выбранные экземпляры CardObjectMain
         $selectedIds = explode(',', $request->input('ids'));
-        $selectedObjectMain = CardObjectMain::whereIn('_id', $selectedIds)->get();
+//        $selectedObjectMain = CardObjectMain::whereIn('_id', $selectedIds)->get();
+        $selectedObjectMain = CardObjectMain::whereIn('_id', $selectedIds)->with(['services' => function($query) {
+            $query->where('checked', false);
+        }])->get();
 
         // Поиск записей CardGraph, где есть хотя бы один объект из $selectedIds
         $CardGraphEntries = CardGraph::where(function($query) use ($selectedIds) {
