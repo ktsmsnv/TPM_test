@@ -197,7 +197,7 @@
             </div>
         </div>
 
-        <!-- Модальное окно подтверждения завершения заказа-наряда -->
+        <!-- Модальное окно подтверждения завершения архивации -->
         <div class="modal fade" id="confirmArchiveModal" tabindex="-1" aria-labelledby="confirmArchiveModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -235,26 +235,6 @@
                         document.getElementById('selectedColor').value = selectedColor;
                     });
                 });
-
-                // После загрузки страницы
-                // $('#service_1-tab').on('shown.bs.tab', function (e) {
-                //     // Если вкладка с календарем стала активной
-                //     if (e.target.id === 'service_1-tab') {
-                //         // Инициализируем календарь
-                //         var calendarEl = document.getElementById('calendar');
-                //         var calendar = new FullCalendar.Calendar(calendarEl, {
-                //             timeZone: 'UTC',
-                //             initialView: 'multiMonthYear',
-                //             locale: 'ru',
-                //             editable: true
-                //         });
-                //         // Рендерим календарь
-                //         calendar.render();
-                //         // Пересчитываем размеры календаря после рендеринга
-                //         calendar.updateSize();
-                //     }
-                // });
-
 
                 // Обработчик события нажатия на кнопку "Завершить заказ"
                 $('.archive_calendar').click(function () {

@@ -240,9 +240,9 @@ class CalendarController extends Controller
             }
         }
 
-
         // Передаем данные в представление
-        return view('cards/card-calendar-edit', compact('cardCalendar', 'cardObjectMain'));
+        return view('cards/card-calendar-edit', compact('cardCalendar',
+            'cardObjectMain', 'services', 'months'));
     }
 
     public function editSave(Request $request, $id)
