@@ -281,23 +281,17 @@
 
                             {
                                 title: 'Календарь TPM',
-                                field: 'tpm_calendar',
+                                field: 'calendar',
                                 align: 'center',
                                 formatter: function(value, row) {
-                                    if (row.services && row.services.length > 0) {
-                                        let nearestService = row.services.reduce((nearest, current) => {
-                                            return (!nearest || new Date(current.planned_maintenance_date) < new Date(nearest.planned_maintenance_date)) ? current : nearest;
-                                        });
-                                        if (nearestService.tpm_calendar) {
-                                            return '<a href="' + nearestService.tpm_calendar + '" target="_blank" class="tool-tip" title="открыть карточку календаря">открыть</a>';
-                                        } else {
-                                            return 'Нет календаря';
-                                        }
+                                    if (row.calendar) {
+                                        return row.calendar;
                                     } else {
-                                        return 'Нет запланированных обслуживаний';
+                                        return 'Нет календаря';
                                     }
                                 }
                             }
+
                         ],
 
                     ],

@@ -68,6 +68,14 @@ class HomeController extends Controller
                         '" target="_blank" class="tool-tip" title="открыть карточку заказ-наряда">' . 'открыть' . '</a>';
                 }
             }
+            $calendarLink = '';
+            if ($object->calendar->isNotEmpty()) {
+                // Проходимся по каждому заказу-наряду и создаем ссылки
+                foreach ($object->calendar as $calendar) {
+                    $calendarLink .= '<a href="' . route('cardCalendar', ['id' => $calendar->_id]) .
+                        '" target="_blank" class="tool-tip" title="открыть карточку календарь">' . 'открыть' . '</a>';
+                }
+            }
 
             $formattedObject = [
                 'id' => $object->id,
@@ -79,6 +87,7 @@ class HomeController extends Controller
                 'date_usage' => $object->date_usage,
                 'date_usage_end' => $object->date_usage_end,
                 'date_cert_end' => $object->date_cert_end,
+                'calendar' => $object->calendar()->first() ? route('cardCalendar', ['id' => $object->calendar()->first()->_id]) : null,
                 'services' => $object->services->map(function($service) {
                     return [
                         'service_type' => $service->service_type,
@@ -94,6 +103,7 @@ class HomeController extends Controller
                     ];
                 })->toArray(),
                 'work_order' => $workOrderLink, // Добавляем ссылку на заказ-наряд
+                'calendar' => $calendarLink,
             ];
 
             // Добавляем объект к массиву с отформатированными данными
