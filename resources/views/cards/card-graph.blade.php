@@ -145,6 +145,7 @@
                                                             $maintenanceExists = false;
                                                             $maintenanceTypes = [];
                                                             foreach ($cardObject->services as $service) {
+                                                                       if (!$service->checked) {
                                                                 $plannedMaintenanceDate = $service->planned_maintenance_date;
                                                                 $service_type = $service->service_type;
                                                                 $month = date('n', strtotime($plannedMaintenanceDate));
@@ -155,6 +156,7 @@
                                                                             $maintenanceTypes[] = $item['short_name'];
                                                                         }
                                                                     }
+                                                                }
                                                                 }
                                                             }
                                                             echo implode(', ', $maintenanceTypes);

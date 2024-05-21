@@ -27,6 +27,10 @@ class Kernel extends ConsoleKernel
             $objects = CardObjectMain::all();
             foreach ($objects as $object) {
                 foreach ($object->services as $service) {
+                    // Проверяем, имеет ли услуга флаг checked
+                    if ($service->checked) {
+                        continue; // Пропускаем эту услугу, если она помечена checked
+                    }
                     $plannedMaintenanceDate = Carbon::parse($service->planned_maintenance_date);
                     $notificationDate = $plannedMaintenanceDate->subDays(14); // Получаем дату уведомления за 14 дней до плановой даты обслуживания
                     if ($now->isSameDay($notificationDate)) {
