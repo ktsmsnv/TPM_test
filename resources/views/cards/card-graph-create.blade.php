@@ -11,6 +11,7 @@
                     @endforeach
                 </ul>
             @endif
+            <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
         </div>
     @else
     <div class="container custom_tab_style1_outer">

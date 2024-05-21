@@ -3,6 +3,7 @@
     @if($isInCalendar)
         <!-- Здесь можно добавить дополнительные действия или сообщение, если объект уже существует в календаре -->
         <div class="alert alert-warning">Выбранный объект <a href="/home/card-object/{{$cardObjectMain->id}}">{{ $cardObjectMain->name }}</a> уже существует в календаре.</div>
+        <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
     @else
         {{--страница карточка календаря --}}
 
