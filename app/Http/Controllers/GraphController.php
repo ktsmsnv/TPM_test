@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use MongoDB\BSON\Binary;
 use Illuminate\Support\Facades\Auth;
+use function Laravel\Prompts\error;
+
 //контроллер для отображения данных на страницы
 class GraphController extends Controller
 {
@@ -219,6 +221,25 @@ class GraphController extends Controller
         // Получаем выбранные экземпляры CardObjectMain
         $selectedIds = explode(',', $request->input('ids'));
         $selectedObjectMain = CardObjectMain::whereIn('_id', $selectedIds)->get();
+
+        // Поиск записей CardGraph, где есть хотя бы один объект из $selectedIds
+        $CardGraphEntries = CardGraph::where(function($query) use ($selectedIds) {
+            foreach ($selectedIds as $id) {
+                $query->orWhere('cards_ids', 'like', '%'.$id.'%');
+            }
+        })->get();
+        if ($CardGraphEntries->isNotEmpty()) {
+            $existingGraphs = [];
+            foreach ($CardGraphEntries as $entry) {
+                $existingGraphs[] = [
+                    'id' => $entry->_id,
+                    'name' => $entry->name,
+                    'link' => route('cardGraph', ['id' => $entry->_id]), // Используем именованный маршрут для генерации ссылки
+                ];
+            }
+            $error  = 'Ошибка! Данный объект уже существует в другом графике.';
+            return view('cards.card-graph-create', compact('error', 'existingGraphs'));
+        }
 
         // Получаем тип инфраструктуры для первого выбранного объекта
         $infrastructureName = $selectedObjectMain->first()->infrastructure;

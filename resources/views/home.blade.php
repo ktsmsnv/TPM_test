@@ -368,14 +368,32 @@
             });
 
 
-            $generateGraphTPM.click(function (){
+            $generateGraphTPM.click(function () {
                 let ids = getIdSelections();
                 console.log(ids);
                 if (ids.length > 0) {
-                    // Сформируйте URL с ID выбранных записей и перенаправьте пользователя на страницу формирования графика TPM
-                    window.location.href = "/pageReestrGraph/card-graph-create?ids=" + ids.join(',');
+                    // Отправка запроса на сервер
+                    $.ajax({
+                        url: "/pageReestrGraph/card-graph-create",
+                        method: "POST",
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: { ids: ids.join(',') },
+                        success: function (response) {
+                            if (response.status === 'error') {
+                                alert(response.message);
+                            } else {
+                                window.location.href = "/pageReestrGraph/card-graph-create?ids=" + ids.join(',');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Ошибка:', error);
+                        }
+                    });
                 }
             });
+
 
             // ------------------------------------ Показать активные объекты ------------------------------------
             let isActiveFilter = false; // Флаг, указывающий на текущее состояние фильтрации активных объектов

@@ -1,7 +1,18 @@
 {{--страница карточка графа --}}
 @extends('layouts.app')
-
 @section('content')
+    @if(isset($error))
+        <div class="alert alert-warning">
+            {{ $error }}
+            @if(isset($existingGraphs))
+                <ul>
+                    @foreach($existingGraphs as $graph)
+                        <li><a target="_blank" href="{{ $graph['link'] }}">{{ $graph['name'] }}</a></li>
+                    @endforeach
+                </ul>
+            @endif
+        </div>
+    @else
     <div class="container custom_tab_style1_outer">
         <select class="form-control d-none" id="locale">
             <option value="ru-RU">ru-RU</option>
@@ -286,4 +297,5 @@
                 });
             });
         </script>
+    @endif
 @endsection
