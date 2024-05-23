@@ -5,8 +5,8 @@
             <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
                 <a href="{{ url('/') }}"
                    class="navbar-brand d-flex align-items-center my-2 my-lg-0 me-lg-auto text-white text-decoration-none"
-                   data-toggle="tooltip" title="Перейти на главную"> <img
-                        src="{{ asset('/storage/apm_apm.png') }}" alt="лого вход">
+                   data-toggle="tooltip" title="Перейти на главную">
+                    <img src="{{ asset('storage/apm_apm.png') }}">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                         data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"

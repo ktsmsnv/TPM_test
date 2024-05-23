@@ -129,24 +129,24 @@ Route::middleware(['auth'])->group(function () {
 
 
 // routes/web.php
-    Route::get('/send-test-email', function () {
-        $user = \App\Models\User::first(); // Получаем первого пользователя из базы данных
-        try {
-            if ($user) {
-                $workOrder = CardWorkOrder::first(); // Получаем первый заказ-наряд
-                $object = CardObjectMain::first(); // Получаем первый объект
-                $service = CardObjectServices::first(); // Получаем первую услугу
-                \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\WorkOrderNotification($workOrder, $object, $service));
-                return 'Письмо отправлено на адрес: ' . $user->email;
-            } else {
-                return 'Нет доступных пользователей с адресом электронной почты.';
-            }
-        } catch (\Exception $e) {
-            return 'Ошибка: ' . $e->getMessage();
-        }
-    });
+//    Route::get('/send-test-email', function () {
+//        $user = \App\Models\User::first(); // Получаем первого пользователя из базы данных
+//        try {
+//            if ($user) {
+//                $workOrder = CardWorkOrder::first(); // Получаем первый заказ-наряд
+//                $object = CardObjectMain::first(); // Получаем первый объект
+//                $service = CardObjectServices::first(); // Получаем первую услугу
+//                \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\WorkOrderNotification($workOrder, $object, $service));
+//                return 'Письмо отправлено на адрес: ' . $user->email;
+//            } else {
+//                return 'Нет доступных пользователей с адресом электронной почты.';
+//            }
+//        } catch (\Exception $e) {
+//            return 'Ошибка: ' . $e->getMessage();
+//        }
+//    });
 
 
-
+    Route::get('/send-test-mail',  [App\Http\Controllers\MailTest::class, 'mail']);
 });
 
