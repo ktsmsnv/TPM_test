@@ -13,7 +13,7 @@
                 <div class="d-flex gap-2">
                     <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
                     <a type="button" class="btn btn-primary btn-primary--2 copy_cardObject">Скопировать карточку объекта</a>
-                    <a href="{{ route('cardObject-edit', ['id' => $data_CardObjectMain->_id]) }}" target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
+                    <a href="{{ route('cardObject-edit', ['id' => $data_CardObjectMain->_id]) }}" type="button" class="btn btn-outline-danger">Редактировать</a>
                 </div>
             </div>
 

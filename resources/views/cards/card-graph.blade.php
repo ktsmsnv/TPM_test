@@ -17,7 +17,7 @@
                     <button type="button" class="btn btn-success" data-toggle="tooltip"
                             title="ДАННАЯ КНОПКА ПОКА НЕ РАБОТАЕТ">Выгрузить WORD</button>
                     <a href="{{ route('cardGraph-edit', ['id' => $data_CardGraph->_id]) }}"
-                       target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
+                       type="button" class="btn btn-outline-danger">Редактировать</a>
 {{--                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addObjectCardModal" id="addObjectCardButton">--}}
 {{--                        Добавить карточку объекта--}}
 {{--                    </button>--}}

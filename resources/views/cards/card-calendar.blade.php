@@ -11,10 +11,9 @@
             <input type="hidden" name="card_id" value="{{ $cardObjectMain->id }}">
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
-                    <a href="{{ route('cardCalendar-edit', ['id' => $cardCalendar->_id]) }}"
-                       target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
                     <a href="/pageReestrCalendar" type="button" class="btn btn-secondary me-5">Назад</a>
-
+                    <a href="{{ route('cardCalendar-edit', ['id' => $cardCalendar->_id]) }}"
+                      type="button" class="btn btn-outline-danger">Редактировать</a>
                     <button type="button" class="btn btn-success">Выгрузить WORD</button>
                     <a href="/home/card-object/{{$cardObjectMain->id}}" target="_blank" type="button" class="btn btn-primary me-5">Открыть карточку объекта</a>
                 </div>

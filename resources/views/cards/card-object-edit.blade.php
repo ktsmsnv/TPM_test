@@ -789,7 +789,7 @@
                     success: function (response) {
                         // Обработка успешного ответа от сервера (например, отображение сообщения об успешном сохранении)
                         // alert("Данные для карточки объекта успешно обновлены!");
-                   //     window.location.href = "{{ route('cardObject', ['id' => $data_CardObjectMain->id]) }}";
+                     window.location.href = "{{ route('cardObject', ['id' => $data_CardObjectMain->id]) }}";
                         //console.log(formData);
                     },
                     error: function (error) {
