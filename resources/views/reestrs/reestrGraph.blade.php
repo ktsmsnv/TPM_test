@@ -179,7 +179,7 @@
                                     }
                                 }
                             },
-                            {title: 'Исполнитель', field: 'performer', align: 'center', visible: false,
+                            {title: 'Исполнитель', field: 'performer', align: 'center',
                                 formatter: function(value, row) {
                                     let performers = []; // Создаем пустой массив для всех исполнителей
                                     if (row.services && Array.isArray(row.services) && row.services.length > 0) {
@@ -192,7 +192,7 @@
                                     }
                                 }
                             },
-                            {title: 'Ответственный', field: 'responsible', align: 'center', visible: false,
+                            {title: 'Ответственный', field: 'responsible', align: 'center',
                                 formatter: function(value, row) {
                                     let responsibles = []; // Создаем пустой массив для всех ответственных
                                     if (row.services && Array.isArray(row.services) && row.services.length > 0) {

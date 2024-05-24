@@ -67,7 +67,8 @@
                                             </div>
                                             <div class="d-flex justify-content-between align-items-center gap-3">
                                                 <label class="w-100">Куратор</label>
-                                                <input name="curator" class="form-control w-100"
+                                                <input name="curator" class="form-control w-100" value="{{ $selectedObjectMain->first()->curator }}" readonly
+                                                       data-toggle="tooltip" title="изменить можно в карточке объекта 'основная'"
                                                        placeholder="Введите куратора">
                                                 {{--                                            <input name="curator" value="{{ $selectedObjectMain->first()->curator }}"--}}
                                                 {{--                                                   class="form-control w-100" readonly>--}}

@@ -47,58 +47,43 @@ class GraphController extends Controller
     public function getCardGraph() {
         $user = Auth::user();
         $role = $user->role;
-        // Получаем объекты инфраструктуры с их сервисами
-        if ($user) {
-            // Получаем роль текущего пользователя
-            $userRole = $user->role;
-            $cardGraphs = CardGraph::with(['object', 'services'])->get();
-            // Создаем массив для хранения всех данных
-            $formattedGraphs = [];
-            // Проходимся по каждому объекту и выбираем все поля
-            foreach ($cardGraphs as $cardGraph) {
 
-                // Разделяем cards_ids на массив
-                $cardsIds = explode(',', $cardGraph->cards_ids);
-                // Создаем массив для хранения всех сервисов
+        if ($user) {
+            $cardGraphs = CardGraph::with(['object', 'services'])->get();
+            $formattedGraphs = [];
+
+            foreach ($cardGraphs as $cardGraph) {
+                $cardsIds = array_filter(array_map('trim', explode(',', $cardGraph->cards_ids)));
                 $allServices = [];
-                // Обрабатываем каждый cards_ids отдельно
+
                 foreach ($cardsIds as $cardId) {
-                    // Получаем объект инфраструктуры для данного cards_ids
-                    $cardObject = CardObjectMain::find($cardId);
-                    // Если объект найден, добавляем все его связанные записи CardObjectServices в массив
+                    $cardObject = CardObjectMain::find(trim($cardId));
                     if ($cardObject) {
                         $allServices = array_merge($allServices, $cardObject->services->toArray());
                     }
                 }
 
                 foreach ($cardGraph->object as $object) {
-
-                    // Инициализируем флаг для добавления объекта
                     $shouldAddObject = false;
 
-                    // Проверяем роль текущего пользователя и фильтруем записи соответствующим образом
-                    if ($userRole == 'executor') {
-                        // Проверяем, если текущий пользователь исполнитель
+                    if ($role == 'executor') {
                         foreach ($object->services as $service) {
                             if ($service->performer == $user->name) {
                                 $shouldAddObject = true;
                                 break;
                             }
                         }
-                    } elseif ($userRole == 'responsible') {
-                        // Проверяем, если текущий пользователь ответственный
+                    } elseif ($role == 'responsible') {
                         foreach ($object->services as $service) {
                             if ($service->responsible == $user->name) {
                                 $shouldAddObject = true;
                                 break;
                             }
                         }
-                    } elseif ($userRole == 'curator' || $userRole == 'admin') {
-                        // Если текущий пользователь куратор или администратор, добавляем все объекты
+                    } elseif (in_array($role, ['curator', 'admin'])) {
                         $shouldAddObject = true;
                     }
 
-                    // Если объект должен быть добавлен, формируем данные для одного объекта инфраструктуры и его сервисов
                     if ($shouldAddObject) {
                         $formattedGraph = [
                             'id' => $cardGraph->id,
@@ -109,16 +94,19 @@ class GraphController extends Controller
                             'date_create' => $cardGraph->date_create,
                             'date_last_save' => $cardGraph->date_last_save,
                             'date_archive' => $cardGraph->date_archive,
-                            'object' => [
-                                'infrastructure' => $cardObject ? $cardObject->infrastructure : null,
-                                'name' => $cardObject ? $cardObject->name : null,
-                                'number' => $cardObject ? $cardObject->number : null,
-                                'location' => $cardObject ? $cardObject->location : null,
-                                'date_arrival' => $cardObject ? $cardObject->date_arrival : null,
-                                'date_usage' => $cardObject ? $cardObject->date_usage : null,
-                                'date_cert_end' => $cardObject ? $cardObject->date_cert_end : null,
-                                'date_usage_end' => $cardObject ? $cardObject->date_usage_end : null,
-                            ],
+                            'cards_ids' => $cardGraph->cards_ids,
+                            'object' => array_map(function($cardObject) {
+                                return [
+                                    'infrastructure' => $cardObject->infrastructure ?? null,
+                                    'name' => $cardObject->name ?? null,
+                                    'number' => $cardObject->number ?? null,
+                                    'location' => $cardObject->location ?? null,
+                                    'date_arrival' => $cardObject->date_arrival ?? null,
+                                    'date_usage' => $cardObject->date_usage ?? null,
+                                    'date_cert_end' => $cardObject->date_cert_end ?? null,
+                                    'date_usage_end' => $cardObject->date_usage_end ?? null,
+                                ];
+                            }, $cardsIds),
                             'services' => array_map(function ($service) {
                                 return [
                                     'service_type' => $service['service_type'],
@@ -134,13 +122,11 @@ class GraphController extends Controller
                                 ];
                             }, $allServices)
                         ];
-                        // Добавляем объект к массиву с отформатированными данными
                         $formattedGraphs[] = $formattedGraph;
                     }
                 }
-        }
-        // Возвращаем все данные в формате JSON с правильным заголовком Content-Type
-        return response()->json($formattedGraphs);
+            }
+            return response()->json($formattedGraphs);
         }
     }
 
