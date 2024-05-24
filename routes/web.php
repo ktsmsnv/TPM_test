@@ -112,6 +112,8 @@ Route::middleware(['auth'])->group(function () {
 
         // Маршрут для добавления выбранных карточек объектов к карточке графика
         Route::post('/add-object-cards', [App\Http\Controllers\GraphController::class, 'addObjectCards'])->name('addObjectCards');
+
+    Route::get('/download-graph/{id}', [App\Http\Controllers\GraphController::class, 'downloadGraph'])->name('downloadGraph');
     // -----------------------------------------------------------------------------------------------------------------------------------------------
 
 

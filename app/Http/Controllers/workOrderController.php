@@ -299,8 +299,14 @@ class workOrderController extends Controller
         // Создаем Word документ
         $docxFilePath = $this->downloadPDF_create($id);
 
+        $data_CardWork =  CardWorkOrder::findOrFail($id);
+        $cardObjectMain = CardObjectMain::with(['services' => function ($query) use ($data_CardWork) {
+            $query->with(['services_types'])->where('_id', $data_CardWork->card_object_services_id);
+        }])->find($data_CardWork->card_id);
+        $name = $cardObjectMain->name;
+
         // Определяем имя файла для скачивания
-        $fileName = 'Карточка_заказ-наряда_' . $id . '.docx';
+        $fileName = 'Карточка_заказ-наряда_' . $name . '.docx';
 
         // Возвращаем Word-файл как ответ на запрос с заголовком для скачивания
         return response()->download($docxFilePath, $fileName);

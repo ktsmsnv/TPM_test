@@ -12,9 +12,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
+use Illuminate\Support\Str;
 use MongoDB\BSON\Binary;
 use Illuminate\Support\Facades\Auth;
 use function Laravel\Prompts\error;
+
+use PhpOffice\PhpWord\Exception\CopyFileException;
+use PhpOffice\PhpWord\Exception\CreateTemporaryFileException;
+use PhpOffice\PhpWord\Exception\Exception;
+use PhpOffice\PhpWord\TemplateProcessor;
 
 //контроллер для отображения данных на страницы
 class GraphController extends Controller
@@ -429,5 +435,103 @@ class GraphController extends Controller
 
         return response()->json(['success' => true], 200);
     }
+
+    // -------------- выгрузка графика в WORD ---------------
+    public function downloadGraph($id)
+    {
+        // Создаем Word документ
+        $docxFilePath = $this->downloadGraph_create($id);
+        $data_CardGraph =  CardGraph::findOrFail($id);
+        $name = $data_CardGraph->name;
+        // Определяем имя файла для скачивания
+        $fileName = 'Карточка_графика_' . $name . '.docx';
+
+        // Возвращаем Word-файл как ответ на запрос с заголовком для скачивания
+        return response()->download($docxFilePath, $fileName);
+    }
+
+    public function downloadGraph_create($id)
+    {
+        // Находим график по его ID
+        $cardGraph = CardGraph::findOrFail($id);
+        $yearAction = $cardGraph->year_action;
+
+        // Преобразуем поле cards_ids из строки в массив
+        $cardsIdsString = trim($cardGraph->cards_ids, '"'); // Удаляем кавычки в начале и конце строки
+        $cardIds = explode(',', $cardsIdsString); // Разбиваем строку на массив по запятой
+
+        // Получаем все записи из card_object_main, связанные с данным графиком
+        $cardObjectMains = CardObjectMain::whereIn('_id', $cardIds)->get();
+
+        // Проверка данных
+        if (count($cardObjectMains) === 0) {
+            dd('No cardObjectMains found for the given cardIds', $cardIds);
+        }
+
+        // Путь к вашему шаблону Word
+        $templatePath = storage_path('app/templates/graph_template.docx');
+
+        // Загружаем шаблон Word
+        $templateProcessor = new TemplateProcessor($templatePath);
+
+        // Клонируем строки для каждого объекта
+        $templateProcessor->cloneRow('name', count($cardObjectMains));
+
+        // Обход каждой записи card_object_main и добавление значений в соответствующие ячейки
+        // Обход каждой записи card_object_main и добавление значений в соответствующие ячейки
+        foreach ($cardObjectMains as $index => $cardObjectMain) {
+            // Получаем все записи card_object_services, связанные с данным объектом, и исключаем те, у которых checked = true
+            $services = CardObjectServices::where('card_object_main_id', $cardObjectMain->_id)
+                ->where('checked', '!=', true)
+                ->get();
+
+            // Проверка данных services
+            if (count($services) === 0) {
+                continue; // Пропустить текущий объект, если нет записей service
+            }
+
+            // Инициализируем массив для месяцев
+            $months = array_fill(1, 12, ' ');
+
+            // Обход каждой записи card_object_services и заполнение месяцев
+            foreach ($services as $service) {
+                $plannedDate = new \DateTime($service->planned_maintenance_date);
+                $month = (int) $plannedDate->format('m');
+                $shortName = $service->short_name;
+
+                $months[$month] = $shortName;
+            }
+
+            // Заполняем шаблон данными
+            $templateProcessor->setValue('name#' . ($index + 1), $cardObjectMain->name);
+            $templateProcessor->setValue('number#' . ($index + 1), $cardObjectMain->number);
+            $templateProcessor->setValue('j#' . ($index + 1), $months[1]);
+            $templateProcessor->setValue('f#' . ($index + 1), $months[2]);
+            $templateProcessor->setValue('r#' . ($index + 1), $months[3]);
+            $templateProcessor->setValue('a#' . ($index + 1), $months[4]);
+            $templateProcessor->setValue('m#' . ($index + 1), $months[5]);
+            $templateProcessor->setValue('ju#' . ($index + 1), $months[6]);
+            $templateProcessor->setValue('l#' . ($index + 1), $months[7]);
+            $templateProcessor->setValue('v#' . ($index + 1), $months[8]);
+            $templateProcessor->setValue('s#' . ($index + 1), $months[9]);
+            $templateProcessor->setValue('o#' . ($index + 1), $months[10]);
+            $templateProcessor->setValue('n#' . ($index + 1), $months[11]);
+            $templateProcessor->setValue('d#' . ($index + 1), $months[12]);
+        }
+
+        // Заполняем данные из cardGraph
+        $templateProcessor->setValue('year_action', $yearAction);
+        $templateProcessor->setValue('infrastructure', Str::upper($cardGraph->infrastructure_type));
+
+
+        // Путь к новому документу Word
+        $docxFilePath = storage_path('app/generated/graphTemplateProcessed.docx');
+
+        // Сохраняем изменения в новом документе Word
+        $templateProcessor->saveAs($docxFilePath);
+
+        return $docxFilePath;
+    }
+
 
 }
