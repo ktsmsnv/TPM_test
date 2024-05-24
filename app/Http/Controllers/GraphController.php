@@ -241,15 +241,35 @@ class GraphController extends Controller
             return view('cards.card-graph-create', compact('error', 'existingGraphs'));
         }
 
-        // Получаем тип инфраструктуры для первого выбранного объекта
+        $infrastructureCases = [
+            'Технологическая' => 'Технологической',
+            'Информационная' => 'Информационной',
+            'Бытовая' => 'Бытовой',
+            'Инженерная' => 'Инженерной',
+            'Электротехническая' => 'Электротехнической',
+            'Безопасность' => 'Безопасной',
+        ];
+        // Получаем тип инфраструктуры для первого выбранного объекта и преобразуем его в верхний регистр
         $infrastructureName = $selectedObjectMain->first()->infrastructure;
-        // Получаем количество уже существующих карточек графика для данного типа инфраструктуры
-        $count = CardGraph::where('infrastructure_type', $infrastructureName)->count();
 
-        $infrastructureName = mb_strtoupper($infrastructureName);
+// Получаем соответствующее склонение для данного типа инфраструктуры
+        $infrastructureNameDeclension = $infrastructureCases[$infrastructureName] ?? $infrastructureName;
+        $infrastructureNameUpper = mb_strtoupper($infrastructureNameDeclension);
+// Получаем количество уже существующих карточек графика для данного типа инфраструктуры
+        $count = CardGraph::where('infrastructure_type', $infrastructureNameDeclension)->count();
 
-        // Формируем название карточки графика
-        $nameGraph = "ГОДОВОЙ ГРАФИК TPM ОБЪЕКТОВ $infrastructureName ИНФРАСТРУКТУРЫ #" . ($count + 1);
+// Формируем название карточки графика
+        $nameGraph = "ГОДОВОЙ ГРАФИК TPM ОБЪЕКТОВ $infrastructureNameUpper ИНФРАСТРУКТУРЫ #" . ($count + 1);
+
+//        // Получаем тип инфраструктуры для первого выбранного объекта
+//        $infrastructureName = $selectedObjectMain->first()->infrastructure;
+//        // Получаем количество уже существующих карточек графика для данного типа инфраструктуры
+//        $count = CardGraph::where('infrastructure_type', $infrastructureName)->count();
+//
+//        $infrastructureName = mb_strtoupper($infrastructureName);
+//
+//        // Формируем название карточки графика
+//        $nameGraph = "ГОДОВОЙ ГРАФИК TPM ОБЪЕКТОВ $infrastructureName ИНФРАСТРУКТУРЫ #" . ($count + 1);
 //dd($selectedIds);
         $maintenance = [
             ['id' => 1, 'service_type' => 'Регламентные работы', 'short_name' => 'РР'],
@@ -518,6 +538,5 @@ class GraphController extends Controller
 
         return $docxFilePath;
     }
-
 
 }
