@@ -53,20 +53,19 @@ class GraphController extends Controller
     public function getCardGraph() {
         $user = Auth::user();
         $role = $user->role;
+
+        // Получаем все карточки графика с их объектами и сервисами
         $cardGraphs = CardGraph::with(['objects', 'services'])->get();
-//        dd($cardGraphs);
+
         if ($user) {
-            // Получаем все карточки графика с их объектами и сервисами
-            $cardGraphs = CardGraph::with(['cardObjectMain', 'services'])->get();
-//dd($cardGraphs);
             // Создаем массив для хранения всех данных
             $formattedGraphs = [];
 
             foreach ($cardGraphs as $cardGraph) {
                 // Разделяем cards_ids на массив
-                $cardsIds = array_filter(array_map('trim', explode(',', $cardGraph->cards_ids)));
+                $cardsIds = array_filter(array_map('trim', explode(',', trim($cardGraph->cards_ids, '"'))));
                 $allServices = [];
-//                dd($cardsIds);
+
                 foreach ($cardsIds as $cardId) {
                     $cardObject = CardObjectMain::with('services')->find(trim($cardId));
 
@@ -108,18 +107,19 @@ class GraphController extends Controller
                         'date_last_save' => $cardGraph->date_last_save,
                         'date_archive' => $cardGraph->date_archive,
                         'cards_ids' => $cardGraph->cards_ids,
-                        'objects' => array_map(function($cardObject) {
-                            return [
-                                'infrastructure' => $cardObject['infrastructure'],
-                                'curator' => $cardObject['curator'],
-                                'name' => $cardObject['name'],
-                                'number' => $cardObject['number'],
-                                'location' => $cardObject['location'],
-                                'date_arrival' => $cardObject['date_arrival'],
-                                'date_usage' => $cardObject['date_usage'],
-                                'date_cert_end' => $cardObject['date_cert_end'],
-                                'date_usage_end' => $cardObject['date_usage_end'],
-                            ];
+                        'objects' => array_map(function($cardId) {
+                            $cardObject = CardObjectMain::find($cardId);
+                                return [
+                                    'infrastructure' => $cardObject->infrastructure,
+                                    'curator' => $cardObject->curator,
+                                    'name' => $cardObject->name,
+                                    'number' => $cardObject->number,
+                                    'location' => $cardObject->location,
+                                    'date_arrival' => $cardObject->date_arrival,
+                                    'date_usage' => $cardObject->date_usage,
+                                    'date_cert_end' => $cardObject->date_cert_end,
+                                    'date_usage_end' => $cardObject->date_usage_end,
+                                ];
                         }, $cardsIds),
                         'services' => array_map(function ($service) {
                             return [
@@ -146,6 +146,7 @@ class GraphController extends Controller
             return response()->json($formattedGraphs);
         }
     }
+
 
 
 
