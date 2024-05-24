@@ -76,7 +76,7 @@
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Куратор</label>
                                             <input class="form-control  w-100" name="curator" value="{{ $cardObjectMain->curator }}" readonly  data-toggle="tooltip" title="изменить можно в карточке объекта 'основная'"
-                                                   placeholder="Введите место установки">
+                                                   placeholder="Введите куратора">
                                         </div>
 {{--                                        <div class="d-flex justify-content-between align-items-center gap-3">--}}
 {{--                                            <label class="w-100">Куратор</label>--}}
