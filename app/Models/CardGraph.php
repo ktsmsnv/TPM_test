@@ -62,4 +62,9 @@ class CardGraph extends Eloquent
     {
         return $this->hasMany(CardObjectServices::class, 'card_object_main_id', 'cards_ids');
     }
+
+    public function objects()
+    {
+        return $this->hasMany(CardObjectMain::class, '_id', 'cards_ids');
+    }
 }

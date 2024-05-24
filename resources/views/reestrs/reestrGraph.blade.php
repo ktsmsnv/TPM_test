@@ -179,7 +179,7 @@
                                     }
                                 }
                             },
-                            {title: 'Исполнитель', field: 'performer', align: 'center',
+                            {title: 'Исполнитель', field: 'performer', align: 'center', visible: false,
                                 formatter: function(value, row) {
                                     let performers = []; // Создаем пустой массив для всех исполнителей
                                     if (row.services && Array.isArray(row.services) && row.services.length > 0) {
@@ -192,7 +192,7 @@
                                     }
                                 }
                             },
-                            {title: 'Ответственный', field: 'responsible', align: 'center',
+                            {title: 'Ответственный', field: 'responsible', align: 'center', visible: false,
                                 formatter: function(value, row) {
                                     let responsibles = []; // Создаем пустой массив для всех ответственных
                                     if (row.services && Array.isArray(row.services) && row.services.length > 0) {
@@ -205,7 +205,19 @@
                                     }
                                 }
                             },
-                            {title: 'Куратор', field: 'curator', align: 'center'},
+                            {title: 'Куратор', field: 'curator', align: 'center',
+                                formatter: function(value, row) {
+                                    let curators = []; // Создаем пустой массив для всех ответственных
+                                    if (row.objects && Array.isArray(row.objects) && row.objects.length > 0) {
+                                        row.objects.forEach(function(objects) {
+                                            curators.push(objects.curator); // Добавляем ответственного в массив
+                                        });
+                                        return curators.length > 0 ? curators : 'Нет куратора'; // Возвращаем массив всех ответственных
+                                    } else {
+                                        return 'Нет куратора';
+                                    }
+                                }
+                            },
                         ],
                     ],
                     data: data,

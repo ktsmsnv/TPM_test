@@ -53,88 +53,100 @@ class GraphController extends Controller
     public function getCardGraph() {
         $user = Auth::user();
         $role = $user->role;
-
+        $cardGraphs = CardGraph::with(['objects', 'services'])->get();
+//        dd($cardGraphs);
         if ($user) {
-            $cardGraphs = CardGraph::with(['object', 'services'])->get();
+            // Получаем все карточки графика с их объектами и сервисами
+            $cardGraphs = CardGraph::with(['cardObjectMain', 'services'])->get();
+//dd($cardGraphs);
+            // Создаем массив для хранения всех данных
             $formattedGraphs = [];
 
             foreach ($cardGraphs as $cardGraph) {
+                // Разделяем cards_ids на массив
                 $cardsIds = array_filter(array_map('trim', explode(',', $cardGraph->cards_ids)));
                 $allServices = [];
-
+//                dd($cardsIds);
                 foreach ($cardsIds as $cardId) {
-                    $cardObject = CardObjectMain::find(trim($cardId));
+                    $cardObject = CardObjectMain::with('services')->find(trim($cardId));
+
                     if ($cardObject) {
                         $allServices = array_merge($allServices, $cardObject->services->toArray());
                     }
                 }
 
-                foreach ($cardGraph->object as $object) {
-                    $shouldAddObject = false;
+                // Инициализируем флаг для добавления объекта
+                $shouldAddObject = false;
 
-                    if ($role == 'executor') {
-                        foreach ($object->services as $service) {
-                            if ($service->performer == $user->name) {
-                                $shouldAddObject = true;
-                                break;
-                            }
+                // Проверяем роль текущего пользователя и фильтруем записи соответствующим образом
+                if ($role == 'executor') {
+                    foreach ($allServices as $service) {
+                        if ($service['performer'] == $user->name) {
+                            $shouldAddObject = true;
+                            break;
                         }
-                    } elseif ($role == 'responsible') {
-                        foreach ($object->services as $service) {
-                            if ($service->responsible == $user->name) {
-                                $shouldAddObject = true;
-                                break;
-                            }
-                        }
-                    } elseif (in_array($role, ['curator', 'admin'])) {
-                        $shouldAddObject = true;
                     }
+                } elseif ($role == 'responsible') {
+                    foreach ($allServices as $service) {
+                        if ($service['responsible'] == $user->name) {
+                            $shouldAddObject = true;
+                            break;
+                        }
+                    }
+                } elseif (in_array($role, ['curator', 'admin'])) {
+                    $shouldAddObject = true;
+                }
 
-                    if ($shouldAddObject) {
-                        $formattedGraph = [
-                            'id' => $cardGraph->id,
-                            'infrastructure_type' => $cardGraph->infrastructure_type,
-                            'name' => $cardGraph->name,
-                            'curator' => $cardGraph->curator,
-                            'year_action' => $cardGraph->year_action,
-                            'date_create' => $cardGraph->date_create,
-                            'date_last_save' => $cardGraph->date_last_save,
-                            'date_archive' => $cardGraph->date_archive,
-                            'cards_ids' => $cardGraph->cards_ids,
-                            'object' => array_map(function($cardObject) {
-                                return [
-                                    'infrastructure' => $cardObject->infrastructure ?? null,
-                                    'name' => $cardObject->name ?? null,
-                                    'number' => $cardObject->number ?? null,
-                                    'location' => $cardObject->location ?? null,
-                                    'date_arrival' => $cardObject->date_arrival ?? null,
-                                    'date_usage' => $cardObject->date_usage ?? null,
-                                    'date_cert_end' => $cardObject->date_cert_end ?? null,
-                                    'date_usage_end' => $cardObject->date_usage_end ?? null,
-                                ];
-                            }, $cardsIds),
-                            'services' => array_map(function ($service) {
-                                return [
-                                    'service_type' => $service['service_type'],
-                                    'short_name' => $service['short_name'],
-                                    'performer' => $service['performer'],
-                                    'responsible' => $service['responsible'],
-                                    'frequency' => $service['frequency'],
-                                    'prev_maintenance_date' => $service['prev_maintenance_date'],
-                                    'planned_maintenance_date' => $service['planned_maintenance_date'],
-                                    'calendar_color' => isset($service['calendar_color']) ? $service['calendar_color'] : null,
-                                    'consumable_materials' => isset($service['consumable_materials']) ? $service['consumable_materials'] : null,
-                                    'work_order' => isset($service['card_work_orders'][0]) ? route('workOrder.show', ['id' => $service['card_work_orders'][0]['_id']]) : null,
-                                ];
-                            }, $allServices)
-                        ];
-                        $formattedGraphs[] = $formattedGraph;
-                    }
+                if ($shouldAddObject) {
+                    $formattedGraph = [
+                        'id' => $cardGraph->id,
+                        'infrastructure_type' => $cardGraph->infrastructure_type,
+                        'name' => $cardGraph->name,
+                        'curator' => $cardGraph->curator,
+                        'year_action' => $cardGraph->year_action,
+                        'date_create' => $cardGraph->date_create,
+                        'date_last_save' => $cardGraph->date_last_save,
+                        'date_archive' => $cardGraph->date_archive,
+                        'cards_ids' => $cardGraph->cards_ids,
+                        'objects' => array_map(function($cardObject) {
+                            return [
+                                'infrastructure' => $cardObject['infrastructure'],
+                                'curator' => $cardObject['curator'],
+                                'name' => $cardObject['name'],
+                                'number' => $cardObject['number'],
+                                'location' => $cardObject['location'],
+                                'date_arrival' => $cardObject['date_arrival'],
+                                'date_usage' => $cardObject['date_usage'],
+                                'date_cert_end' => $cardObject['date_cert_end'],
+                                'date_usage_end' => $cardObject['date_usage_end'],
+                            ];
+                        }, $cardsIds),
+                        'services' => array_map(function ($service) {
+                            return [
+                                'service_type' => $service['service_type'],
+                                'short_name' => $service['short_name'],
+                                'performer' => $service['performer'],
+                                'responsible' => $service['responsible'],
+                                'frequency' => $service['frequency'],
+                                'prev_maintenance_date' => $service['prev_maintenance_date'],
+                                'planned_maintenance_date' => $service['planned_maintenance_date'],
+                                'calendar_color' => $service['calendar_color'] ?? null,
+                                'consumable_materials' => $service['consumable_materials'] ?? null,
+                                'work_order' => isset($service['card_work_orders'][0]) ? route('workOrder.show', ['id' => $service['card_work_orders'][0]['_id']]) : null,
+                            ];
+                        }, $allServices)
+                    ];
+
+                    // Добавляем объект к массиву с отформатированными данными
+                    $formattedGraphs[] = $formattedGraph;
                 }
             }
+
+            // Возвращаем все данные в формате JSON с правильным заголовком Content-Type
             return response()->json($formattedGraphs);
         }
     }
+
 
 
     public function index($id, Request $request)
