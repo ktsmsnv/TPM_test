@@ -155,19 +155,34 @@
 
                             {title: 'Дата ввода в эксплуатацию', field: 'date_usage', align: 'center',
                                 formatter: function(value, row) {
-                                    // Преобразование даты в нужный формат (день-месяц-год)
-                                    return new Date(value).toLocaleDateString('ru-RU');
+                                    if (value === null) {
+                                        return null;
+                                    }
+                                    else {
+                                        // Преобразование даты в нужный формат (день-месяц-год)
+                                        return new Date(value).toLocaleDateString('ru-RU');
+                                    }
                                 }
                             },
                             {title: 'Дата вывода из эксплуатации', field: 'date_usage_end', align: 'center',
                                 formatter: function(value, row) {
-                                    // Преобразование даты в нужный формат (день-месяц-год)
-                                    return new Date(value).toLocaleDateString('ru-RU');
+                                    if (value === null) {
+                                        return null;
+                                    }
+                                    else {
+                                        // Преобразование даты в нужный формат (день-месяц-год)
+                                        return new Date(value).toLocaleDateString('ru-RU');
+                                    }
                                 }},
                             {title: 'Дата окончания аттестации/гарантии', field: 'date_cert_end', align: 'center',
                                 formatter: function(value, row) {
-                                    // Преобразование даты в нужный формат (день-месяц-год)
-                                    return new Date(value).toLocaleDateString('ru-RU');
+                                    if (value === null) {
+                                        return null;
+                                    }
+                                    else {
+                                        // Преобразование даты в нужный формат (день-месяц-год)
+                                        return new Date(value).toLocaleDateString('ru-RU');
+                                    }
                                 }},
                             {title: 'Инв./заводской номер', field: 'number', align: 'center'},
 

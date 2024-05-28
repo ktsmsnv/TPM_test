@@ -79,22 +79,22 @@
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата прихода</label>
                                             <input class="form-control w-100" name="" readonly
-                                                   value="{{ isset($data_CardObjectMain->date_arrival) ? date('d-m-Y', strtotime($data_CardObjectMain->date_arrival)) : 'нет данных' }}">
+                                                   value="{{ isset($data_CardObjectMain->date_arrival) ? date('d.m.Y', strtotime($data_CardObjectMain->date_arrival)) : 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата ввода в эксплуатацию</label>
                                             <input class="form-control w-100" name="" readonly
-                                                   value="{{ isset($data_CardObjectMain->date_usage) ? date('d-m-Y', strtotime($data_CardObjectMain->date_usage)) : 'нет данных' }}">
+                                                   value="{{ isset($data_CardObjectMain->date_usage) ? date('d.m.Y', strtotime($data_CardObjectMain->date_usage)) : 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата окончания аттестации/гарантии</label>
                                             <input class="form-control w-100" name="" readonly
-                                                   value="{{ isset($data_CardObjectMain->date_cert_end) ?  date('d-m-Y', strtotime($data_CardObjectMain->date_cert_end)) : 'нет данных' }}">
+                                                   value="{{ isset($data_CardObjectMain->date_cert_end) ?  date('d.m.Y', strtotime($data_CardObjectMain->date_cert_end)) : 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата вывода из эксплуатации</label>
                                             <input class="form-control  w-100" name="" readonly
-                                                   value="{{ isset($data_CardObjectMain->date_usage_end) ? date('d-m-Y', strtotime($data_CardObjectMain->date_usage_end)) : 'нет данных' }}">
+                                                   value="{{ isset($data_CardObjectMain->date_usage_end) ? date('d.m.Y', strtotime($data_CardObjectMain->date_usage_end)) : 'нет данных' }}">
                                         </div>
                                     </div>
                                 </div>
@@ -199,11 +199,11 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата предыдущего обслуживания</label>
-                                            <input class="form-control w-100" name="" value="{{ date('d-m-Y', strtotime($service->prev_maintenance_date)) }}" readonly>
+                                            <input class="form-control w-100" name="" value="{{ date('d.m.Y', strtotime($service->prev_maintenance_date)) }}" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Плановая дата обслуживания</label>
-                                            <input class="form-control w-100" name="" value="{{ date('d-m-Y', strtotime($service->planned_maintenance_date)) }}" readonly>
+                                            <input class="form-control w-100" name="" value="{{ date('d.m.Y', strtotime($service->planned_maintenance_date)) }}" readonly>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Цвет в календаре</label>

@@ -165,14 +165,24 @@
                             {title: 'Вид ближайшего обслуживания', field: 'service_type', align: 'center'},
                             {title: 'Плановая дата обслуживания',  field: 'planned_maintenance_date', align: 'center',
                                 formatter: function(value, row) {
-                                    // Преобразование даты в нужный формат (день-месяц-год)
-                                    return new Date(value).toLocaleDateString('ru-RU');
+                                    if (value === null) {
+                                        return null;
+                                    }
+                                    else {
+                                        // Преобразование даты в нужный формат (день-месяц-год)
+                                        return new Date(value).toLocaleDateString('ru-RU');
+                                    }
                                 }
                             },
                             {title: 'Фактическая дата предыдущего обслуживания', field: 'prev_maintenance_date', align: 'center',
                                 formatter: function(value, row) {
-                                    // Преобразование даты в нужный формат (день-месяц-год)
-                                    return new Date(value).toLocaleDateString('ru-RU');
+                                    if (value === null) {
+                                        return null;
+                                    }
+                                    else {
+                                        // Преобразование даты в нужный формат (день-месяц-год)
+                                        return new Date(value).toLocaleDateString('ru-RU');
+                                    }
                                 }},
                             {
                                 title: 'Статус заказ-наряда',
@@ -191,8 +201,13 @@
 
                             {title: 'Дата создания', field: 'date_create', align: 'center',
                                 formatter: function(value, row) {
-                                    // Преобразование даты в нужный формат (день-месяц-год)
-                                    return new Date(value).toLocaleDateString('ru-RU');
+                                    if (value === null) {
+                                        return null;
+                                    }
+                                    else {
+                                        // Преобразование даты в нужный формат (день-месяц-год)
+                                        return new Date(value).toLocaleDateString('ru-RU');
+                                    }
                                 }
                             },
                             // {title: 'Дата последнего сохранения', field: 'date_last_save', align: 'center'},

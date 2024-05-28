@@ -72,7 +72,8 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Плановая дата обслуживания</label>
-                                            <input name="planned_maintenance_date" class="form-control w-100" value="{{ $cardObjectServices->planned_maintenance_date }}" readonly
+                                            <input name="planned_maintenance_date" class="form-control w-100"
+                                                   value="{{ date('d.m.Y', strtotime($cardObjectServices->planned_maintenance_date)) ?? 'нет данных' }}" readonly
                                                    data-toggle="tooltip" title="изменить можно в карточке объекта 'обслуживание'">
                                         </div>
                                     </div>
@@ -80,7 +81,8 @@
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата создания</label>
-                                            <input name="date_create" class="form-control w-100" value="{{ $workOrder->date_create }}" readonly
+                                            <input name="date_create" class="form-control w-100"
+                                                   value="{{ date('d.m.Y', strtotime($workOrder->date_create)) ?? 'нет данных' }}" readonly
                                                    data-toggle="tooltip" title="дата создания заказ-наряда">
                                         </div>
 {{--                                        <div class="d-flex justify-content-between align-items-center gap-3">--}}
@@ -90,7 +92,7 @@
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Фактическая дата</label>
                                             @if ($workOrder && $workOrder->date_fact)
-                                            <input name="date_fact" class="form-control w-100" value="{{ $workOrder->date_fact }}" readonly
+                                            <input name="date_fact" class="form-control w-100" value="{{ date('d.m.Y', strtotime($workOrder->date_fact)) ?? 'нет данных'  }}" readonly
                                                    data-toggle="tooltip" title="дата завершения заказ-наряда">
                                             @else
                                                 <input name="date_fact" class="form-control w-100" value="дата завершения заказа"
