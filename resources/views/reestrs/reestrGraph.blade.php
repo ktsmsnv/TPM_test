@@ -209,11 +209,12 @@
                                 formatter: function(value, row) {
                                     let curators = []; // Создаем пустой массив для всех ответственных
                                     if (row.objects && Array.isArray(row.objects) && row.objects.length > 0) {
-                                        row.objects.forEach(function(objects) {
-                                            curators.push(objects.curator); // Добавляем ответственного в массив
+                                        row.objects.forEach(function(object) {
+                                            curators.push(object.curator); // Добавляем ответственного в массив
                                         });
                                         return curators.length > 0 ? curators : 'Нет куратора'; // Возвращаем массив всех ответственных
                                     } else {
+                                        console.log('Кураторы',  curators);
                                         return 'Нет куратора';
                                     }
                                 }

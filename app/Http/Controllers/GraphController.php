@@ -30,7 +30,7 @@ class GraphController extends Controller
     {
         // Получаем все карточки графика
         $cardGraphs = CardGraph::with(['object', 'services'])->get();
-
+//dd($cardGraphs);
 //        $allPerformers = [];
 //        $allResponsibles = [];
 //

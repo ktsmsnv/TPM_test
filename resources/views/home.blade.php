@@ -97,6 +97,8 @@
             let $confirmDelete = $('#confirmDeleteModal'); // Ссылка на модальное окно
             let $confirmDeleteButton = $('#confirmDeleteButton'); // Кнопка "Удалить" в модальном окне
 
+            let originalData = []; // Сохраняем исходные данные таблицы
+
             // ------------------------------------ выбор полей checked ------------------------------------
             function getIdSelections() {
                 return $.map($table.bootstrapTable('getSelections'), function (row) {
@@ -123,6 +125,7 @@
             // ------------------------------------ Функция для инициализации таблицы ------------------------------------
             function initTable(data) {
                 console.log('Данные:', data);
+                originalData = data;
                 // Инициализация таблицы с данными
                 $table.bootstrapTable('destroy').bootstrapTable({
                     locale: $('#locale').val(),
@@ -306,6 +309,7 @@
                     }
                 });
             }
+
             //Вызов функции для получения данных с сервера
             getObjectsFromServer().done(function(data) {
                 initTable(data); // Инициализируем таблицу с новыми данными
@@ -319,11 +323,32 @@
                     $generateGraphTPM.prop('disabled', !$table.bootstrapTable('getSelections').length)
                     $('.create_workOrder').prop('disabled', !$table.bootstrapTable('getSelections').length)
                     $('.createCalendar').prop('disabled', !$table.bootstrapTable('getSelections').length)
-                        selections = getIdSelections();
+                    selections = getIdSelections();
                     updateCopyButtonState();
+
+                    let selectedRows = $table.bootstrapTable('getSelections');
+                    if (selectedRows.length === 1) { // Проверяем, что выбрана только одна запись
+                        let infrastructure = selectedRows[0].infrastructure; // Получаем вид инфраструктуры выбранной строки
+                        filterTable(infrastructure); // Фильтруем таблицу по виду инфраструктуры выбранной карточки объекта
+                    }
+            });
+
+            // // Изменяем обработчик события на изменение состояния чекбокса
+            // $table.on('check.bs.table uncheck.bs.table' + 'check-all.bs.table uncheck-all.bs.table',
+            //     function () {
+            //     let selectedRows = $table.bootstrapTable('getSelections');
+            //     if (selectedRows.length === 1) { // Проверяем, что выбрана только одна запись
+            //         let infrastructure = selectedRows[0].infrastructure; // Получаем вид инфраструктуры выбранной строки
+            //         filterTable(infrastructure); // Фильтруем таблицу по виду инфраструктуры выбранной карточки объекта
+            //     }
+            // });
+
+            function filterTable(infrastructure) {
+                let filteredData = originalData.filter(function (row) {
+                    return row.infrastructure === infrastructure;
                 });
-
-
+                $table.bootstrapTable('load', filteredData);
+            }
 
             // ------------------------------------ обработчик нажатия по кнопке удаления ------------------------------------
             $remove.click(function () {
@@ -332,15 +357,6 @@
                     showConfirmDeleteModal();
                 }
             });
-
-            // $generateGraphTPM.click(function (){
-            //     let ids = getIdSelections();
-            //     console.log(ids);
-            //     if (ids.length > 0) {
-            //         // Сформируйте URL с ID выбранных записей и перенаправьте пользователя на страницу формирования графика TPM
-            //         window.location.href = "/pageReestrGraph/card-graph-create?ids=" + ids.join(',');
-            //     }
-            // });
 
             // Функция для отображения модального окна удаления
             function showConfirmDeleteModal() {
@@ -426,6 +442,7 @@
             }
             // Функция для сброса фильтрации и отображения всех объектов
             function resetFilter() {
+                // $table.bootstrapTable('load', originalData);
                 refreshTable(); // Перезагружаем таблицу, чтобы сбросить фильтр
                 isActiveFilter = false; // Устанавливаем флаг фильтрации в неактивное состояние
             }

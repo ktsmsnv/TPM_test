@@ -7,7 +7,11 @@ class CardObjectServices extends Eloquent
 {
     protected $connection = 'mongodb';
     protected $collection = 'card_object_services';
-    protected $fillable = ['card_object_main_id', 'service_type', 'short_name', 'performer', 'responsible', 'frequency', 'prev_maintenance_date', 'planned_maintenance_date', 'calendar_color', 'consumable_materials', 'checked'];
+    protected $fillable = [
+        'card_object_main_id', 'service_type', 'short_name',
+        'performer', 'responsible', 'frequency', 'prev_maintenance_date',
+        'planned_maintenance_date', 'calendar_color', 'consumable_materials', 'checked'
+    ];
 
     public function cardObjectMain()
     {
@@ -21,5 +25,10 @@ class CardObjectServices extends Eloquent
     public function cardWorkOrders()
     {
         return $this->hasMany(CardWorkOrder::class, 'card_object_services_id');
+    }
+
+    public function cardGraph()
+    {
+        return $this->belongsTo(CardGraph::class, 'card_object_main_id', 'cards_ids');
     }
 }
