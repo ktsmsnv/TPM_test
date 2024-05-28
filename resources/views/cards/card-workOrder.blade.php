@@ -11,7 +11,7 @@
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
                     {{-- <button type="button" class="btn btn-success">Сохранить</button>--}}
-                    <button type="button" class="btn btn-secondary me-5">Закрыть</button>
+                    <a href="/reestr-work-orders" type="button" class="btn btn-secondary me-5">Закрыть</a>
 
                     <a href="{{ route('downloadPDF', ['id' => $workOrder->id]) }}" target="_blank" class="btn btn-success">Выгрузить WORD</a>
 {{--                    <a href="{{ route('downloadWordDocument', ['id' => $workOrder->id]) }}" target="_blank" class="btn btn-success">Выгрузить Word</a>--}}
