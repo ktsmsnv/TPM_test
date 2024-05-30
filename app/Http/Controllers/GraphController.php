@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use MongoDB\BSON\Binary;
 use Illuminate\Support\Facades\Auth;
@@ -150,6 +151,44 @@ class GraphController extends Controller
 
 
 
+//    public function index($id, Request $request)
+//    {
+//        $data_CardGraph = CardGraph::findOrFail($id);
+//
+//        $maintenance = [
+//            ['id' => 1, 'service_type' => 'Регламентные работы', 'short_name' => 'РР'],
+//            ['id' => 2, 'service_type' => 'Техническое обслуживание', 'short_name' => 'ТО'],
+//            ['id' => 3, 'service_type' => 'Сервисное техническое обслуживание', 'short_name' => 'СТО'],
+//            ['id' => 4, 'service_type' => 'Капитальный ремонт', 'short_name' => 'КР'],
+//            ['id' => 5, 'service_type' => 'Аварийный ремонт', 'short_name' => 'АР'],
+//        ];
+//
+//        $infrastructureType = $data_CardGraph->infrastructure_type;
+//        // Преобразуем строку cards_ids в массив
+//        $objectIds = explode(',', $data_CardGraph->cards_ids);
+//
+//        // Создаем массив для хранения данных объектов
+//        $allObjectsData = [];
+//
+//        // Перебираем все идентификаторы объектов
+//        foreach($objectIds as $objectId) {
+//            // Удаляем лишние пробелы
+//            $objectId = trim($objectId);
+//
+//            // Получаем объект по идентификатору
+//            $cardObject = CardObjectMain::with('services')->findOrFail($objectId);
+//
+//            // Фильтруем услуги с checked = true
+//            $cardObject->services = $cardObject->services->filter(function($service) {
+//                return !$service->checked;
+//            });
+//
+//            // Добавляем данные объекта в массив
+//            $allObjectsData[] = $cardObject;
+//        }
+//        return view('cards/card-graph', compact('data_CardGraph','allObjectsData', 'maintenance', 'id', 'infrastructureType'));
+//    }
+
     public function index($id, Request $request)
     {
         $data_CardGraph = CardGraph::findOrFail($id);
@@ -162,9 +201,10 @@ class GraphController extends Controller
             ['id' => 5, 'service_type' => 'Аварийный ремонт', 'short_name' => 'АР'],
         ];
 
+        $infrastructureType = $data_CardGraph->infrastructure_type;
         // Преобразуем строку cards_ids в массив
         $objectIds = explode(',', $data_CardGraph->cards_ids);
-
+//dd($objectIds);
         // Создаем массив для хранения данных объектов
         $allObjectsData = [];
 
@@ -184,45 +224,48 @@ class GraphController extends Controller
             // Добавляем данные объекта в массив
             $allObjectsData[] = $cardObject;
         }
-
-        return view('cards/card-graph', compact('data_CardGraph','allObjectsData', 'maintenance'));
+        return view('cards/card-graph', compact('data_CardGraph','allObjectsData', 'maintenance', 'id', 'infrastructureType', 'objectIds'));
     }
 
-
-    public function getUnlinkedObjectCards()
+    // ФУНКЦИЯ ПОЛУЧЕНИЯ ДАННЫХ ВСЕХ КАРТОЧЕК ОБЪЕКТА (ДЛЯ КАРТОЧКИ ГРАФИКА), ОТФИЛЬТРОВАННЫХ ПО ВИДУ ИНФРАСТРУКТУРЫ
+    public function getAllCardObjects(Request $request)
     {
-        // Получаем список карточек объектов, которые не привязаны к другим карточкам графика
-        $unlinkedCards = CardObjectMain::whereNull('linked_graph_id')->get();
-        // Убедитесь, что все данные в правильной кодировке UTF-8
-        foreach ($unlinkedCards as &$card) {
-            $card->name = $card->name;
+        $infrastructureType = $request->input('infrastructure_type');
+        $excludedObjectIds = $request->input('excluded_object_ids', []);
+//        dd($excludedObjectIds);
+//dd($infrastructureType);
+        if($infrastructureType) {
+            $similarCards = CardObjectMain::where('infrastructure', $infrastructureType)
+                ->whereNotIn('_id', $excludedObjectIds)
+                ->select('_id', 'infrastructure', 'curator', 'name', 'number', 'location', 'date_arrival',
+                    'date_usage', 'date_cert_end', 'date_usage_end')
+                ->get();
+//            dd($similarCards);
+            return response()->json($similarCards);
+        } else {
+            return response()->json(['error' => 'Тип инфраструктуры не предусмотрен'], 400);
         }
-
-        // Возвращаем список в формате JSON
-        return response()->json($unlinkedCards);
     }
 
-    public function addObjectCards(Request $request)
-    {
-        // Получаем выбранные карточки объектов и ID карточки графика
-        $selectedCards = $request->input('selectedCards');
-        $graphId = $request->input('graphId');
 
-        // Проверяем, что $selectedCards - массив
-        if (!is_array($selectedCards)) {
-            return response()->json(['message' => 'Неправильный формат данных'], 400);
-        }
+//    public function addObjectCards(Request $request)
+//    {
+//        $selectedCards = $request->input('selectedCards');
+//        $graphId = $request->input('graphId');
+//
+//        if (!is_array($selectedCards)) {
+//            return response()->json(['message' => 'Неправильный формат данных'], 400);
+//        }
+//
+//        $graph = CardGraph::findOrFail($graphId);
+//        $existingCardsIds = $graph->cards_ids ? explode(',', $graph->cards_ids) : [];
+//        $existingCardsIds = array_merge($existingCardsIds, $selectedCards);
+//        $graph->cards_ids = implode(',', $existingCardsIds);
+//        $graph->save();
+//
+//        return response()->json(['message' => 'Карточки объектов успешно добавлены к карточке графика']);
+//    }
 
-        // Обновляем карточку графика, добавляя выбранные карточки объектов к массиву cards_ids
-        $graph = CardGraph::findOrFail($graphId);
-        $existingCardsIds = $graph->cards_ids ? explode(',', $graph->cards_ids) : [];
-        $existingCardsIds = array_merge($existingCardsIds, $selectedCards);
-        $graph->cards_ids = implode(',', $existingCardsIds);
-        $graph->save();
-
-        // Возвращаем успешный ответ
-        return response()->json(['message' => 'Карточки объектов успешно добавлены к карточке графика']);
-    }
 
 
     // ------------------  СОЗДАНИЕ карточки графика TPM (переход на страницу)  ------------------

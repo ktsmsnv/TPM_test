@@ -99,7 +99,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/pageReestrGraph/card-graph/{id}', [App\Http\Controllers\GraphController::class, 'index'])->name('cardGraph');
         //СОЗДАНИЕ новой карточки графика TPM
         Route::get('/pageReestrGraph/card-graph-create', [App\Http\Controllers\GraphController::class, 'createGraphPage'])->name('cardGraph-create');
-    Route::post('/pageReestrGraph/card-graph-create', [App\Http\Controllers\GraphController::class, 'createGraphPage'])->name('cardGraph-create');
+        Route::post('/pageReestrGraph/card-graph-create', [App\Http\Controllers\GraphController::class, 'createGraphPage'])->name('cardGraph-create');
 
         Route::post('/save-cardGraph-data/{id}', [App\Http\Controllers\GraphController::class, 'saveCardGraph'])->name('cardGraph-create-save');
         // РЕДАКТИРОВАНИЕ существующей карточки графика TPM
@@ -107,13 +107,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/edit-card-graph/save/{id}', [App\Http\Controllers\GraphController::class, 'editSave'])->name('cardGraph-editSave');
         Route::post('/archiveGraphDateButt',  [App\Http\Controllers\GraphController::class, 'archiveGraphDateButt'])->name('archiveGraphDateButt');
 
-        // Маршрут для получения списка карточек объектов, которые не привязаны к другим карточкам графика
-        Route::get('/get-unlinked-object-cards', [App\Http\Controllers\GraphController::class, 'getUnlinkedObjectCards'])->name('getUnlinkedObjectCards');
+        // Маршрут для получения карточек объектов к карточке графика по виду инфраструктуры
+        Route::get('/get-all-card-objects', [App\Http\Controllers\GraphController::class, 'getAllCardObjects']);
 
-        // Маршрут для добавления выбранных карточек объектов к карточке графика
-        Route::post('/add-object-cards', [App\Http\Controllers\GraphController::class, 'addObjectCards'])->name('addObjectCards');
 
-    Route::get('/download-graph/{id}', [App\Http\Controllers\GraphController::class, 'downloadGraph'])->name('downloadGraph');
+        Route::get('/download-graph/{id}', [App\Http\Controllers\GraphController::class, 'downloadGraph'])->name('downloadGraph');
     // -----------------------------------------------------------------------------------------------------------------------------------------------
 
 

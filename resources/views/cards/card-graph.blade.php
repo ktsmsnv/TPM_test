@@ -19,13 +19,12 @@
 
                     <a href="{{ route('cardGraph-edit', ['id' => $data_CardGraph->_id]) }}"
                        type="button" class="btn btn-outline-danger">Редактировать</a>
-{{--                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addObjectCardModal" id="addObjectCardButton">--}}
-{{--                        Добавить карточку объекта--}}
-{{--                    </button>--}}
-{{--                    <button type="button" class="btn btn-primary" data-toggle="modal"--}}
-{{--                            data-target="#addObjectCardModal" id="addObjectCardBtn">--}}
-{{--                        Добавить карточку объекта--}}
-{{--                    </button>--}}
+                    <button id="getCardObject" class="btn btn-outline-primary addCardObject"
+                            data-graph-id="{{ $data_CardGraph->id }}">
+                        <i class="fa fa-trash"></i> Добавить карточку объекта
+                    </button>
+                    {{-- ПОЛУЧЕНИЕ ВСЕХ ID CardObjects, связанных с текущей карточкой графика --}}
+                    <input type="hidden" id="excludedObjectIds" value="{{ json_encode($objectIds) }}">
                 </div>
             </div>
 
@@ -52,7 +51,8 @@
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид инфраструктуры</label>
-                                            <input name="infrastructure_type" placeholder="Введите вид инфраструктуры" class="form-control w-100"
+                                            <input name="infrastructure_type" id="infrastructureType" placeholder="Введите вид инфраструктуры"
+                                                   class="form-control w-100"
                                                    readonly value="{{ $data_CardGraph->infrastructure_type ?? 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
@@ -199,10 +199,33 @@
             </div>
         </div>
 
+{{--        Модальное окно добавления карточки объекта в карточку графика--}}
+        <div class="modal fade" id="confirmAddCardObjectModal" tabindex="-1" aria-labelledby="confirmAddCardObjectLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmAddCardObjectModalLabel">Выберите карточку графика, которую хотите добавить</h5>
+                        <button type="button" class="btn-close" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="cardObjectsSelect">Выберите карточку объекта:</label>
+                        <select id="cardObjectsSelect" class="form-select" multiple>
+                            <!-- Здесь будут отображены карточки объектов -->
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Добавить</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{{--        МОДАЛЬНОЕ ОКНО АРХИВИРОВАНИЯ ГРАФИКА--}}
         <script>
-            // Обработчик события нажатия на кнопку "Завершить заказ"
+            // Обработчик события нажатия на кнопку "Архивировать"
             $('.archive_graph').click(function () {
-                // Открываем модальное окно с вопросом о завершении заказа-наряда
+                // Открываем модальное окно с вопросом об архивации
                 $('#confirmArchiveModal').modal('show');
             });
             $('#confirmArchiveButton').click(function () {
@@ -238,14 +261,20 @@
             $(document).ready(function () {
                 $("#cardGraphTab").show;
 
+                let $getCardObject = $('#getCardObject');
                 let $table = $('#reestrCardGraph');
                 var $remove = $('#remove');
+                let $confirmAddCardObject = $('#confirmAddCardObjectModal');
                 var selections = [];
 
                 function getIdSelections() {
                     return $.map($table.bootstrapTable('getSelections'), function (row) {
                         return row.id;
                     });
+                }
+
+                function showConfirmAddCardObjectModal() {
+                    $confirmAddCardObject.modal('show');
                 }
 
                 function responseHandler(res) {
@@ -280,11 +309,10 @@
                     });
 
                     $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
-                        $remove.prop('disabled', !$table.bootstrapTable('getSelections').length);
                         selections = getIdSelections();
                     });
 
-                    $remove.click(function () {
+                    $getCardObject.click(function () {
                         let ids = getIdSelections();
                         $table.bootstrapTable('remove', {
                             field: 'id',
@@ -294,10 +322,44 @@
                     });
                 }
 
+                $getCardObject.click(function () {
+                    showConfirmAddCardObjectModal();
+                })
+
+                $('#getCardObject').click(function(){
+                    // Получаем вид инфраструктуры из скрытого поля
+                    var infrastructureType = $('#infrastructureType').val();
+                    var excludedObjectIds = JSON.parse($('#excludedObjectIds').val());
+
+                    // Отправляем AJAX запрос на сервер
+                    $.ajax({
+                        url: '/get-all-card-objects',
+                        type: 'GET',
+                        data: {
+                            infrastructure_type: infrastructureType,
+                            excluded_object_ids: excludedObjectIds
+                        },
+                        success: function(response){
+                            // Очищаем текущие элементы в select
+                            $('#cardObjectsSelect').empty();
+
+                            // Добавляем полученные карточки объектов в select
+                            $.each(response, function(index, cardObject){
+                                var optionText = (index + 1) + ') ' + cardObject.name;
+                                $('#cardObjectsSelect').append('<option value="' + cardObject.id + '">' + optionText + '</option>');
+                            });
+                        },
+                        error: function(xhr, status, error){
+                            console.error(error);
+                        }
+                    });
+                });
+
                 $(function () {
                     initTable();
                     $('#locale').change(initTable);
                 });
+
             });
         </script>
 @endsection
