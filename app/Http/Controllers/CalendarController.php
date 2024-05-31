@@ -183,6 +183,14 @@ class CalendarController extends Controller
         $calendar->date_archive = $dateArchive;
         $calendar->save();
 
+        $CardCalendar_history = new HistoryCardCalendar();
+        $CardCalendar_history->card_id = $calendar->card_id;
+        $CardCalendar_history->card_calendar_id =  $request->id; // Связываем заказ-наряд с выбранной карточкой объекта
+        $CardCalendar_history->date_create =  $calendar->date_create;
+        $CardCalendar_history->date_archive =  $calendar->date_archive; // Устанавливаем статус
+        $CardCalendar_history->year =  $calendar->year;
+        $CardCalendar_history->save();
+
         return response()->json(['message' => 'Карточка календаря успешно заархивирована'], 200);
     }
 

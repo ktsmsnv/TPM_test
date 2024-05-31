@@ -231,8 +231,13 @@
 
                 // ------------ динамическое создание вкладок обслуживание  ------------
                 let serviceTabsCount = 1; // начальный счетчик вкладок для обслуживания
+                const maxServiceTabs = 5; // максимальное количество вкладок
                 // Обработчик нажатия на кнопку "Создать обслуживание"
                 $('.createService').on('click', function () {
+                    if (serviceTabsCount >= maxServiceTabs) {
+                        alert('Нельзя добавить больше 4 видов обслуживания');
+                        return; // Прекращаем выполнение функции, если достигнут лимит вкладок
+                    }
                 // Генерируем id для новой вкладки и ее содержимого
                     let tabId = 'service_' + serviceTabsCount + '-tab';
                     let paneId = 'service_' + serviceTabsCount;
@@ -413,6 +418,7 @@
 
                     // Удаляем блок обслуживания
                     serviceBlock.remove();
+                    serviceTabsCount--;
                     // Удаляем соответствующую кнопку навигации
                     $('#' + tabId).parent().remove();
                 });

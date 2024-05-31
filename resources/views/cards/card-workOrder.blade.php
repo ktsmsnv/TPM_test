@@ -256,6 +256,7 @@
                     success: function (response) {
                         // Обработка успешного завершения запроса
                         console.log(response);
+                        location.reload();
                     },
                     error: function (error) {
                         // Обработка ошибки

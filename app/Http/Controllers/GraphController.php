@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use MongoDB\BSON\Binary;
 use Illuminate\Support\Facades\Auth;
@@ -31,7 +30,7 @@ class GraphController extends Controller
     {
         // Получаем все карточки графика
         $cardGraphs = CardGraph::with(['object', 'services'])->get();
-//dd($cardGraphs);
+
 //        $allPerformers = [];
 //        $allResponsibles = [];
 //
@@ -204,7 +203,7 @@ class GraphController extends Controller
         $infrastructureType = $data_CardGraph->infrastructure_type;
         // Преобразуем строку cards_ids в массив
         $objectIds = explode(',', $data_CardGraph->cards_ids);
-//dd($objectIds);
+
         // Создаем массив для хранения данных объектов
         $allObjectsData = [];
 
@@ -471,15 +470,17 @@ class GraphController extends Controller
         $card->date_archive = $date_archive;
         $card->save();
 
-//        $newWorkOrder_history = new HistoryCardWorkOrder();
-//        $newWorkOrder_history->card_id = $card->card_id; // Связываем заказ-наряд с выбранной карточкой объекта
-//        $newWorkOrder_history->card_object_services_id = $card->card_object_services_id; // Связываем заказ-наряд с ближайшей услугой
-//        $newWorkOrder_history->date_create =  $card->date_create;
-//        $newWorkOrder_history->status =  $request->status; // Устанавливаем статус
-//        $newWorkOrder_history->date_fact = $card;
-//        // Присваиваем номер заказа-наряда
-//        $newWorkOrder_history->number = $workOrder->number;
-//        $newWorkOrder_history->save();
+        $history_card = new HistoryCardGraph();
+        $history_card->name =  $card->name;
+        $history_card->infrastructure_type = $card->infrastructure_type;
+        $history_card->curator = $card->curator;
+        $history_card->year_action = $card->year_action;
+        $history_card->date_create = $card->date_create;
+        $history_card->date_last_save = $card->date_last_save;
+        $history_card->date_archive = $card;
+        $history_card->cards_ids =  $card->cards_ids;
+        $history_card->card_graph_id = $request->id;
+        $history_card->save();
 
 
         return response()->json(['message' => 'Карточка графика успешно заархивирована'], 200);
