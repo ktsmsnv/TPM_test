@@ -109,6 +109,7 @@ Route::middleware(['auth'])->group(function () {
 
         // Маршрут для получения карточек объектов к карточке графика по виду инфраструктуры
         Route::get('/get-all-card-objects', [App\Http\Controllers\GraphController::class, 'getAllCardObjects']);
+        Route::post('/add-card-objects-to-graph', [App\Http\Controllers\GraphController::class, 'addCardObjectsToGraph'])->name('addCardObjectsToGraph');
 
 
         Route::get('/download-graph/{id}', [App\Http\Controllers\GraphController::class, 'downloadGraph'])->name('downloadGraph');

@@ -247,6 +247,43 @@ class GraphController extends Controller
         }
     }
 
+    public function addCardObjectsToGraph(Request $request)
+    {
+        $selectedCardObjects = $request->input('card_objects', []);
+//        dd($selectedCardObjects);
+        $graphId = $request->input('graph_id');
+
+        // Найдите карточку графика по идентификатору
+        $cardGraph = CardGraph::findOrFail($graphId);
+
+        // Преобразуйте cards_ids из строки в массив, если это необходимо
+        $existingCardIds = explode(', ', $cardGraph->cards_ids);
+
+        // Добавьте выбранные карточки объектов к карточке графика
+        $newCardIds = array_merge($existingCardIds, $selectedCardObjects);
+
+        // Добавьте выбранные карточки объектов к карточке графика
+        $cardGraph->cards_ids = implode(', ', $newCardIds);
+
+
+
+        // Получите всех кураторов выбранных карточек объектов
+        $curators = CardObjectMain::whereIn('_id', $selectedCardObjects)->pluck('curator')->toArray();
+
+        // Преобразуйте существующих кураторов в массив, если это необходимо
+        $existingCurators = explode(', ', $cardGraph->curator);
+
+        // Добавьте новых кураторов к существующим
+        $newCurators = array_merge($existingCurators, $curators);
+
+        // Преобразуйте обратно в строку и сохраните в карточке графика
+        $cardGraph->curator = implode(', ', array_unique($newCurators)); // Используем array_unique для удаления дубликатов
+
+        // Сохраните изменения
+        $cardGraph->save();
+
+        return response()->json(['success' => true]);
+    }
 
 //    public function addObjectCards(Request $request)
 //    {

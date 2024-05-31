@@ -214,7 +214,9 @@
                         </select>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Добавить</button>
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal" data-graph-id="{{ $id }}">
+                            Добавить
+                        </button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
                     </div>
                 </div>
@@ -341,16 +343,47 @@
                         },
                         success: function(response){
                             // Очищаем текущие элементы в select
-                            $('#cardObjectsSelect').empty();
+                           $('#cardObjectsSelect').empty();
 
                             // Добавляем полученные карточки объектов в select
                             $.each(response, function(index, cardObject){
                                 var optionText = (index + 1) + ') ' + cardObject.name;
-                                $('#cardObjectsSelect').append('<option value="' + cardObject.id + '">' + optionText + '</option>');
+                                $('#cardObjectsSelect').append('<option value="' + cardObject._id + '">' + optionText + '</option>');
                             });
                         },
                         error: function(xhr, status, error){
                             console.error(error);
+                        }
+                    });
+                });
+
+                $('#confirmAddCardObjectModal .btn-success').click(function(){
+                    // Получаем выбранные карточки объектов из select
+                    var selectedCardObjects = $('#cardObjectsSelect').val();
+
+                    // Получаем id карточки графика из data-атрибута кнопки "Добавить"
+                    var graphId = $(this).data('graph-id');
+
+                    console.log('Selected Card Objects:', selectedCardObjects);
+                    console.log('Graph ID:', graphId);
+
+                    // Отправляем AJAX запрос на сервер для добавления карточек объектов к карточке графика
+                    $.ajax({
+                        url: '/add-card-objects-to-graph',
+                        type: 'POST',
+                        data: {
+                            card_objects: selectedCardObjects,
+                            graph_id: graphId, // Предположим, что у вас есть переменная graphId с идентификатором карточки графика
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response){
+                            // Перезагружаем страницу после успешного добавления
+                            if(response.success){
+                                location.reload();
+                            }
+                        },
+                        error: function(xhr, status, error){
+                            console.error('Error:', error);
                         }
                     });
                 });
