@@ -10,6 +10,11 @@ use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use App\Models\CardCalendar;
 use Illuminate\Support\Facades\Auth;
 
+use PhpOffice\PhpWord\Exception\CopyFileException;
+use PhpOffice\PhpWord\Exception\CreateTemporaryFileException;
+use PhpOffice\PhpWord\Exception\Exception;
+use PhpOffice\PhpWord\TemplateProcessor;
+
 //контроллер для отображения данных на страницы
 class CalendarController extends Controller
 {
@@ -288,5 +293,99 @@ class CalendarController extends Controller
         // Возвращаем успешный ответ или редирект на страницу карточки объекта
         return response()->json(['success' => 'Данные карточки календаря успешно обновлены'], 200);
     }
+
+
+// -------------- выгрузка графика в WORD ---------------
+    public function downloadCalendar($id)
+    {
+        // Создаем Word документ
+        $docxFilePath = $this->downloadCalendar_create($id);
+
+        // Получаем данные для имени файла
+        $data_CardCalendar = CardCalendar::with('objects.services')->find($id);
+        $cardObjectMain = CardObjectMain::find($data_CardCalendar->card_id);
+
+        $name = $cardObjectMain->name;
+        // Определяем имя файла для скачивания
+        $fileName = 'Карточка_календаря_' . $name . '.docx';
+
+        // Возвращаем Word-файл как ответ на запрос с заголовком для скачивания
+        return response()->download($docxFilePath, $fileName);
+    }
+
+// -------------- выгрузка графика в WORD ---------------
+    public function downloadCalendar_create($id)
+    {
+        // Находим заказ-наряд по его ID
+        $cardCalendar = CardCalendar::with('objects.services.services_types')->find($id);
+        if (!$cardCalendar) {
+            abort(404, 'CardCalendar not found');
+        }
+
+        // Получаем данные о связанных записях с предварительной загрузкой связанных услуг и их типов работ
+        $cardObjectMain = CardObjectMain::with(['services.services_types'])
+            ->find($cardCalendar->card_id);
+        if (!$cardObjectMain) {
+            abort(404, 'CardObjectMain not found');
+        }
+
+        // Получаем данные для вставки в шаблон
+        $data = [
+            'name' => $cardObjectMain->name,
+            'infrastructure' => $cardObjectMain->infrastructure,
+            'location' => $cardObjectMain->location,
+            'number' => $cardObjectMain->number,
+            'year' => $cardCalendar->name,
+        ];
+
+        // Собираем материалы всех услуг в одну строку, разделяя их запятой
+        $materials = [];
+        foreach ($cardObjectMain->services as $service) {
+            $materials[] = $service->consumable_materials;
+        }
+        $materialsString = implode(', ', $materials);
+        $data['materials'] = $materialsString;
+
+        $templatePath = storage_path('app/templates/calendar_template.docx');
+        $templateProcessor = new TemplateProcessor($templatePath);
+
+        // Клонируем блоки для каждой услуги
+        foreach ($cardObjectMain->services as $serviceIndex => $service) {
+            $index = $serviceIndex + 1;
+
+            // Клонируем блок услуги
+            $templateProcessor->cloneBlock('service_block', 1, true, false);
+
+            // Заполнение данных по текущей услуге
+            $templateProcessor->setValue("performer#{$index}", $service->performer);
+            $templateProcessor->setValue("responsible#{$index}", $service->responsible);
+            $templateProcessor->setValue("service_type#{$index}", $service->service_type);
+            $templateProcessor->setValue("frequency#{$index}", $service->frequency);
+
+            // Получаем типы работ для текущей услуги
+            $serviceTypes = $service->services_types->pluck('type_work')->toArray();
+
+            // Клонируем строки для каждого типа работ
+            foreach ($serviceTypes as $typeIndex => $type) {
+                // Клонируем блок типа работ
+                $templateProcessor->cloneBlock('type_work_block#' . $index, 1, true, true);
+                // Заполнение данных по текущему типу работ
+                $templateProcessor->setValue("type_work#{$index}#".($typeIndex + 1), $type);
+            }
+        }
+
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $value = implode("\n", $value);
+            }
+            $templateProcessor->setValue($key, (string)$value);
+        }
+
+        $docxFilePath = storage_path('app/generated/workOrderProcessed.docx');
+        $templateProcessor->saveAs($docxFilePath);
+
+        return $docxFilePath;
+    }
+
 
 }

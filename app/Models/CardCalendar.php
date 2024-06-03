@@ -32,4 +32,8 @@ class CardCalendar extends Eloquent
     {
         return $this->hasMany(CardObjectServices::class, 'card_object_main_id', 'card_id');
     }
+    public function services_types()
+    {
+        return $this->hasMany(CardObjectServicesTypes::class, 'card_services_id', '_id');
+    }
 }

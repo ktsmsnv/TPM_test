@@ -17,6 +17,10 @@ class CardObjectMain extends Eloquent
     {
         return $this->hasMany(CardObjectServices::class, 'card_object_main_id', '_id');
     }
+    public function services_types()
+    {
+        return $this->hasMany(CardObjectServicesTypes::class, 'card_services_id', '_id');
+    }
     public function documents()
     {
         return $this->hasMany(CardObjectMainDoc::class, 'card_object_main_id', '_id');

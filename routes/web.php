@@ -126,6 +126,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/edit-card-calendar/save/{id}', [App\Http\Controllers\CalendarController::class, 'editSave'])->name('cardCalendar-editSave');
 
         Route::post('/archiveCalendarDateButt',  [App\Http\Controllers\CalendarController::class, 'archiveCalendarDateButt'])->name('archiveCalendarDateButt');
+
+    Route::get('/download-calendar/{id}', [App\Http\Controllers\CalendarController::class, 'downloadCalendar'])->name('downloadCalendar');
     // ----------------------------------------------------------------------------------------------------------------
 
 
