@@ -350,13 +350,13 @@ class CalendarController extends Controller
         $templateProcessor = new TemplateProcessor($templatePath);
 
         // Клонируем блоки для каждой услуги
-        $templateProcessor->cloneBlock('service_block', count($cardObjectMain->services), true, true);
-
-        // Заполнение данных по каждой услуге
-        // Заполнение данных по каждой услуге
         foreach ($cardObjectMain->services as $serviceIndex => $service) {
             $index = $serviceIndex + 1;
 
+            // Клонируем блок услуги
+            $templateProcessor->cloneBlock('service_block', 1, true, false);
+
+            // Заполнение данных по текущей услуге
             $templateProcessor->setValue("performer#{$index}", $service->performer);
             $templateProcessor->setValue("responsible#{$index}", $service->responsible);
             $templateProcessor->setValue("service_type#{$index}", $service->service_type);
@@ -366,10 +366,10 @@ class CalendarController extends Controller
             $serviceTypes = $service->services_types->pluck('type_work')->toArray();
 
             // Клонируем строки для каждого типа работ
-            $templateProcessor->cloneBlock('type_work_block#'.$index, count($serviceTypes), true, true);
-
-            // Заполнение данных по каждому типу работ
             foreach ($serviceTypes as $typeIndex => $type) {
+                // Клонируем блок типа работ
+                $templateProcessor->cloneBlock('type_work_block#' . $index, 1, true, true);
+                // Заполнение данных по текущему типу работ
                 $templateProcessor->setValue("type_work#{$index}#".($typeIndex + 1), $type);
             }
         }
@@ -383,8 +383,9 @@ class CalendarController extends Controller
 
         $docxFilePath = storage_path('app/generated/workOrderProcessed.docx');
         $templateProcessor->saveAs($docxFilePath);
-dd($templateProcessor);
+
         return $docxFilePath;
     }
+
 
 }
