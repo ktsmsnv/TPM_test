@@ -237,11 +237,9 @@
                                                     @php
                                                         $title = $type->checked ? 'снять отметку выполненное' : 'отметить как выполненное';
                                                     @endphp
-                                                    <input type="checkbox" class="form-check-input type-checkbox"
-                                                           id="type_{{ $type->id }}" data-id="{{ $type->id }}"
-                                                           {{ $type->checked ? 'checked' : '' }}
-                                                           data-toggle="tooltip" title="{{ $title }}">
-                                                    <label class="form-check-label" for="type_{{ $type->id }}">
+{{--                                                    <input type="text" class="form-input"--}}
+{{--                                                           id="type_{{ $type->id }}" data-id="{{ $type->id }}">--}}
+                                                    <label class="form-label" for="type_{{ $type->id }}">
                                                         {{ $type->type_work }}
                                                     </label>
                                                 </div>
