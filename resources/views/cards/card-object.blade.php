@@ -203,7 +203,8 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Плановая дата обслуживания</label>
-                                            <input class="form-control w-100" name="" value="{{ date('d.m.Y', strtotime($service->planned_maintenance_date)) }}" readonly>
+                                            <input class="form-control w-100" name="" value="{{ date('d.m.Y', strtotime($service->planned_maintenance_date)) }}"
+                                                   readonly style="opacity: 0.5;">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Цвет в календаре</label>

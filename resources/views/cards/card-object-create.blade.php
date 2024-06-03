@@ -319,7 +319,7 @@
                                             <div class="d-flex justify-content-between align-items-center gap-3"> \
                                                 <label class="w-100" for="planned_maintenance_date_' + serviceTabsCount + '">Плановая дата обслуживания</label> \
                                                 <input type="date" id="planned_maintenance_date_' + serviceTabsCount + '" name="planned_maintenance_date" class="form-control w-100" \
-                                                    placeholder="Введите плановую дату обслуживания"> \
+                                                    placeholder="Введите плановую дату обслуживания" readonly style="opacity: 0.5;"> \
                                             </div> \
                                             <div class="d-flex justify-content-between align-items-center gap-3"> \
                                                 <label class="w-100">Цвет в календаре</label> \

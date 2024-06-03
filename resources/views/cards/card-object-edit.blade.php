@@ -247,7 +247,8 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Плановая дата обслуживания</label>
-                                            <input id="planned_maintenance_date_{{ $key + 1 }}" type="date" class="form-control w-100" name="planned_maintenance_date" value="{{ $service->planned_maintenance_date }}" >
+                                            <input id="planned_maintenance_date_{{ $key + 1 }}" type="date" class="form-control w-100" name="planned_maintenance_date" value="{{ $service->planned_maintenance_date }}"
+                                                   readonly style="opacity: 0.5;">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Цвет в календаре</label>
