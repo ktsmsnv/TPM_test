@@ -349,31 +349,19 @@ class CalendarController extends Controller
         $templatePath = storage_path('app/templates/calendar_template.docx');
         $templateProcessor = new TemplateProcessor($templatePath);
 
-        // Клонируем блоки для каждой услуги
+// Конструируем массив замен для клонирования блока
+        $replacements = [];
         foreach ($cardObjectMain->services as $serviceIndex => $service) {
-            $index = $serviceIndex + 1;
-
-            // Клонируем блок услуги
-            $templateProcessor->cloneBlock('service_block', 1, true, false);
-
-            // Заполнение данных по текущей услуге
-            $templateProcessor->setValue("performer#{$index}", $service->performer);
-            $templateProcessor->setValue("responsible#{$index}", $service->responsible);
-            $templateProcessor->setValue("service_type#{$index}", $service->service_type);
-            $templateProcessor->setValue("frequency#{$index}", $service->frequency);
-
-            // Получаем типы работ для текущей услуги
-            $serviceTypes = $service->services_types->pluck('type_work')->toArray();
-
-            // Клонируем строки для каждого типа работ
-            foreach ($serviceTypes as $typeIndex => $type) {
-                // Клонируем блок типа работ
-                $templateProcessor->cloneBlock('type_work_block#' . $index, 1, true, true);
-                // Заполнение данных по текущему типу работ
-                $templateProcessor->setValue("type_work#{$index}#".($typeIndex + 1), $type);
-            }
+            $replacements[] = [
+                'service_type' => $service->service_type,
+                'frequency' => $service->frequency,
+            ];
         }
+// Клонируем блок и устанавливаем замены для переменных внутри каждого клонированного блока
+        $templateProcessor->cloneBlock('service_block', count($replacements), true, false, $replacements);
+        //dd($replacements);
 
+        // Устанавливаем остальные значения в шаблоне
         foreach ($data as $key => $value) {
             if (is_array($value)) {
                 $value = implode("\n", $value);
@@ -386,6 +374,8 @@ class CalendarController extends Controller
 
         return $docxFilePath;
     }
+
+
 
 
 }

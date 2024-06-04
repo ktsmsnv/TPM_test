@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Models\CardWorkOrder;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
@@ -42,13 +43,13 @@ class HomeController extends Controller
         if ($role === 'executor') {
             $objects = CardObjectMain::whereHas('services', function ($query) use ($user) {
                 $query->where('performer', $user->name);
-            })->with(['services', 'workOrders'])->get();
+            })->with(['services', 'workOrders', 'calendar'])->get()->toArray(); // Преобразуем коллекцию в массив;
         } elseif ($role === 'responsible') {
             $objects = CardObjectMain::whereHas('services', function ($query) use ($user) {
                 $query->where('responsible', $user->name);
-            })->with(['services', 'workOrders'])->get();
+            })->with(['services', 'workOrders', 'calendar'])->get()->toArray(); // Преобразуем коллекцию в массив;
         } else { // Для ролей curator и admin выводим все объекты
-            $objects = CardObjectMain::with(['services', 'workOrders'])->get();
+            $objects = CardObjectMain::with(['services', 'workOrders', 'calendar'])->get()->toArray(); // Преобразуем коллекцию в массив;
         }
 
         // Создаем массив для хранения всех данных
@@ -56,59 +57,65 @@ class HomeController extends Controller
         // Проходимся по каждому объекту и выбираем все поля
         foreach ($objects as $object) {
             $workOrderLink = '';
-            //dd($object->workOrders);
-            // Если у объекта есть связанный заказ-наряд, создаем ссылку
-            if ($object->workOrders->isNotEmpty()) {
-                // Проходимся по каждому заказу-наряду и создаем ссылки
-                foreach ($object->workOrders as $workOrder) {
-                    $workOrderLink .= '<a href="' . route('workOrder.show', ['id' => $workOrder->_id]) .
+            if (!empty($object['workOrders'])) {
+                foreach ($object['workOrders'] as $workOrder) {
+                    $workOrderLink .= '<a href="' . route('workOrder.show', ['id' => $workOrder['_id']]) .
                         '" target="_blank" class="tool-tip" title="открыть карточку заказ-наряда">' . 'открыть' . '</a>';
                 }
             }
             $calendarLink = '';
-            if ($object->calendar->isNotEmpty()) {
-                // Проходимся по каждому заказу-наряду и создаем ссылки
-                foreach ($object->calendar as $calendar) {
-                    $calendarLink .= '<a href="' . route('cardCalendar', ['id' => $calendar->_id]) .
+            if (!empty($object['calendar'])) {
+                foreach ($object['calendar'] as $calendar) {
+                    $calendarLink .= '<a href="' . route('cardCalendar', ['id' => $calendar['_id']]) .
                         '" target="_blank" class="tool-tip" title="открыть карточку календарь">' . 'открыть' . '</a>';
                 }
             }
 
+            // Фильтруем сервисы, исключая те, у которых checked = true
+            $filteredServices = [];
+            // Фильтруем сервисы, исключая те, у которых checked = true
+            $filteredServices = collect($object['services'])->filter(function($service) {
+                // Фильтруем массив, оставляя только сервисы, у которых свойство 'checked' равно false
+                return !$service['checked'];
+            });
+
             $formattedObject = [
-                'id' => $object->id,
-                'infrastructure' => $object->infrastructure,
-                'name' => $object->name,
-                'curator' => $object->curator,
-                'number' => $object->number,
-                'location' => $object->location,
-                'date_usage' => $object->date_usage,
-                'date_usage_end' => $object->date_usage_end,
-                'date_cert_end' => $object->date_cert_end,
-                'calendar' => $object->calendar()->first() ? route('cardCalendar', ['id' => $object->calendar()->first()->_id]) : null,
-                'services' => $object->services->map(function($service) {
+                'id' => $object['_id'], // Обратите внимание на изменение здесь
+                'infrastructure' => $object['infrastructure'],
+                'name' => $object['name'],
+                'curator' => $object['curator'],
+                'number' => $object['number'],
+                'location' => $object['location'],
+                'date_usage' => $object['date_usage'],
+                'date_usage_end' => $object['date_usage_end'],
+                'date_cert_end' => $object['date_cert_end'],
+                'calendar' => $calendarLink,
+                'services' => $filteredServices->map(function($service) {
+                    $workOrder = CardWorkOrder::where('service_id', $service['_id'])->first(); // Получаем соответствующий заказ-наряд
                     return [
-                        'service_type' => $service->service_type,
-                        'short_name' => $service->short_name,
-                        'performer' => $service->performer,
-                        'responsible' => $service->responsible,
-                        'frequency' => $service->frequency,
-                        'prev_maintenance_date' => $service->prev_maintenance_date,
-                        'planned_maintenance_date' => $service->planned_maintenance_date,
-                        'calendar_color' => $service->calendar_color,
-                        'consumable_materials' => $service->consumable_materials,
-                        'work_order' => $service->cardWorkOrders()->first() ? route('workOrder.show', ['id' => $service->cardWorkOrders()->first()->_id]) : null,
+                        'service_type' => $service['service_type'],
+                        'short_name' => $service['short_name'],
+                        'performer' => $service['performer'],
+                        'responsible' => $service['responsible'],
+                        'frequency' => $service['frequency'],
+                        'prev_maintenance_date' => $service['prev_maintenance_date'],
+                        'planned_maintenance_date' => $service['planned_maintenance_date'],
+                        'calendar_color' => $service['calendar_color'],
+                        'consumable_materials' => $service['consumable_materials'],
+                        'work_order' => $workOrder ? route('workOrder.show', ['id' => $workOrder->_id]) : null,
                     ];
                 })->toArray(),
-                'work_order' => $workOrderLink, // Добавляем ссылку на заказ-наряд
-                'calendar' => $calendarLink,
+                'work_order' => $workOrderLink,
             ];
 
             // Добавляем объект к массиву с отформатированными данными
             $formattedObjects[] = $formattedObject;
+
         }
         // Возвращаем все данные в формате JSON с правильным заголовком Content-Type
         return response()->json($formattedObjects);
     }
+
 
     // ------------------ КОПИРОВАНИЕ КАРТЧОКИ ОБЪЕКТА------------------
 // ------------------ КОПИРОВАНИЕ КАРТЧОКИ ОБЪЕКТА------------------
