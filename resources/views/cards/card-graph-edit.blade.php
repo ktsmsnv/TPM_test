@@ -15,8 +15,6 @@
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-success saveEditGraph">Сохранить изменения</button>
                     <a href="{{ route('cardGraph', ['id' => $data_CardGraph->_id]) }}" type="button" class="btn btn-secondary me-5">Отменить изменения</a>
-                    <button type="button" class="btn btn-success" data-toggle="tooltip"
-                            title="ДАННАЯ КНОПКА ПОКА НЕ РАБОТАЕТ">Выгрузить WORD</button>
                 </div>
             </div>
 
@@ -44,14 +42,15 @@
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Вид инфраструктуры</label>
                                             <input name="" placeholder="Введите вид инфраструктуры" class="form-control w-100"
-                                                   readonly value="{{ $data_CardGraph->infrastructure_type ?? 'нет данных' }}"
-                                                   data-toggle="tooltip" title="Данное поле меняется в карточке объекта">
+                                                   readonly style="opacity: 0.5;" value="{{ $data_CardGraph->infrastructure_type ?? 'нет данных' }}"
+                                                   data-toggle="tooltip" title="Данное поле изменяется в карточке объекта">
 
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Куратор</label>
                                             <input name="curator" placeholder="Введите куратора" class="form-control w-100"
-                                                   value="{{$data_CardGraph->curator ?? 'нет данных' }}">
+                                                   readonly style="opacity: 0.5;" value="{{$data_CardGraph->curator ?? 'нет данных' }}"
+                                                   data-toggle="tooltip" title="Данное поле изменяется в карточке объекта">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Год действия</label>
@@ -64,18 +63,23 @@
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата создания</label>
                                             <input type="date" name="date_create" placeholder="Введите дату создания" class="form-control w-100"
-                                                   value="{{ isset($data_CardGraph->date_create) ? $data_CardGraph->date_create : 'нет данных' }}">
+                                                   readonly style="opacity: 0.5;"
+                                                   value="{{ isset($data_CardGraph->date_create) ? $data_CardGraph->date_create : 'нет данных' }}"
+                                                   data-toggle="tooltip" title="Дата создания - не подлежит редактированию">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата последнего сохранения</label>
                                             <input type="date" name="date_last_save" placeholder="Введите дату последнего сохранения" class="form-control w-100"
-                                                   value="{{ isset($data_CardGraph->date_last_save) ? $data_CardGraph->date_last_save : 'нет данных' }}">
+                                                   readonly style="opacity: 0.5;"
+                                                   value="{{ isset($data_CardGraph->date_last_save) ? $data_CardGraph->date_last_save : 'нет данных' }}"
+                                                   data-toggle="tooltip" title="Данное поле обновляется автоматически">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата архивации</label>
                                             <input type="date" name="date_archive" placeholder="Введите дату архивации" class="form-control w-100"
                                                    readonly style="opacity: 0.5;"
-                                                   value="{{ isset($data_CardGraph->date_archive) ?$data_CardGraph->date_archive : 'нет данных' }}">
+                                                   value="{{ isset($data_CardGraph->date_archive) ?$data_CardGraph->date_archive : 'нет данных' }}"
+                                                   data-toggle="tooltip" title="Данное поле изменяется после нажатия на кнопку - Архивация">
                                         </div>
                                     </div>
                                 </div>

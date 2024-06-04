@@ -192,9 +192,12 @@
                                 field: 'planned_maintenance_date',
                                 align: 'center',
                                 formatter: function(value, row) {
+                                    console.log('Services:', row.services);
+                                    console.log('Services length:', row.services.length);
+
                                     let nearestMaintenanceDate = null;
-                                    if (row.services && Array.isArray(row.services) && row.services.length > 0) {
-                                        row.services.forEach(function(service) {
+                                    if (row.services && Object.keys(row.services).length > 0) {
+                                        Object.values(row.services).forEach(function(service) {
                                             if (!nearestMaintenanceDate || new Date(service.planned_maintenance_date) < new Date(nearestMaintenanceDate)) {
                                                 nearestMaintenanceDate = service.planned_maintenance_date;
                                             }
@@ -211,8 +214,8 @@
                                 align: 'center',
                                 formatter: function(value, row) {
                                     let nearestService = null;
-                                    if (row.services && Array.isArray(row.services) && row.services.length > 0) {
-                                        row.services.forEach(function(service) {
+                                    if (row.services && Object.keys(row.services).length > 0) {
+                                        Object.values(row.services).forEach(function(service) {
                                             if (!nearestService || new Date(service.planned_maintenance_date) < new Date(nearestService.planned_maintenance_date)) {
                                                 nearestService = service;
                                             }
@@ -229,8 +232,8 @@
                                 align: 'center',
                                 formatter: function(value, row) {
                                     let nearestService = null;
-                                    if (row.services && Array.isArray(row.services) && row.services.length > 0) {
-                                        row.services.forEach(function(service) {
+                                    if (row.services && Object.keys(row.services).length > 0) {
+                                        Object.values(row.services).forEach(function(service) {
                                             if (!nearestService || new Date(service.planned_maintenance_date) < new Date(nearestService.planned_maintenance_date)) {
                                                 nearestService = service;
                                             }
@@ -247,8 +250,8 @@
                                 align: 'center',
                                 formatter: function(value, row) {
                                     let nearestService = null;
-                                    if (row.services && Array.isArray(row.services) && row.services.length > 0) {
-                                        row.services.forEach(function(service) {
+                                    if (row.services && Object.keys(row.services).length > 0) {
+                                        Object.values(row.services).forEach(function(service) {
                                             if (!nearestService || new Date(service.planned_maintenance_date) < new Date(nearestService.planned_maintenance_date)) {
                                                 nearestService = service;
                                             }
@@ -265,8 +268,8 @@
                                 align: 'center',
                                 formatter: function(value, row) {
                                     let nearestService = null;
-                                    if (row.services && Array.isArray(row.services) && row.services.length > 0) {
-                                        row.services.forEach(function(service) {
+                                    if (row.services && Object.keys(row.services).length > 0) {
+                                        Object.values(row.services).forEach(function(service) {
                                             if (!nearestService || new Date(service.planned_maintenance_date) < new Date(nearestService.planned_maintenance_date)) {
                                                 nearestService = service;
                                             }
@@ -282,11 +285,14 @@
                                 field: 'work_order',
                                 align: 'center',
                                 formatter: function(value, row) {
-                                    if (row.services && row.services.length > 0) {
-                                        let nearestService = row.services.reduce((nearest, current) => {
-                                            return (!nearest || new Date(current.planned_maintenance_date) < new Date(nearest.planned_maintenance_date)) ? current : nearest;
+                                    if (row.services && Object.keys(row.services).length > 0) {
+                                        let nearestService = null;
+                                        Object.values(row.services).forEach(function(service) {
+                                            if (!nearestService || new Date(service.planned_maintenance_date) < new Date(nearestService.planned_maintenance_date)) {
+                                                nearestService = service;
+                                            }
                                         });
-                                        if (nearestService.work_order) {
+                                        if (nearestService && nearestService.work_order) {
                                             return '<a href="' + nearestService.work_order + '" target="_blank" class="tool-tip" title="открыть карточку заказ-наряда">открыть</a>';
                                         } else {
                                             return 'Нет заказа-наряда';
@@ -296,6 +302,7 @@
                                     }
                                 }
                             },
+
 
                             {
                                 title: 'Календарь TPM',
