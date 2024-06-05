@@ -13,9 +13,9 @@
                 </button>
                 <div class="d-flex gap-2">
                     <a id="showActiveBtn" type="button" class="btn btn-success" data-toggle="tooltip"
-                       title="без даты вывода объекта из эксплуатации"
+                       title="с датой вывода объекта из эксплуатации"
                        data-title="Работа с реестром объектов" data-step="7"
-                       data-intro="По нажатию на данную кнопку отображаются только те объекты, в карточке которых не заполнена «Дата вывода объекта из эксплуатации».">
+                       data-intro="По нажатию на данную кнопку отображаются только те объекты, в карточке которых заполнена «Дата вывода объекта из эксплуатации».">
                         Показать активные объекты</a>
                     <a href="/home/card-object-create" target="_blank" type="button" class="btn btn-primary"
                        data-title="Работа с реестром объектов" data-step="8"
@@ -447,7 +447,7 @@
             function showActiveObjects() {
                 let data = $table.bootstrapTable('getData');
                 let activeObjects = data.filter(function (row) {
-                    return !row.date_usage_end;
+                    return row.date_usage_end;
                 });
 
                 // Функция для отображения модального окна удаления
