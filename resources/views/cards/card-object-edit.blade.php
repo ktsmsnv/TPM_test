@@ -379,7 +379,7 @@
     </div>
 
     @php
-        $imageSrc = $data_CardObjectMain ? route('getImage', ['id' => $data_CardObjectMain->id]) : 'http://placehold.it/350x450';
+        $imageSrc = $data_CardObjectMain ? route('getImage', ['id' => $data_CardObjectMain->id]) : 'https://placehold.it/350x450';
     @endphp
     <script>
         let uploadedImageSrc = '{{ $imageSrc }}'; // Переменная для хранения пути к загруженному изображению
@@ -432,7 +432,7 @@
                 // Находим родительский элемент кнопки "Удалить"
                 let parent = $(this).closest('.member_card_style.image .member-info');
                 // Удаляем изображение из родительского элемента
-                parent.find('.objectImage img').attr('src', 'http://placehold.it/350x450'); // Устанавливаем атрибут src пустой строкой
+                parent.find('.objectImage img').attr('src', 'https://placehold.it/350x450'); // Устанавливаем атрибут src пустой строкой
                 // Удаляем кнопку "Удалить"
                 $(this).closest('.objectImage__delete').remove();
             });

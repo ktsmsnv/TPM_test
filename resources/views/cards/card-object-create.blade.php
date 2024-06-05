@@ -140,7 +140,7 @@
                                     <input type="file" id="imageUpload" class="d-none" multiple accept="image/*">
                                 </div>
                                 <div class="objectImage">
-                                    <img src="http://placehold.it/350x450" id="uploadedImage" alt="Uploaded Image">
+                                    <img src="https://placehold.it/350x450" id="uploadedImage" alt="Uploaded Image">
                                 </div>
                             </div>
                         </div>
@@ -223,7 +223,7 @@
                     // Находим родительский элемент кнопки "Удалить"
                     let parent = $(this).closest('.member_card_style.image .member-info');
                     // Удаляем изображение из родительского элемента
-                    parent.find('.objectImage img').attr('src', 'http://placehold.it/350x450'); // Устанавливаем атрибут src пустой строкой
+                    parent.find('.objectImage img').attr('src', 'https://placehold.it/350x450'); // Устанавливаем атрибут src пустой строкой
                     // Удаляем кнопку "Удалить"
                     $(this).closest('.objectImage__delete').remove();
                 });
