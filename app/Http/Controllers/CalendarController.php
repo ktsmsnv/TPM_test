@@ -14,6 +14,11 @@ use PhpOffice\PhpWord\Exception\CopyFileException;
 use PhpOffice\PhpWord\Exception\CreateTemporaryFileException;
 use PhpOffice\PhpWord\Exception\Exception;
 use PhpOffice\PhpWord\TemplateProcessor;
+use PhpOffice\PhpWord\Shared\Html;
+use PhpOffice\PhpWord\PhpWord;
+use Illuminate\Support\Facades\View;
+use PhpOffice\PhpWord\IOFactory;
+use Dompdf\Dompdf;
 
 //контроллер для отображения данных на страницы
 class CalendarController extends Controller
@@ -424,5 +429,6 @@ class CalendarController extends Controller
 
         return $docxFilePath;
     }
+
 
 }
