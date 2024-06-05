@@ -247,7 +247,8 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Плановая дата обслуживания</label>
-                                            <input id="planned_maintenance_date_{{ $key + 1 }}" type="date" class="form-control w-100" name="planned_maintenance_date" value="{{ $service->planned_maintenance_date }}" >
+                                            <input id="planned_maintenance_date_{{ $key + 1 }}" type="date" class="form-control w-100" name="planned_maintenance_date" value="{{ $service->planned_maintenance_date }}"
+                                                   readonly style="opacity: 0.5;">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Цвет в календаре</label>
@@ -379,7 +380,7 @@
     </div>
 
     @php
-        $imageSrc = $data_CardObjectMain ? route('getImage', ['id' => $data_CardObjectMain->id]) : 'http://placehold.it/350x450';
+        $imageSrc = $data_CardObjectMain ? route('getImage', ['id' => $data_CardObjectMain->id]) : 'https://placehold.it/350x450';
     @endphp
     <script>
         let uploadedImageSrc = '{{ $imageSrc }}'; // Переменная для хранения пути к загруженному изображению
@@ -432,7 +433,7 @@
                 // Находим родительский элемент кнопки "Удалить"
                 let parent = $(this).closest('.member_card_style.image .member-info');
                 // Удаляем изображение из родительского элемента
-                parent.find('.objectImage img').attr('src', 'http://placehold.it/350x450'); // Устанавливаем атрибут src пустой строкой
+                parent.find('.objectImage img').attr('src', 'https://placehold.it/350x450'); // Устанавливаем атрибут src пустой строкой
                 // Удаляем кнопку "Удалить"
                 $(this).closest('.objectImage__delete').remove();
             });

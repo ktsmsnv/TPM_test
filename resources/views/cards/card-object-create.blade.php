@@ -140,7 +140,7 @@
                                     <input type="file" id="imageUpload" class="d-none" multiple accept="image/*">
                                 </div>
                                 <div class="objectImage">
-                                    <img src="http://placehold.it/350x450" id="uploadedImage" alt="Uploaded Image">
+                                    <img src="https://placehold.it/350x450" id="uploadedImage" alt="Uploaded Image">
                                 </div>
                             </div>
                         </div>
@@ -223,7 +223,7 @@
                     // Находим родительский элемент кнопки "Удалить"
                     let parent = $(this).closest('.member_card_style.image .member-info');
                     // Удаляем изображение из родительского элемента
-                    parent.find('.objectImage img').attr('src', 'http://placehold.it/350x450'); // Устанавливаем атрибут src пустой строкой
+                    parent.find('.objectImage img').attr('src', 'https://placehold.it/350x450'); // Устанавливаем атрибут src пустой строкой
                     // Удаляем кнопку "Удалить"
                     $(this).closest('.objectImage__delete').remove();
                 });
@@ -319,7 +319,7 @@
                                             <div class="d-flex justify-content-between align-items-center gap-3"> \
                                                 <label class="w-100" for="planned_maintenance_date_' + serviceTabsCount + '">Плановая дата обслуживания</label> \
                                                 <input type="date" id="planned_maintenance_date_' + serviceTabsCount + '" name="planned_maintenance_date" class="form-control w-100" \
-                                                    placeholder="Введите плановую дату обслуживания"> \
+                                                    placeholder="Введите плановую дату обслуживания" readonly style="opacity: 0.5;"> \
                                             </div> \
                                             <div class="d-flex justify-content-between align-items-center gap-3"> \
                                                 <label class="w-100">Цвет в календаре</label> \
@@ -577,6 +577,12 @@
 
              //------------  обработчик сохранения данных  ------------
                 $(".saveCard").click(function () {
+                    // Выводим сообщение пользователю
+                    // $("body").append('<div id="savingMessage" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 20px; border: 1px solid #ccc; z-index: 1000;">Пожалуйста подождите, данные сохраняются</div>');
+                    var popup = $('<div class="popup">Пожалуйста подождите, данные сохраняются</div>');
+                    $('body').append(popup);
+                    popup.fadeIn();
+
                     // Собираем данные с основной формы
                     formData.append('infrastructure', $("select[name=infrastructure]").val());
                     formData.append('name', $("input[name=name]").val());
@@ -646,10 +652,16 @@
                         success: function (response) {
                             // Обработка успешного ответа от сервера (например, отображение сообщения об успешном сохранении)
                             // alert("Данные успешно сохранены!");
+                            popup.fadeOut(function() {
+                                $(this).remove();
+                            });
                             // console.log(formData);
                             window.location.href = "/home/card-object/" + response.id;
                         },
                         error: function (error) {
+                            popup.fadeOut(function() {
+                                $(this).remove();
+                            });
                             // Обработка ошибки при сохранении данных
                             alert("Ошибка при сохранении данных!");
                             console.log(formData);

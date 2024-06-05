@@ -58,7 +58,7 @@ class workOrderController extends Controller
                     ($userRole == 'curator' || $userRole == 'admin')) {
                     $formattedWorkOrder = [
                         'id' => $workOrder->id,
-                        'infrastructure' => $workOrder->cardObjectServices->cardObjectMain->infrastructure,
+                        'infrastructure' => $workOrder->cardObjectServices->cardObjectMain->infrastructure ?? null,
                         'name' => $workOrder->cardObjectServices->cardObjectMain->name,
                         'number' => $workOrder->cardObjectServices->cardObjectMain->number,
                         'location' => $workOrder->cardObjectServices->cardObjectMain->location,

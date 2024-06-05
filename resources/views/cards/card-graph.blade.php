@@ -98,7 +98,7 @@
                                             <label class="w-100">Дата архивации</label>
                                             <input type="date" name="date_archive" placeholder="Введите дату архивации"
                                                    class="form-control w-100"
-                                                   readonly style="opacity: 0.5;"
+                                                   readonly style="opacity: 0.5;" data-toggle="tooltip" title="Дата архивации создаётся после нажатия на кнопку 'Заархивировать'
                                                    value="{{ isset($data_CardGraph->date_archive) ?$data_CardGraph->date_archive : 'нет данных' }}">
                                         </div>
                                     </div>
@@ -374,6 +374,37 @@
                         },
                         error: function (xhr, status, error) {
                             console.error(error);
+                        }
+                    });
+                });
+
+                $('#confirmAddCardObjectModal .btn-success').click(function(){
+                    // Получаем выбранные карточки объектов из select
+                    var selectedCardObjects = $('#cardObjectsSelect').val();
+
+                    // Получаем id карточки графика из data-атрибута кнопки "Добавить"
+                    var graphId = $(this).data('graph-id');
+
+                    console.log('Selected Card Objects:', selectedCardObjects);
+                    console.log('Graph ID:', graphId);
+
+                    // Отправляем AJAX запрос на сервер для добавления карточек объектов к карточке графика
+                    $.ajax({
+                        url: '/add-card-objects-to-graph',
+                        type: 'POST',
+                        data: {
+                            card_objects: selectedCardObjects,
+                            graph_id: graphId, // Предположим, что у вас есть переменная graphId с идентификатором карточки графика
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response){
+                            // Перезагружаем страницу после успешного добавления
+                            if(response.success){
+                                location.reload();
+                            }
+                        },
+                        error: function(xhr, status, error){
+                            console.error('Error:', error);
                         }
                     });
                 });
