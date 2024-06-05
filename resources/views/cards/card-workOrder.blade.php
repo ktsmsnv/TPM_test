@@ -40,8 +40,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    <button class="btn btn-primary end_workOrder{{ $workOrder->status === 'Выполнен' ? ' disabled' : '' }}">
-                                        Завершить заказ</button>
+                                    <button class="btn btn-primary end_workOrder{{ $workOrder->status === 'Выполнен' ? ' disabled' : '' }}">Завершить заказ</button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
@@ -230,8 +229,16 @@
         <script>
             // Обработчик события нажатия на кнопку "Завершить заказ"
             $('.end_workOrder').click(function () {
-                // Открываем модальное окно с вопросом о завершении заказа-наряда
-                $('#confirmEndWorkOrderModal').modal('show');
+                // Проверяем состояние всех чекбоксов
+                var allChecked = $('.type-checkbox:checked').length === $('.type-checkbox').length;
+                // Если все чекбоксы отмечены, делаем кнопку активной; в противном случае - неактивной
+                if (allChecked) {
+                    $('#confirmEndWorkOrderModal').modal('show'); // Открываем модальное окно с вопросом о завершении заказа-наряда
+                } else {
+                    // Если не все чекбоксы отмечены, выводим сообщение об ошибке или просто ничего не делаем
+                    // Например:
+                    alert('Необходимо отметить все виды работ!');
+                }
             });
             // Обработчик события нажатия на кнопку "Да" в модальном окне подтверждения
             $('#confirmEndWorkOrderButton').click(function () {

@@ -256,6 +256,7 @@
                                                 <div class="color-option red" data-color="#ff0000"></div>
                                                 <div class="color-option green" data-color="#00ff00"></div>
                                                 <div class="color-option blue" data-color="#0000ff"></div>
+                                                <div class="color-option yellow" data-color="#fff400"></div>
                                             </div>
                                             <input type="hidden" id="selectedColor_{{ $key + 1 }}" name="selectedColor" value="{{ $service->calendar_color }}" >
                                         </div>
@@ -541,6 +542,7 @@
                                                     <div class="color-option red" data-color="#ff0000"></div> \
                                                     <div class="color-option green" data-color="#00ff00"></div> \
                                                     <div class="color-option blue" data-color="#0000ff"></div> \
+                                                    <div class="color-option yellow" data-color="#fff400"></div> \
                                                 </div> \
                                                 <input type="hidden" id="selectedColor_' + serviceTabsCount + '" name="selectedColor"> \
                                             </div> \

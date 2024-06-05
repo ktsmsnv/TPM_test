@@ -14,6 +14,11 @@ use PhpOffice\PhpWord\Exception\CopyFileException;
 use PhpOffice\PhpWord\Exception\CreateTemporaryFileException;
 use PhpOffice\PhpWord\Exception\Exception;
 use PhpOffice\PhpWord\TemplateProcessor;
+use PhpOffice\PhpWord\Shared\Html;
+use PhpOffice\PhpWord\PhpWord;
+use Illuminate\Support\Facades\View;
+use PhpOffice\PhpWord\IOFactory;
+use Dompdf\Dompdf;
 
 //контроллер для отображения данных на страницы
 class CalendarController extends Controller
@@ -323,8 +328,7 @@ class CalendarController extends Controller
         }
 
         // Получаем данные о связанных записях с предварительной загрузкой связанных услуг и их типов работ
-        $cardObjectMain = CardObjectMain::with(['services.services_types'])
-            ->find($cardCalendar->card_id);
+        $cardObjectMain = CardObjectMain::with(['services.services_types'])->find($cardCalendar->card_id);
         if (!$cardObjectMain) {
             abort(404, 'CardObjectMain not found');
         }
@@ -335,7 +339,7 @@ class CalendarController extends Controller
             'infrastructure' => $cardObjectMain->infrastructure,
             'location' => $cardObjectMain->location,
             'number' => $cardObjectMain->number,
-            'year' => $cardCalendar->name,
+            'year' => $cardCalendar->year,
         ];
 
         // Собираем материалы всех услуг в одну строку, разделяя их запятой
@@ -347,19 +351,70 @@ class CalendarController extends Controller
         $data['materials'] = $materialsString;
 
         $templatePath = storage_path('app/templates/calendar_template.docx');
-        $templateProcessor = new TemplateProcessor($templatePath);
+        $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor($templatePath);
 
-// Конструируем массив замен для клонирования блока
-        $replacements = [];
+        // Добавляем изображение
+        if ($cardObjectMain->image) {
+            // Получаем бинарные данные изображения
+            $imageData = $cardObjectMain->image->getData();
+
+            // Создаем временный файл для изображения
+            $tempImagePath = storage_path('app/public/images/temp_image_' . $cardObjectMain->id . '.png');
+            file_put_contents($tempImagePath, $imageData);
+
+            // Проверяем, существует ли файл изображения
+            if (file_exists($tempImagePath)) {
+                $templateProcessor->setImageValue('image', [
+                    'path' => $tempImagePath,
+                    'width' => 100, // Установите нужные размеры
+                    'height' => 100,
+                ]);
+            } else {
+                // Выводим сообщение об ошибке, если файл не найден
+                abort(404, 'Image file not found');
+            }
+        }
+
+        // Конструируем массив замен для клонирования блока обслуживания
+        $serviceReplacements = [];
         foreach ($cardObjectMain->services as $serviceIndex => $service) {
-            $replacements[] = [
+            $serviceBlock = [
                 'service_type' => $service->service_type,
                 'frequency' => $service->frequency,
+                'performer' => $service->performer,
+                'responsible' => $service->responsible,
             ];
+
+            // Конструируем массив замен для вложенного блока типов работ
+            $typeWorkReplacements = [];
+            foreach ($service->services_types as $typeWork) {
+                $typeWorkReplacements[] = [
+                    'type_work' => $typeWork->type_work,
+                ];
+            }
+
+            // Добавляем данные для клонирования вложенного блока типов работ
+            $serviceBlock['type_work_block'] = $typeWorkReplacements;
+
+            // Добавляем данные для клонирования блока обслуживания
+            $serviceReplacements[] = $serviceBlock;
         }
-// Клонируем блок и устанавливаем замены для переменных внутри каждого клонированного блока
-        $templateProcessor->cloneBlock('service_block', count($replacements), true, false, $replacements);
-        //dd($replacements);
+
+        // Клонируем блок обслуживания
+        $templateProcessor->cloneBlock('service_block', count($serviceReplacements), true, false);
+        foreach ($serviceReplacements as $index => $serviceReplacement) {
+            $templateProcessor->setValue('service_type#' . ($index + 1), $serviceReplacement['service_type']);
+            $templateProcessor->setValue('frequency#' . ($index + 1), $serviceReplacement['frequency']);
+            $templateProcessor->setValue('performer#' . ($index + 1), $serviceReplacement['performer']);
+            $templateProcessor->setValue('responsible#' . ($index + 1), $serviceReplacement['responsible']);
+
+            // Клонируем и заполняем вложенные блоки типов работ
+            $typeWorkReplacements = $serviceReplacement['type_work_block'];
+            $templateProcessor->cloneBlock('type_work_block#' . ($index + 1), count($typeWorkReplacements), true, true);
+            foreach ($typeWorkReplacements as $typeWorkIndex => $typeWorkReplacement) {
+                $templateProcessor->setValue('type_work#' . ($index + 1) . '#' . ($typeWorkIndex + 1), $typeWorkReplacement['type_work']);
+            }
+        }
 
         // Устанавливаем остальные значения в шаблоне
         foreach ($data as $key => $value) {
@@ -369,13 +424,11 @@ class CalendarController extends Controller
             $templateProcessor->setValue($key, (string)$value);
         }
 
-        $docxFilePath = storage_path('app/generated/workOrderProcessed.docx');
+        $docxFilePath = storage_path('app/generated/calendarProcessed.docx');
         $templateProcessor->saveAs($docxFilePath);
 
         return $docxFilePath;
     }
-
-
 
 
 }
