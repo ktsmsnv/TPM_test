@@ -323,14 +323,21 @@ class GraphController extends Controller
         if ($CardGraphEntries->isNotEmpty()) {
             $existingGraphs = [];
             foreach ($CardGraphEntries as $entry) {
-                $existingGraphs[] = [
-                    'id' => $entry->_id,
-                    'name' => $entry->name,
-                    'link' => route('cardGraph', ['id' => $entry->_id]), // Используем именованный маршрут для генерации ссылки
-                ];
+                // Проверяем, архивирована ли запись
+                if ($entry->date_archive === null) {
+                    // Если запись не архивирована, добавляем ее в список существующих графиков
+                    $existingGraphs[] = [
+                        'id' => $entry->_id,
+                        'name' => $entry->name,
+                        'link' => route('cardGraph', ['id' => $entry->_id]), // Используем именованный маршрут для генерации ссылки
+                    ];
+                }
             }
-            $error  = 'Ошибка! Данный объект уже существует в другом графике.';
-            return view('cards.card-graph-create', compact('error', 'existingGraphs'));
+            // Если есть неархивированные графики, выводим ошибку
+            if (!empty($existingGraphs)) {
+                $error = 'Ошибка! Данный объект уже существует в другом графике.';
+                return view('cards.card-graph-create', compact('error', 'existingGraphs'));
+            }
         }
 
         $infrastructureCases = [
