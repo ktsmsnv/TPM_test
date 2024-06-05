@@ -98,7 +98,7 @@
                                             <label class="w-100">Дата архивации</label>
                                             <input type="date" name="date_archive" placeholder="Введите дату архивации"
                                                    class="form-control w-100"
-                                                   readonly style="opacity: 0.5;"
+                                                   readonly style="opacity: 0.5;" data-toggle="tooltip" title="Дата архивации создаётся после нажатия на кнопку 'Заархивировать'
                                                    value="{{ isset($data_CardGraph->date_archive) ?$data_CardGraph->date_archive : 'нет данных' }}">
                                         </div>
                                     </div>
