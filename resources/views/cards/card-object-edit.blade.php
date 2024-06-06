@@ -731,6 +731,44 @@
                 });
             }
 
+            $(document).on('change', '[id^="service_type_"]', function () {
+                console.log('Выбран вид обслуживания. Обновляем сокращенное название...');
+                // Обновляем плановую дату обслуживания при изменении периодичности или даты предыдущего обслуживания
+                updateInfrastructure();
+            });
+
+            // Функция для обновления сокращенного названия вида обслуживания
+            function updateInfrastructure() {
+                console.log('Обновляем сокращенное название вида обслуживания...');
+                $('[id^="service_type_"]').each(function () {
+                    let index = $(this).attr('id').split('_')[2];
+                    let infrastructure = $('#service_type_' + index).val();
+                    let shortNameInput = $('#short_name_' + index);
+
+                    // Выполняем соответствующие действия в зависимости от выбранного вида обслуживания
+                    switch (infrastructure) {
+                        case 'Регламентные работы':
+                            shortNameInput.val('РР');
+                            break;
+                        case 'Техническое обслуживание':
+                            shortNameInput.val('ТО');
+                            break;
+                        case 'Сервисное техническое обслуживание':
+                            shortNameInput.val('СТО');
+                            break;
+                        case 'Капитальный ремонт':
+                            shortNameInput.val('КР');
+                            break;
+                        case 'Аварийный ремонт':
+                            shortNameInput.val('АР');
+                            break;
+                        default:
+                            // Если выбран неизвестный вид обслуживания, очищаем поле сокращенного названия
+                            shortNameInput.val('');
+                            break;
+                    }
+                });
+            }
 
             //------------  обработчик сохранения данных  ------------
             $(".saveEditObject").click(function () {
