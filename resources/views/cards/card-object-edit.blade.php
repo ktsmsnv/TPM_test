@@ -457,6 +457,7 @@
             $('.createService').on('click', function () {
                 if (serviceTabsCount >= maxServiceTabs) {
                     alert('Нельзя добавить больше 4 видов обслуживания');
+                    $(this).prop('disabled', true).css('opacity', 0.5); // Делаем кнопку неактивной и изменяем её стиль
                     return; // Прекращаем выполнение функции, если достигнут лимит вкладок
                 }
                 // Генерируем id для новой вкладки и ее содержимого
@@ -620,6 +621,10 @@
                 // Увеличиваем счетчик вкладок для обслуживания
                 serviceTabsCount++;
             });
+            // Проверка при загрузке страницы, чтобы кнопка была неактивной, если уже достигнут лимит
+            if (serviceTabsCount >= maxServiceTabs) {
+                $('.createService').prop('disabled', true).css('opacity', 0.5);
+            }
             // Функция для обновления обработчика событий для выбора цвета
             function updateColorPicker() {
                 // Получаем все блоки цветов
