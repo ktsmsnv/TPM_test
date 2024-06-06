@@ -162,7 +162,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Обслуживание ТРМ {{ $key + 1 }}</h4>
-                                    <button class="btn btn-primary">Обновить даты</button>
+{{--                                    <button class="btn btn-primary">Обновить даты</button>--}}
                                     <div data-toggle="tooltip"
                                          title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ">
                                         <input type="checkbox" class="form-check-input me-1" id="disableInTable_{{ $key + 1 }}"

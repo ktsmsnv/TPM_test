@@ -182,7 +182,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Обслуживание ТРМ {{ $key + 1 }}</h4>
-                                    <button class="btn btn-primary">Обновить даты</button>
+{{--                                    <button class="btn btn-primary">Обновить даты</button>--}}
                                     <div>
                                         <input type="checkbox" class="form-check-input me-1" id="disableInTable_{{ $key + 1 }}"
                                                @if ($service->checked) checked @endif>
@@ -474,7 +474,7 @@
                                 <div class="member-info"> \
                                     <div class="d-flex justify-content-between mb-4"> \
                                         <h4>Обслуживание ТРМ</h4> \
-                                        <button class="btn btn-primary">Обновить даты</button> \
+                                        <!-- <button class="btn btn-primary">Обновить даты</button> --> \
                                         <div> \
                                             <input type="checkbox" class="form-check-input me-1" id="disableInTable_' + serviceTabsCount + '"> \
                                             <label class="form-check-label disableInTable" for="disableInTable_' + serviceTabsCount + '">Не выводить \
