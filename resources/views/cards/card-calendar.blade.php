@@ -298,7 +298,6 @@
             function generateCalendar(services) {
                 const currentDate = new Date();
                 const year = currentDate.getFullYear(); // Получаем текущий год
-                // const year = 2024;
                 const months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
                 const daysOfWeek = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт'];
 
@@ -343,8 +342,7 @@
                             }
                             dayCounter++;
                         } else {
-                          //  row += `<td></td>`;
-                            dayCounter++;// Если суббота или воскресенье, добавляем пустую ячейку
+                            dayCounter++; // Если суббота или воскресенье, добавляем пустую ячейку
                         }
                     }
 

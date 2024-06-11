@@ -166,8 +166,11 @@ class CalendarController extends Controller
         $services = [];
         foreach ($cardCalendar->objects as $object) {
             foreach ($object->services as $service) {
+                // Рассчитываем следующую дату обслуживания
+                $nextMaintenanceDate = $this->getAdjustedMaintenanceDate($service->planned_maintenance_date, $service->prev_maintenance_date);
                 $services[] = [
-                    'planned_maintenance_date' => $service->planned_maintenance_date,
+                    'prev_maintenance_date' => $service->prev_maintenance_date,
+                    'planned_maintenance_date' => $nextMaintenanceDate,
                     'short_name' => $service->short_name,
                     'calendar_color' => $service->calendar_color,
                 ];
@@ -178,6 +181,25 @@ class CalendarController extends Controller
         return view('cards/card-calendar', compact('cardCalendar', 'cardObjectMain', 'services', 'months'));
     }
 
+    private function getAdjustedMaintenanceDate($plannedDate, $lastMaintenanceDate)
+    {
+
+        $plannedDate = Carbon::parse($plannedDate);
+        $lastMaintenanceDate = Carbon::parse($lastMaintenanceDate);
+
+        $lastMaintenanceDayOfWeek = $lastMaintenanceDate->dayOfWeek;
+//        dd($lastMaintenanceDayOfWeek);
+
+        // Найти ближайший день недели к плановой дате, соответствующий дню недели предыдущего обслуживания
+        $adjustedDate = $plannedDate->copy()->next($lastMaintenanceDayOfWeek);
+
+        // Если ближайший день недели находится в следующем месяце, берем предыдущий ближайший день недели
+        if ($adjustedDate->month != $plannedDate->month) {
+            $adjustedDate = $plannedDate->copy()->previous($lastMaintenanceDayOfWeek);
+        }
+
+        return $adjustedDate->toDateString();
+    }
 
     public function archiveCalendarDateButt(Request $request)
     {
