@@ -182,7 +182,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Обслуживание ТРМ {{ $key + 1 }}</h4>
-                                    <button class="btn btn-primary">Обновить даты</button>
+{{--                                    <button class="btn btn-primary">Обновить даты</button>--}}
                                     <div>
                                         <input type="checkbox" class="form-check-input me-1" id="disableInTable_{{ $key + 1 }}"
                                                @if ($service->checked) checked @endif>
@@ -452,8 +452,14 @@
             });
             // Определяем следующий номер для вкладки обслуживания
             let serviceTabsCount = maxServiceTabsCount + 1;
+            const maxServiceTabs = 5; // максимальное количество вкладок
             // Обработчик нажатия на кнопку "Создать обслуживание"
             $('.createService').on('click', function () {
+                if (serviceTabsCount >= maxServiceTabs) {
+                    alert('Нельзя добавить больше 4 видов обслуживания');
+                    $(this).prop('disabled', true).css('opacity', 0.5); // Делаем кнопку неактивной и изменяем её стиль
+                    return; // Прекращаем выполнение функции, если достигнут лимит вкладок
+                }
                 // Генерируем id для новой вкладки и ее содержимого
                 let tabId = 'service_' + serviceTabsCount + '-tab';
                 let paneId = 'service_' + serviceTabsCount;
@@ -469,7 +475,7 @@
                                 <div class="member-info"> \
                                     <div class="d-flex justify-content-between mb-4"> \
                                         <h4>Обслуживание ТРМ</h4> \
-                                        <button class="btn btn-primary">Обновить даты</button> \
+                                        <!-- <button class="btn btn-primary">Обновить даты</button> --> \
                                         <div> \
                                             <input type="checkbox" class="form-check-input me-1" id="disableInTable_' + serviceTabsCount + '"> \
                                             <label class="form-check-label disableInTable" for="disableInTable_' + serviceTabsCount + '">Не выводить \
@@ -615,6 +621,10 @@
                 // Увеличиваем счетчик вкладок для обслуживания
                 serviceTabsCount++;
             });
+            // Проверка при загрузке страницы, чтобы кнопка была неактивной, если уже достигнут лимит
+            if (serviceTabsCount >= maxServiceTabs) {
+                $('.createService').prop('disabled', true).css('opacity', 0.5);
+            }
             // Функция для обновления обработчика событий для выбора цвета
             function updateColorPicker() {
                 // Получаем все блоки цветов
@@ -726,6 +736,44 @@
                 });
             }
 
+            $(document).on('change', '[id^="service_type_"]', function () {
+                console.log('Выбран вид обслуживания. Обновляем сокращенное название...');
+                // Обновляем плановую дату обслуживания при изменении периодичности или даты предыдущего обслуживания
+                updateInfrastructure();
+            });
+
+            // Функция для обновления сокращенного названия вида обслуживания
+            function updateInfrastructure() {
+                console.log('Обновляем сокращенное название вида обслуживания...');
+                $('[id^="service_type_"]').each(function () {
+                    let index = $(this).attr('id').split('_')[2];
+                    let infrastructure = $('#service_type_' + index).val();
+                    let shortNameInput = $('#short_name_' + index);
+
+                    // Выполняем соответствующие действия в зависимости от выбранного вида обслуживания
+                    switch (infrastructure) {
+                        case 'Регламентные работы':
+                            shortNameInput.val('РР');
+                            break;
+                        case 'Техническое обслуживание':
+                            shortNameInput.val('ТО');
+                            break;
+                        case 'Сервисное техническое обслуживание':
+                            shortNameInput.val('СТО');
+                            break;
+                        case 'Капитальный ремонт':
+                            shortNameInput.val('КР');
+                            break;
+                        case 'Аварийный ремонт':
+                            shortNameInput.val('АР');
+                            break;
+                        default:
+                            // Если выбран неизвестный вид обслуживания, очищаем поле сокращенного названия
+                            shortNameInput.val('');
+                            break;
+                    }
+                });
+            }
 
             //------------  обработчик сохранения данных  ------------
             $(".saveEditObject").click(function () {

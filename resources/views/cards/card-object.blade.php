@@ -13,7 +13,7 @@
                 <div class="d-flex gap-2">
                     <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
                     <a type="button" class="btn btn-primary btn-primary--2 copy_cardObject">Скопировать карточку объекта</a>
-                    <a href="{{ route('cardObject-edit', ['id' => $data_CardObjectMain->_id]) }}" type="button" class="btn btn-outline-danger">Редактировать</a>
+                    <button type="button" class="btn btn-outline-danger editCardObjectMain">Редактировать</button>
                 </div>
             </div>
 
@@ -162,7 +162,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Обслуживание ТРМ {{ $key + 1 }}</h4>
-                                    <button class="btn btn-primary">Обновить даты</button>
+{{--                                    <button class="btn btn-primary">Обновить даты</button>--}}
                                     <div data-toggle="tooltip"
                                          title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ">
                                         <input type="checkbox" class="form-check-input me-1" id="disableInTable_{{ $key + 1 }}"
@@ -336,6 +336,37 @@
                     }
                 });
             });
+
+
+            // Функция для сброса всех сохраненных выбранных цветов
+            function resetSelectedColors() {
+                console.log("Clearing selected colors from localStorage:");
+                let keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.endsWith('_selectedColor')) {
+                        keysToRemove.push(key);
+                    }
+                }
+                // Теперь удаляем все ключи, которые собрали
+                for (let key of keysToRemove) {
+                    console.log("Removing:", key);
+                    localStorage.removeItem(key);
+                }
+            }
+
+
+
+            $(".editCardObjectMain").click(function () {
+                resetSelectedColors();
+
+                // Убираем все выделенные цвета на UI
+                $('.color-option').removeClass('selected');
+                $('input[name="selectedColor"]').val('');
+
+                window.location.href = "{{ route('cardObject-edit', ['id' => $data_CardObjectMain->_id]) }}";
+            });
+
         });
     </script>
 @endsection

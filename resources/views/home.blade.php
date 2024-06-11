@@ -17,10 +17,10 @@
                        data-title="Работа с реестром объектов" data-step="7"
                        data-intro="По нажатию на данную кнопку отображаются только те объекты, в карточке которых заполнена «Дата вывода объекта из эксплуатации».">
                         Показать активные объекты</a>
-                    <a href="/home/card-object-create" target="_blank" type="button" class="btn btn-primary"
+                    <button target="_blank" type="button" class="btn btn-primary createCardObjectMain"
                        data-title="Работа с реестром объектов" data-step="8"
                        data-intro="По нажатию на данную кнопку создается новая сущность «Карточка объекта» и открывается в новом окне.">
-                        Создать карточку объекта</a>
+                        Создать карточку объекта</button>
                     <a type="button" class="btn btn-primary btn-primary--2 copy_cardObject" disabled="true"
                        data-title="Работа с реестром объектов" data-step="9"
                        data-intro="Кнопка активна только при выборе галочками одной или нескольких строк в реестре. По нажатию создаются копии сущностей «Карточка объекта» и открываются в новом окне.">
@@ -331,6 +331,38 @@
                     }
                 });
             }
+
+            // Функция для сброса всех сохраненных выбранных цветов
+            function resetSelectedColors() {
+                // console.log("Clearing selected colors from localStorage:");
+                let keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.endsWith('_selectedColor')) {
+                        keysToRemove.push(key);
+                    }
+                }
+                // Теперь удаляем все ключи, которые собрали
+                for (let key of keysToRemove) {
+                    // console.log("Removing:", key);
+                    localStorage.removeItem(key);
+                }
+            }
+
+            $(".createCardObjectMain").click(function () {
+                // Сброс всех сохраненных выбранных цветов
+                resetSelectedColors();
+
+                // console.log(localStorage.length);
+
+                // Убираем все выделенные цвета на UI
+                $('.color-option').removeClass('selected');
+                $('input[name="selectedColor"]').val('');
+
+
+                // Перенаправляем пользователя на главную страницу
+                window.location.href = "/home/card-object-create";
+            });
 
             //Вызов функции для получения данных с сервера
             getObjectsFromServer().done(function(data) {

@@ -151,6 +151,7 @@ class workOrderController extends Controller
             $existingOrdersCount = CardWorkOrder::where('card_id', $selectedId)->count();
             $nearestService = $cardObjectMain->services->sortBy('planned_maintenance_date')->first();
 
+            // Если ближайшее обслуживание найдено, создаем новый заказ-наряд и связываем его с этим обслуживанием
             if ($nearestService) {
                 $newWorkOrder = new CardWorkOrder();
                 $newWorkOrder->card_id = $selectedId;
@@ -158,6 +159,7 @@ class workOrderController extends Controller
                 $newWorkOrder->date_create = $now->format('d-m-Y');
                 $newWorkOrder->status = 'В работе';
                 $newWorkOrder->number = $existingOrdersCount + 1;
+                $newWorkOrder->planned_maintenance_date = $nearestService->planned_maintenance_date;
                 $newWorkOrder->save();
 
                 $newWorkOrder_history = new HistoryCardWorkOrder();
@@ -166,6 +168,7 @@ class workOrderController extends Controller
                 $newWorkOrder_history->date_create = $now->format('d-m-Y');
                 $newWorkOrder_history->status = 'В работе';
                 $newWorkOrder_history->number = $existingOrdersCount + 1;
+                $newWorkOrder_history->planned_maintenance_date = $nearestService->planned_maintenance_date;
                 $newWorkOrder_history->save();
             }
         }
@@ -217,6 +220,7 @@ class workOrderController extends Controller
         $newWorkOrder_history->date_fact = $dateFact;
         // Присваиваем номер заказа-наряда
         $newWorkOrder_history->number = $workOrder->number;
+        $newWorkOrder_history->planned_maintenance_date =$workOrder->planned_maintenance_date;
         $newWorkOrder_history->save();
 
 
@@ -233,7 +237,6 @@ class workOrderController extends Controller
     {
         // Находим заказ-наряд по его ID
         $workOrder = CardWorkOrder::findOrFail($id);
-
         // Получаем данные о связанных записях с предварительной загрузкой связанных услуг и их типов работ
         $cardObjectMain = CardObjectMain::with(['services' => function ($query) use ($workOrder) {
             $query->with(['services_types'])->where('_id', $workOrder->card_object_services_id);
@@ -253,7 +256,7 @@ class workOrderController extends Controller
             'responsible' => $cardObjectServices->responsible,
             'location' => $cardObjectMain->location,
             'number' => $cardObjectMain->number,
-            'planned_maintenance_date' => $cardObjectServices->planned_maintenance_date,
+            'planned_maintenance_date' => $workOrder->planned_maintenance_date,
             'consumable_materials' => $cardObjectServices->consumable_materials,
             'service_type' => $cardObjectServices->service_type,
             'frequency' => $cardObjectServices->frequency,

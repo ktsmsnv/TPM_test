@@ -19,6 +19,7 @@ return new class extends Migration
             $collection->date('date_fact')->nullable();
             $collection->string('status');
             $collection->string('number')->nullable();
+            $collection->date('planned_maintenance_date');
         });
     }
 

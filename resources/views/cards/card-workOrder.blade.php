@@ -86,7 +86,7 @@
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Плановая дата обслуживания</label>
                                             <input name="planned_maintenance_date" class="form-control w-100"
-                                                   value="{{ date('d.m.Y', strtotime($cardObjectServices->planned_maintenance_date)) ?? 'нет данных' }}" readonly
+                                                   value="{{ date('d.m.Y', strtotime($workOrder->planned_maintenance_date)) ?? 'нет данных' }}" readonly
                                                    data-toggle="tooltip" title="изменить можно в карточке объекта 'обслуживание'">
                                         </div>
                                     </div>
