@@ -110,54 +110,72 @@ class workOrderController extends Controller
         // Получаем ID выбранных записей из запроса
         $selectedIds = $request->selected_ids;
         $now = Carbon::now();
-        // Создаем новый заказ-наряд для каждого выбранного ID
+
+        // Для проверки существующих заказов-нарядов
+        $existingWorkOrders = [];
+
         foreach ($selectedIds as $selectedId) {
             // Находим карточку объекта по ID
             $cardObjectMain = CardObjectMain::findOrFail($selectedId);
 
-            // Проверяем, существует ли заказ-наряд для данной карточки объекта и ее обслуживания
+            // Проверяем, существует ли заказ-наряд для данной карточки объекта и ее обслуживания, который не имеет значения date_fact
             $existingWorkOrder = CardWorkOrder::where('card_id', $selectedId)
                 ->whereIn('card_object_services_id', $cardObjectMain->services->pluck('id'))
-                ->exists();
-            // Если заказ-наряд уже существует, отправляем уведомление
+                ->whereNull('date_fact')
+                ->first();
+
             if ($existingWorkOrder) {
-                return response()->json(['message' => 'Заказ-наряд уже существует для выбранного объекта'], 400);
+                $existingWorkOrders[] = [
+                    'id' => $existingWorkOrder->id,
+                    'name' => 'Карточка заказ-наряда №' . $existingWorkOrder->number,
+                    'link' => route('workOrder.show', ['id' => $existingWorkOrder->id]),
+                ];
             }
+        }
 
-            // Находим количество заказов-нарядов для данной карточки объекта
+        // Если есть существующие заказ-наряды без date_fact, возвращаем ошибку
+        if (!empty($existingWorkOrders)) {
+            $url = route('show-error', [
+                'message' => 'Заказ-наряд уже существует для выбранного объекта',
+                'existingWorkOrders' => $existingWorkOrders
+            ]);
+            return response()->json([
+                'status' => 'error',
+                'url' => $url
+            ], 400);
+        }
+
+        // Создаем новый заказ-наряд для каждого выбранного ID
+        foreach ($selectedIds as $selectedId) {
+            $cardObjectMain = CardObjectMain::findOrFail($selectedId);
             $existingOrdersCount = CardWorkOrder::where('card_id', $selectedId)->count();
-
-            // Находим ближайшее обслуживание для карточки объекта
             $nearestService = $cardObjectMain->services->sortBy('planned_maintenance_date')->first();
 
-            // Если ближайшее обслуживание найдено, создаем новый заказ-наряд и связываем его с этим обслуживанием
             if ($nearestService) {
                 $newWorkOrder = new CardWorkOrder();
-                $newWorkOrder->card_id = $selectedId; // Связываем заказ-наряд с выбранной карточкой объекта
-                $newWorkOrder->card_object_services_id = $nearestService->id; // Связываем заказ-наряд с ближайшей услугой
+                $newWorkOrder->card_id = $selectedId;
+                $newWorkOrder->card_object_services_id = $nearestService->id;
                 $newWorkOrder->date_create = $now->format('d-m-Y');
-                // $newWorkOrder->date_last_save = $now->format('d-m-Y');
-                $newWorkOrder->status = 'В работе'; // Устанавливаем статус
-                // Присваиваем номер заказа-наряда
+                $newWorkOrder->status = 'В работе';
                 $newWorkOrder->number = $existingOrdersCount + 1;
                 $newWorkOrder->save();
 
                 $newWorkOrder_history = new HistoryCardWorkOrder();
-                $newWorkOrder_history->card_id = $selectedId; // Связываем заказ-наряд с выбранной карточкой объекта
-                $newWorkOrder_history->card_object_services_id = $nearestService->id; // Связываем заказ-наряд с ближайшей услугой
+                $newWorkOrder_history->card_id = $selectedId;
+                $newWorkOrder_history->card_object_services_id = $nearestService->id;
                 $newWorkOrder_history->date_create = $now->format('d-m-Y');
-                $newWorkOrder_history->status = 'В работе'; // Устанавливаем статус
-                // Присваиваем номер заказа-наряда
+                $newWorkOrder_history->status = 'В работе';
                 $newWorkOrder_history->number = $existingOrdersCount + 1;
                 $newWorkOrder_history->save();
             }
         }
 
-        // Возвращаем URL страницы нового заказ-наряда
         $url = route('workOrder.show', ['id' => $newWorkOrder->id]);
-
         return response()->json(['url' => $url], 200);
     }
+
+
+
 
 // --------------- удаление карточки заказ-наряда ---------------
     public function deleteWorkOrder(Request $request)

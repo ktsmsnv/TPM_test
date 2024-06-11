@@ -2,6 +2,20 @@
 @extends('layouts.app')
 
 @section('content')
+    @if(isset($error))
+        <div class="alert alert-warning">
+            {{ $error }}
+            {{-- Вывод списка существующих заказов-нарядов --}}
+            @if(isset($existingWorkOrders))
+                <ul>
+                    @foreach($existingWorkOrders as $workOrder)
+                        <li><a target="_blank" href="{{ $workOrder['link'] }}">{{ $workOrder['name'] }}</a></li>
+                    @endforeach
+                </ul>
+            @endif
+            <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
+        </div>
+    @else
     <div class="container custom_tab_style1_outer">
         <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
@@ -280,4 +294,5 @@
                 $("#carObjectTab").show;
             });
         </script>
+    @endif
 @endsection

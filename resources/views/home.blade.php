@@ -531,10 +531,9 @@
                     url: "{{ route('create-work-order') }}",
                     data: { selected_ids: selectedIds }, // Передаем выбранные ID как данные для создания заказ-наряда
                     success: function (response) {
-                        // Проверяем наличие сообщения в ответе
-                        if (response.message) {
-                            // Выводим уведомление о существующем заказе-наряде
-                            alert(response.message);
+                        if (response.status === 'error') {
+                            // Перенаправляем на страницу с ошибкой
+                            window.open(response.url, '_blank');
                         } else {
                             // Открываем страницу нового заказ-наряда в новой вкладке
                             window.open(response.url, '_blank');
@@ -547,6 +546,9 @@
                 });
             });
 
+
+
+
             $('.createCalendar').click(function () {
                 let selectedRows = $table.bootstrapTable('getSelections');
                 if (selectedRows.length > 0) {
@@ -558,10 +560,6 @@
                     });
                 }
             });
-
-
-
-
 
         });
     </script>
