@@ -2,22 +2,23 @@
 @extends('layouts.app')
 
 @section('content')
-    @if(isset($error))
-        <div class="alert alert-warning">
-            {{ $error }}
-            {{-- Вывод списка существующих заказов-нарядов --}}
-            @if(isset($existingWorkOrders))
-                <ul>
-                    @foreach($existingWorkOrders as $workOrder)
-                        <li><a target="_blank" href="{{ $workOrder['link'] }}">{{ $workOrder['name'] }}</a></li>
-                    @endforeach
-                </ul>
-            @endif
+    <div class="container">
+        @if(isset($message))
+            <div class="alert alert-danger">
+                {{ $message }}
+            </div>
             <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
-        </div>
-    @else
-    <div class="container custom_tab_style1_outer">
-        <div class="row">
+        @endif
+
+        @if(isset($existingWorkOrders) && !empty($existingWorkOrders))
+            <ul>
+                @foreach($existingWorkOrders as $workOrder)
+                    <li><a target="_blank" href="{{ $workOrder['link'] }}">{{ $workOrder['name'] }}</a></li>
+                @endforeach
+            </ul>
+                <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
+        @else
+            <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
                 <h1 class="mb-4"><strong>Карточка заказ-наряда №{{$workOrder->number}} объекта "{{$cardObjectMain->name}}"</strong></h1>
