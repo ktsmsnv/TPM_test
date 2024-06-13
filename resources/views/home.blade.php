@@ -561,17 +561,38 @@
                     url: "{{ route('create-work-order') }}",
                     data: { selected_ids: selectedIds },
                     success: function (response) {
-                        var results = response.results;
+                        if (response.existingWorkOrders && response.existingWorkOrders.length > 0) {
+                            var html = '<div class="container">' +
+                                '<div class="alert alert-warning">' +
+                                '<h4>Следующие заказ-наряды уже существуют:</h4>' +
+                                '<ul>';
 
-                        results.forEach(function (result) {
-                            window.open(result.url, '_blank');
-                        });
+                            response.existingWorkOrders.forEach(function (workOrder) {
+                                html += '<li><a target="_blank" href="' + workOrder.link + '">' + workOrder.name + '</a></li>';
+                            });
+
+                            html += '</ul>' +
+                                '<a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>' +
+                                '</div></div>';
+
+                            $('body').html(html);
+                        } else {
+                            response.results.forEach(function (result) {
+                                if (result.status === 'success') {
+                                    window.open(result.url, '_blank');
+                                } else {
+                                    alert(result.message);
+                                }
+                            });
+                        }
                     },
                     error: function (xhr, status, error) {
                         alert("Произошла ошибка при выполнении запроса: " + xhr.responseText);
                     }
                 });
             });
+
+
 
 
             $('.createCalendar').click(function () {

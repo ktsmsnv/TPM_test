@@ -110,6 +110,7 @@ class workOrderController extends Controller
         $selectedIds = $request->selected_ids;
         $now = Carbon::now();
         $results = [];
+        $existingWorkOrders = [];
 
         foreach ($selectedIds as $selectedId) {
             $cardObjectMain = CardObjectMain::findOrFail($selectedId);
@@ -121,6 +122,11 @@ class workOrderController extends Controller
                 ->first();
 
             if ($existingWorkOrder) {
+                $existingWorkOrders[] = [
+                    'id' => $existingWorkOrder->id,
+                    'link' => route('workOrder.show', ['id' => $existingWorkOrder->id]),
+                    'name' => 'Заказ-наряд для объекта ID ' . $selectedId,
+                ];
                 $results[] = [
                     'id' => $existingWorkOrder->id,
                     'status' => 'error',
@@ -164,6 +170,10 @@ class workOrderController extends Controller
                     'message' => 'Не найдено запланированное обслуживание для объекта ID ' . $selectedId,
                 ];
             }
+        }
+
+        if (!empty($existingWorkOrders)) {
+            return response()->json(['existingWorkOrders' => $existingWorkOrders], 200);
         }
 
         return response()->json(['results' => $results], 200);

@@ -3,21 +3,24 @@
 
 @section('content')
     <div class="container">
-        @if(isset($message))
-            <div class="alert alert-danger">
-                {{ $message }}
-            </div>
-            <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
-        @endif
-
         @if(isset($existingWorkOrders) && !empty($existingWorkOrders))
-            <ul>
-                @foreach($existingWorkOrders as $workOrder)
-                    <li><a target="_blank" href="{{ $workOrder['link'] }}">{{ $workOrder['name'] }}</a></li>
-                @endforeach
-            </ul>
+            <div class="alert alert-warning">
+                <h4>Следующие заказ-наряды уже существуют:</h4>
+                <ul>
+                    @foreach($existingWorkOrders as $workOrder)
+                        <li><a target="_blank" href="{{ $workOrder['link'] }}">{{ $workOrder['name'] }}</a></li>
+                    @endforeach
+                </ul>
                 <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
+            </div>
         @else
+            @if(isset($message))
+                <div class="alert alert-danger">
+                    {{ $message }}
+                </div>
+                <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
+            @endif
+
             <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
