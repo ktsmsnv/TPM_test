@@ -202,7 +202,7 @@ class workOrderController extends Controller
     public function endWorkOrder(Request $request)
     {
         $workOrderId = $request->id;
-        $dateFact = Carbon::now()->format('Y-m-d'); // Используем формат ISO для хранения
+        $dateFact = Carbon::now()->format('Y-m-d');
         $status = $request->status;
 
         $workOrder = CardWorkOrder::findOrFail($workOrderId);
@@ -212,22 +212,52 @@ class workOrderController extends Controller
 
         $cardObjectServicesId = $workOrder->card_object_services_id;
         $cardObjectServices = CardObjectServices::findOrFail($cardObjectServicesId);
+
+        // Вычисление следующей плановой даты обслуживания
+        $prevMaintenanceDate = Carbon::parse($cardObjectServices->prev_maintenance_date);
+        $frequency = $cardObjectServices->frequency;
+        $plannedMaintenanceDate = Carbon::parse($cardObjectServices->planned_maintenance_date);
+        $dayOfWeek = $plannedMaintenanceDate->dayOfWeek; // Используем день недели из текущей плановой даты
+
+        switch ($frequency) {
+            case 'Ежемесячное':
+                $nextDate = $prevMaintenanceDate->copy()->addMonth();
+                break;
+            case 'Ежеквартальное':
+                $nextDate = $prevMaintenanceDate->copy()->addMonths(3);
+                break;
+            case 'Полугодовое':
+                $nextDate = $prevMaintenanceDate->copy()->addMonths(6);
+                break;
+            case 'Ежегодное':
+                $nextDate = $prevMaintenanceDate->copy()->addYear();
+                break;
+            default:
+                throw new \Exception('Unknown frequency type');
+        }
+
+
+        // Переносим дату на ближайший нужный день недели
+        while ($nextDate->dayOfWeek !== $dayOfWeek) {
+            $nextDate->addDay();
+        }
+
         $cardObjectServices->prev_maintenance_date = $dateFact;
+        $cardObjectServices->planned_maintenance_date = $nextDate->format('Y-m-d');
         $cardObjectServices->save();
 
-        $newWorkOrder_history = new HistoryCardWorkOrder();
-        $newWorkOrder_history->card_id = $workOrder->card_id;
-        $newWorkOrder_history->card_object_services_id = $workOrder->card_object_services_id;
-        $newWorkOrder_history->date_create = Carbon::parse($workOrder->date_create)->format('Y-m-d'); // Преобразуем дату в объект Carbon
-        $newWorkOrder_history->status = $status;
-        $newWorkOrder_history->date_fact = $dateFact;
-        $newWorkOrder_history->number = $workOrder->number;
-        $newWorkOrder_history->planned_maintenance_date = Carbon::parse($workOrder->planned_maintenance_date)->format('Y-m-d'); // Преобразуем дату в объект Carbon
-        $newWorkOrder_history->save();
+        $newWorkOrderHistory = new HistoryCardWorkOrder();
+        $newWorkOrderHistory->card_id = $workOrder->card_id;
+        $newWorkOrderHistory->card_object_services_id = $workOrder->card_object_services_id;
+        $newWorkOrderHistory->date_create = Carbon::parse($workOrder->date_create)->format('Y-m-d');
+        $newWorkOrderHistory->status = $status;
+        $newWorkOrderHistory->date_fact = $dateFact;
+        $newWorkOrderHistory->number = $workOrder->number;
+        $newWorkOrderHistory->planned_maintenance_date = $cardObjectServices->planned_maintenance_date;
+        $newWorkOrderHistory->save();
 
         return response()->json(['message' => 'Заказ-наряд успешно завершен'], 200);
     }
-
 
     /**
      * @throws CopyFileException
