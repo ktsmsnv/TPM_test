@@ -458,11 +458,10 @@ class ObjectController extends Controller
         // Возвращаем успешный ответ или редирект на страницу карточки объекта
         return response()->json(['success' => 'Данные карточки объекта успешно обновлены'], 200);
     }
+
     private function updateCuratorInGraphs($cardId, $curator)
     {
-        // Находим все связанные карточки графиков и обновляем куратора
-        $graphs = CardGraph::where('cards_ids', $cardId)->get();
-
+        $graphs = CardGraph::where('cards_ids', 'like', '%"'.$cardId.'"%')->get();
         foreach ($graphs as $graph) {
             $graph->curator = $curator;
             $graph->save();
