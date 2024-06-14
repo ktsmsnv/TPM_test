@@ -98,6 +98,7 @@ class ObjectController extends Controller
         $curators = User::all();
         $data_CardObjectMain = CardObjectMain::find($id);
         $data_CardObjectMainDocs = CardObjectMainDoc::where('card_object_main_id', $id)->get();
+//        dd($data_CardObjectMainDocs);
 //        $breadcrumbs = Breadcrumbs::generate('/card-object/edit');
         return view('cards/card-object-edit', compact('data_CardObjectMain', 'data_CardObjectMainDocs', 'executors', 'responsibles', 'curators'));
     }

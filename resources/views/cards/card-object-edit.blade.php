@@ -615,6 +615,9 @@
                 $('#cardObjectTab').append(tab);
                 $('#cardObjectTabContent').append(tabContent);
 
+                // Устанавливаем цвет в календаре для новой вкладки
+                setColorOptions();
+
                 // Обновляем обработчик событий для выбора цвета
                 updateColorPicker();
 
@@ -625,21 +628,31 @@
             if (serviceTabsCount >= maxServiceTabs) {
                 $('.createService').prop('disabled', true).css('opacity', 0.5);
             }
+
+            // Функция для установки выбранного цвета
+            function setColorOptions() {
+                $('.color-options').each(function() {
+                    let selectedColor = $(this).siblings('input[name="selectedColor"]').val();
+                    $(this).find('.color-option').each(function() {
+                        if ($(this).data('color') === selectedColor) {
+                            $(this).addClass('selected');
+                        } else {
+                            $(this).removeClass('selected');
+                        }
+                    });
+                });
+            }
+            // Вызов функции установки выбранного цвета при загрузке страницы
+            setColorOptions();
+
             // Функция для обновления обработчика событий для выбора цвета
             function updateColorPicker() {
-                // Получаем все блоки цветов
                 const colorOptions = $('.color-option');
-                // Добавляем обработчик события для каждого блока цвета
-                colorOptions.on('click', function () {
-                    // Убираем рамку у всех блоков цветов
+                colorOptions.on('click', function() {
                     colorOptions.removeClass('selected');
-                    // Добавляем рамку только выбранному блоку цвета
                     $(this).addClass('selected');
-                    // Получаем цвет выбранного блока
                     const selectedColor = $(this).data('color');
-                    // Находим скрытое поле выбранного цвета для текущей вкладки
-                    const selectedColorField = $(this).closest('.tab-pane').find('input[name="selectedColor"]');
-                    // Устанавливаем значение цвета в скрытое поле ввода текущей вкладки
+                    const selectedColorField = $(this).closest('.d-flex').find('input[name="selectedColor"]');
                     selectedColorField.val(selectedColor);
                 });
             }
