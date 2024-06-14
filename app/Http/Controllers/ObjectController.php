@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CardGraph;
 use App\Models\HistoryCardObjectMain;
 use App\Models\HistoryCardObjectMainDoc;
 use App\Models\HistoryCardObjectServices;
@@ -289,6 +290,9 @@ class ObjectController extends Controller
         // Сохраняем изменения
         $card->save();
 
+        // Обновляем куратора во всех связанных карточках графиков
+        $this->updateCuratorInGraphs($card->_id, $card->curator);
+
         // Обновляем изображения (если есть новые изображения)
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
@@ -454,6 +458,15 @@ class ObjectController extends Controller
 
         // Возвращаем успешный ответ или редирект на страницу карточки объекта
         return response()->json(['success' => 'Данные карточки объекта успешно обновлены'], 200);
+    }
+
+    private function updateCuratorInGraphs($cardId, $curator)
+    {
+        $graphs = CardGraph::where('cards_ids', 'like', '%"'.$cardId.'"%')->get();
+        foreach ($graphs as $graph) {
+            $graph->curator = $curator;
+            $graph->save();
+        }
     }
 
     //------------------ УДАЛЕНИЕ ОБСЛУЖИВАНИЯ У КАРТЧОЧКИ ------------------

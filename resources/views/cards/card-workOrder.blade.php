@@ -2,8 +2,26 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container custom_tab_style1_outer">
-        <div class="row">
+    <div class="container">
+        @if(isset($existingWorkOrders) && !empty($existingWorkOrders))
+            <div class="alert alert-warning">
+                <h4>Следующие заказ-наряды уже существуют:</h4>
+                <ul>
+                    @foreach($existingWorkOrders as $workOrder)
+                        <li><a target="_blank" href="{{ $workOrder['link'] }}">{{ $workOrder['name'] }}</a></li>
+                    @endforeach
+                </ul>
+                <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
+            </div>
+        @else
+            @if(isset($message))
+                <div class="alert alert-danger">
+                    {{ $message }}
+                </div>
+                <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
+            @endif
+
+            <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
                 <h1 class="mb-4"><strong>Карточка заказ-наряда №{{$workOrder->number}} объекта "{{$cardObjectMain->name}}"</strong></h1>
@@ -280,4 +298,5 @@
                 $("#carObjectTab").show;
             });
         </script>
+    @endif
 @endsection

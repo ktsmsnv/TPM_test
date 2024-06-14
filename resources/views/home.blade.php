@@ -550,34 +550,50 @@
 
             // ------------------------------------ создание заказ-наряда ------------------------------------
             $('.create_workOrder').click(function () {
-                // Получаем ID выбранных записей
                 var selectedRows = $table.bootstrapTable('getSelections');
                 var selectedIds = selectedRows.map(row => row.id);
 
-                // Отправляем AJAX-запрос на создание заказ-наряда с передачей выбранных ID
                 $.ajax({
                     type: "POST",
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     url: "{{ route('create-work-order') }}",
-                    data: { selected_ids: selectedIds }, // Передаем выбранные ID как данные для создания заказ-наряда
+                    data: { selected_ids: selectedIds },
                     success: function (response) {
-                        // Проверяем наличие сообщения в ответе
-                        if (response.message) {
-                            // Выводим уведомление о существующем заказе-наряде
-                            alert(response.message);
+                        if (response.existingWorkOrders && response.existingWorkOrders.length > 0) {
+                            var html = '<div class="container">' +
+                                '<div class="alert alert-warning">' +
+                                '<h4>Следующие заказ-наряды уже существуют:</h4>' +
+                                '<ul>';
+
+                            response.existingWorkOrders.forEach(function (workOrder) {
+                                html += '<li><a target="_blank" href="' + workOrder.link + '">' + workOrder.name + '</a></li>';
+                            });
+
+                            html += '</ul>' +
+                                '<a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>' +
+                                '</div></div>';
+
+                            $('body').html(html);
                         } else {
-                            // Открываем страницу нового заказ-наряда в новой вкладке
-                            window.open(response.url, '_blank');
+                            response.results.forEach(function (result) {
+                                if (result.status === 'success') {
+                                    window.open(result.url, '_blank');
+                                } else {
+                                    alert(result.message);
+                                }
+                            });
                         }
                     },
                     error: function (xhr, status, error) {
-                        // Показываем всплывающее окно с текстом ошибки
                         alert("Произошла ошибка при выполнении запроса: " + xhr.responseText);
                     }
                 });
             });
+
+
+
 
             $('.createCalendar').click(function () {
                 let selectedRows = $table.bootstrapTable('getSelections');
@@ -590,10 +606,6 @@
                     });
                 }
             });
-
-
-
-
 
         });
     </script>
