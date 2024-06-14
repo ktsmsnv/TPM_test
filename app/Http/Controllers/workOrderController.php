@@ -219,28 +219,30 @@ class workOrderController extends Controller
         $plannedMaintenanceDate = Carbon::parse($cardObjectServices->planned_maintenance_date);
         $dayOfWeek = $plannedMaintenanceDate->dayOfWeek; // Используем день недели из текущей плановой даты
 
+
         switch ($frequency) {
             case 'Ежемесячное':
-                $nextDate = $prevMaintenanceDate->copy()->addMonth();
+                $nextDate = $plannedMaintenanceDate->addMonth();
                 break;
             case 'Ежеквартальное':
-                $nextDate = $prevMaintenanceDate->copy()->addMonths(3);
+                $nextDate = $plannedMaintenanceDate->addMonths(3);
                 break;
             case 'Полугодовое':
-                $nextDate = $prevMaintenanceDate->copy()->addMonths(6);
+                $nextDate = $plannedMaintenanceDate->addMonths(6);
                 break;
             case 'Ежегодное':
-                $nextDate = $prevMaintenanceDate->copy()->addYear();
+                $nextDate = $plannedMaintenanceDate->addYear();
                 break;
             default:
                 throw new \Exception('Unknown frequency type');
         }
 
-
+//        $nextDate = $prevMaintenanceDate->addMonth();
         // Переносим дату на ближайший нужный день недели
         while ($nextDate->dayOfWeek !== $dayOfWeek) {
             $nextDate->addDay();
         }
+
 
         $cardObjectServices->prev_maintenance_date = $dateFact;
         $cardObjectServices->planned_maintenance_date = $nextDate->format('Y-m-d');
