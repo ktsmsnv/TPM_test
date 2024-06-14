@@ -167,6 +167,22 @@ class HomeController extends Controller
             CardObjectMainDoc::where('card_object_main_id', $id)->delete();
             CardObjectServices::where('card_object_main_id', $id)->delete();
             CardObjectServicesTypes::where('card_id', $id)->delete();
+            CardWorkOrder::where('card_id', $id)->orWhere('card_object_services_id', $id)->delete();
+            CardCalendar::where('card_id', $id)->delete();
+
+            // Удалить записи из графиков
+            $graphs = CardGraph::where('cards_ids', 'like', '%"'.$id.'"%')->get();
+            foreach ($graphs as $graph) {
+                $graph->cards_ids = array_filter($graph->cards_ids, function($cardId) use ($id) {
+                    return $cardId !== $id;
+                });
+                $graph->save();
+
+                // Если в графике не осталось объектов, удалить сам график
+                if (empty($graph->cards_ids)) {
+                    $graph->delete();
+                }
+            }
 
             // Удалить запись из основной таблицы
             CardObjectMain::find($id)->delete();
@@ -174,7 +190,6 @@ class HomeController extends Controller
 
         return response()->json(['success' => 'Выбранные записи успешно удалены'], 200);
     }
-
     // ------------------ ОТОБРАЖЕНИЕ ПРОФИЛЯ ПОЛЬЗОВАТЕЛЧ------------------
     public function profile()
     {

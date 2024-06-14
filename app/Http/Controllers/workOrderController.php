@@ -139,22 +139,24 @@ class workOrderController extends Controller
             $nearestService = $cardObjectMain->services->sortBy('planned_maintenance_date')->first();
 
             if ($nearestService) {
+                $plannedDate = Carbon::parse($nearestService->planned_maintenance_date); // Преобразуем дату в объект Carbon
+
                 $newWorkOrder = new CardWorkOrder();
                 $newWorkOrder->card_id = $selectedId;
                 $newWorkOrder->card_object_services_id = $nearestService->id;
-                $newWorkOrder->date_create = $now->format('d-m-Y');
+                $newWorkOrder->date_create = $now->format('Y-m-d'); // Используем формат ISO для хранения
                 $newWorkOrder->status = 'В работе';
                 $newWorkOrder->number = CardWorkOrder::where('card_id', $selectedId)->count() + 1;
-                $newWorkOrder->planned_maintenance_date = $nearestService->planned_maintenance_date;
+                $newWorkOrder->planned_maintenance_date = $plannedDate->format('Y-m-d');
                 $newWorkOrder->save();
 
                 $newWorkOrder_history = new HistoryCardWorkOrder();
                 $newWorkOrder_history->card_id = $selectedId;
                 $newWorkOrder_history->card_object_services_id = $nearestService->id;
-                $newWorkOrder_history->date_create = $now->format('d-m-Y');
+                $newWorkOrder_history->date_create = $now->format('Y-m-d');
                 $newWorkOrder_history->status = 'В работе';
                 $newWorkOrder_history->number = $newWorkOrder->number;
-                $newWorkOrder_history->planned_maintenance_date = $nearestService->planned_maintenance_date;
+                $newWorkOrder_history->planned_maintenance_date = $plannedDate->format('Y-m-d');
                 $newWorkOrder_history->save();
 
                 $results[] = [
@@ -200,32 +202,28 @@ class workOrderController extends Controller
     public function endWorkOrder(Request $request)
     {
         $workOrderId = $request->id;
-        $dateFact = Carbon::now()->format('d-m-Y');
+        $dateFact = Carbon::now()->format('Y-m-d'); // Используем формат ISO для хранения
         $status = $request->status;
 
-        // Найдите заказ-наряд по его ID и обновите фактическую дату и статус
         $workOrder = CardWorkOrder::findOrFail($workOrderId);
         $workOrder->date_fact = $dateFact;
         $workOrder->status = $status;
         $workOrder->save();
 
-        // Обновите дату предыдущего обслуживания в объекте CardObjectServices
         $cardObjectServicesId = $workOrder->card_object_services_id;
         $cardObjectServices = CardObjectServices::findOrFail($cardObjectServicesId);
         $cardObjectServices->prev_maintenance_date = $dateFact;
         $cardObjectServices->save();
 
         $newWorkOrder_history = new HistoryCardWorkOrder();
-        $newWorkOrder_history->card_id = $workOrder->card_id; // Связываем заказ-наряд с выбранной карточкой объекта
-        $newWorkOrder_history->card_object_services_id = $workOrder->card_object_services_id; // Связываем заказ-наряд с ближайшей услугой
-        $newWorkOrder_history->date_create =  $workOrder->date_create;
-        $newWorkOrder_history->status =  $request->status; // Устанавливаем статус
+        $newWorkOrder_history->card_id = $workOrder->card_id;
+        $newWorkOrder_history->card_object_services_id = $workOrder->card_object_services_id;
+        $newWorkOrder_history->date_create = Carbon::parse($workOrder->date_create)->format('Y-m-d'); // Преобразуем дату в объект Carbon
+        $newWorkOrder_history->status = $status;
         $newWorkOrder_history->date_fact = $dateFact;
-        // Присваиваем номер заказа-наряда
         $newWorkOrder_history->number = $workOrder->number;
-        $newWorkOrder_history->planned_maintenance_date =$workOrder->planned_maintenance_date;
+        $newWorkOrder_history->planned_maintenance_date = Carbon::parse($workOrder->planned_maintenance_date)->format('Y-m-d'); // Преобразуем дату в объект Carbon
         $newWorkOrder_history->save();
-
 
         return response()->json(['message' => 'Заказ-наряд успешно завершен'], 200);
     }
