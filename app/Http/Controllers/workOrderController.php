@@ -220,33 +220,44 @@ class workOrderController extends Controller
         $dayOfWeek = $plannedMaintenanceDate->dayOfWeek; // Используем день недели из текущей плановой даты
 
 
-        switch ($frequency) {
-            case 'Ежемесячное':
-                $nextDate = $plannedMaintenanceDate->addMonth();
-                break;
-            case 'Ежеквартальное':
-                $nextDate = $plannedMaintenanceDate->addMonths(3);
-                break;
-            case 'Полугодовое':
-                $nextDate = $plannedMaintenanceDate->addMonths(6);
-                break;
-            case 'Ежегодное':
-                $nextDate = $plannedMaintenanceDate->addYear();
-                break;
-            default:
-                throw new \Exception('Unknown frequency type');
-        }
+        $allMaintenanceDates = [];
+        $currentDate = Carbon::parse($dateFact);
+        $yearEnd = $currentDate->copy()->endOfYear();
 
-//        $nextDate = $prevMaintenanceDate->addMonth();
-        // Переносим дату на ближайший нужный день недели
-        while ($nextDate->dayOfWeek !== $dayOfWeek) {
-            $nextDate->addDay();
-        }
+        while ($currentDate->lessThanOrEqualTo($yearEnd)) {
+            switch ($frequency) {
+                case 'Ежемесячное':
+                    $nextDate = $plannedMaintenanceDate->addMonth();
+                    break;
+                case 'Ежеквартальное':
+                    $nextDate = $plannedMaintenanceDate->addMonths(3);
+                    break;
+                case 'Полугодовое':
+                    $nextDate = $plannedMaintenanceDate->addMonths(6);
+                    break;
+                case 'Ежегодное':
+                    $nextDate = $plannedMaintenanceDate->addYear();
+                    break;
+                default:
+                    throw new \Exception('Unknown frequency type');
+            }
 
+            while ($nextDate->dayOfWeek !== $dayOfWeek) {
+                $nextDate->addDay();
+            }
+
+            if ($nextDate->greaterThan($yearEnd)) {
+                break;
+            }
+
+            $allMaintenanceDates[] = $nextDate->format('Y-m-d');
+            $plannedMaintenanceDate = $nextDate;
+        }
 
         $cardObjectServices->prev_maintenance_date = $dateFact;
-        $cardObjectServices->planned_maintenance_date = $nextDate->format('Y-m-d');
+        $cardObjectServices->planned_maintenance_date = $plannedMaintenanceDate->format('Y-m-d');
         $cardObjectServices->save();
+
 
         $newWorkOrderHistory = new HistoryCardWorkOrder();
         $newWorkOrderHistory->card_id = $workOrder->card_id;
