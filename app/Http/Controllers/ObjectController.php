@@ -164,7 +164,13 @@ class ObjectController extends Controller
                 $newService->performer = $service['performer'];
                 $newService->responsible = $service['responsible'];
                 $newService->frequency = $service['frequency'];
-                $newService->prev_maintenance_date = $service['prev_maintenance_date'];
+               // $newService->prev_maintenance_date = $service['prev_maintenance_date'];
+                // Проверяем, была ли передана дата предыдущего обслуживания
+                if (isset($service['prev_maintenance_date'])) {
+                    $newService->prev_maintenance_date = $service['prev_maintenance_date'];
+                } else {
+                    $newService->prev_maintenance_date = null; // Устанавливаем значение null
+                }
                 $newService->planned_maintenance_date = $service['planned_maintenance_date'];
                 $newService->calendar_color = $service['selectedColor'];
                 $newService->consumable_materials = $service['materials'];
