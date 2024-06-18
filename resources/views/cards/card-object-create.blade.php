@@ -212,6 +212,7 @@
                             uploadedImageSrc = e.target.result; // Сохраняем путь к загруженному изображению
                             $('.objectImage img').attr('src', uploadedImageSrc); // Отображаем изображение на вкладке "Основная"
                             $('.member_card_style.image .objectImage img').attr('src', uploadedImageSrc); // Отображаем изображение на других вкладках
+                            $('.objectImage__delete').remove();
                             $('.member_card_style.image .member-info').append(
                                 '<div class="objectImage__delete mt-4"><button class="btn btn-danger imageDelete">Удалить</button></div>'
                             );
