@@ -164,18 +164,6 @@ class CalendarController extends Controller
 
         // Собираем все услуги для календаря
         $services = [];
-//        foreach ($cardCalendar->objects as $object) {
-//            foreach ($object->services as $service) {
-//                // Рассчитываем следующую дату обслуживания
-//                $nextMaintenanceDate = $this->getAdjustedMaintenanceDate($service->planned_maintenance_date, $service->prev_maintenance_date);
-//                $services[] = [
-//                    'prev_maintenance_date' => $service->prev_maintenance_date,
-//                    'planned_maintenance_date' => $nextMaintenanceDate,
-//                    'short_name' => $service->short_name,
-//                    'calendar_color' => $service->calendar_color,
-//                ];
-//            }
-//        }
         foreach ($cardCalendar->objects as $object) {
             foreach ($object->services as $service) {
                 $allMaintenanceDates = $this->calculateMaintenanceDates($service);
@@ -195,7 +183,6 @@ class CalendarController extends Controller
 
     private function calculateMaintenanceDates($service)
     {
-        $initialPlannedDate = Carbon::parse($service->initial_planned_date);
         $plannedDate = Carbon::parse($service->planned_maintenance_date);
         $frequency = $service->frequency;
 
