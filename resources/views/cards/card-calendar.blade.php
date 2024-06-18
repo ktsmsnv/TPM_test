@@ -165,6 +165,24 @@
                                             <tbody></tbody>
                                         </table>
                                     </div>
+{{--                                    <div class="calendar" id="calendar">--}}
+{{--                                        @for($i = 0; $i < 12; $i++)--}}
+{{--                                            <div class="month">--}}
+{{--                                                <div class="month-title">--}}
+{{--                                                    {{ $months[$i] }}--}}
+{{--                                                </div>--}}
+{{--                                                <div class="month-body">--}}
+{{--                                                    @foreach($services as $service)--}}
+{{--                                                        @if(Carbon\Carbon::parse($service['planned_maintenance_date'])->month == $i + 1)--}}
+{{--                                                            <div class="event" style="background-color: {{ $service['calendar_color'] }}">--}}
+{{--                                                                <span>{{ Carbon\Carbon::parse($service['planned_maintenance_date'])->format('d') }} - {{ $service['short_name'] }}</span>--}}
+{{--                                                            </div>--}}
+{{--                                                        @endif--}}
+{{--                                                    @endforeach--}}
+{{--                                                </div>--}}
+{{--                                            </div>--}}
+{{--                                        @endfor--}}
+{{--                                    </div>--}}
                                 </div>
                             </div>
                         </div>
@@ -344,6 +362,7 @@
                         } else {
                             dayCounter++; // Если суббота или воскресенье, добавляем пустую ячейку
                         }
+
                     }
 
                     row += '</tr>';

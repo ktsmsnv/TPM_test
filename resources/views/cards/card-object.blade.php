@@ -197,9 +197,13 @@
                                             <label class="w-100">Периодичность</label>
                                             <input class="form-control w-100" name="" value="{{ $service->frequency }}" readonly>
                                         </div>
+                                        {{-- Дата предыдущего обслуживания --}}
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата предыдущего обслуживания</label>
-                                            <input class="form-control w-100" name="" value="{{ date('d.m.Y', strtotime($service->prev_maintenance_date)) }}" readonly>
+                                            <input class="form-control w-100" name="" value="{{ !empty($service->prev_maintenance_date) ? date('d.m.Y', strtotime($service->prev_maintenance_date)) : '-' }}" readonly
+                                                   @if(empty($service->prev_maintenance_date))
+                                                       data-toggle="tooltip" title="Дата появится после завершения заказ-наряда"
+                                                @endif>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Плановая дата обслуживания</label>
