@@ -544,32 +544,62 @@
                         // Если дата предыдущего обслуживания не указана, используем дату ввода в эксплуатацию
                         let prevMaintenanceDate = prevDateInput.val() ? new Date(prevDateInput.val()) : new Date(dateUsageInput.val());
                         let plannedMaintenanceDate = new Date(prevMaintenanceDate);
+                        let dayOfWeek = plannedMaintenanceDate.getDay();
+
+                        let nextDate = new Date(prevMaintenanceDate);
 
                         // Выполняем соответствующие расчеты в зависимости от выбранной периодичности
                         switch (frequency) {
-                            case 'Сменное':
-                                plannedMaintenanceDate.setDate(plannedMaintenanceDate.getDate() + 1);
-                                break;
                             case 'Ежемесячное':
-                                plannedMaintenanceDate.setMonth(plannedMaintenanceDate.getMonth() + 1);
+                                nextDate.setMonth(nextDate.getMonth() + 1);
                                 break;
                             case 'Ежеквартальное':
-                                plannedMaintenanceDate.setMonth(plannedMaintenanceDate.getMonth() + 3);
+                                nextDate.setMonth(nextDate.getMonth() + 3);
                                 break;
                             case 'Полугодовое':
-                                plannedMaintenanceDate.setMonth(plannedMaintenanceDate.getMonth() + 6);
+                                nextDate.setMonth(nextDate.getMonth() + 6);
                                 break;
                             case 'Ежегодное':
-                                plannedMaintenanceDate.setFullYear(plannedMaintenanceDate.getFullYear() + 1);
+                                nextDate.setFullYear(nextDate.getFullYear() + 1);
                                 break;
                             default:
                                 // Если выбрана периодичность "Сменное" или что-то другое, выходим из функции
                                 return;
                         }
+                        // // Переносим дату на ближайший нужный день недели
+                        // while (nextDate.getDay() !== dayOfWeek) {
+                        //     nextDate.setDate(nextDate.getDate() + 1);
+                        // }
+                        //
+                        // // Устанавливаем новую плановую дату обслуживания
+                        // plannedDateInput.val(nextDate.toISOString().slice(0, 10));
+
+                        // Поиск ближайшей даты, соответствующей нужному дню недели
+                        let closestDate = findClosestDayOfWeek(nextDate, dayOfWeek);
 
                         // Устанавливаем новую плановую дату обслуживания
-                        plannedDateInput.val(plannedMaintenanceDate.toISOString().slice(0, 10));
+                        plannedDateInput.val(closestDate.toISOString().slice(0, 10));
                     });
+                }
+                // Функция для поиска ближайшего нужного дня недели
+                function findClosestDayOfWeek(baseDate, targetDayOfWeek) {
+                    let prevDate = new Date(baseDate);
+                    let nextDate = new Date(baseDate);
+
+                    // Ищем ближайшие даты до и после базовой даты
+                    while (prevDate.getDay() !== targetDayOfWeek) {
+                        prevDate.setDate(prevDate.getDate() - 1);
+                    }
+                    while (nextDate.getDay() !== targetDayOfWeek) {
+                        nextDate.setDate(nextDate.getDate() + 1);
+                    }
+
+                    // Возвращаем дату, которая ближе к базовой дате
+                    if (Math.abs(prevDate - baseDate) <= Math.abs(nextDate - baseDate)) {
+                        return prevDate;
+                    } else {
+                        return nextDate;
+                    }
                 }
 
 
