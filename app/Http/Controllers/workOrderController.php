@@ -213,64 +213,18 @@ class workOrderController extends Controller
         $cardObjectServicesId = $workOrder->card_object_services_id;
         $cardObjectServices = CardObjectServices::findOrFail($cardObjectServicesId);
 
-//        // Вычисление следующей плановой даты обслуживания
-//        $prevMaintenanceDate = Carbon::parse($cardObjectServices->prev_maintenance_date);
-//        $frequency = $cardObjectServices->frequency;
-//        $plannedMaintenanceDate = Carbon::parse($cardObjectServices->planned_maintenance_date);
-//        $dayOfWeek = $plannedMaintenanceDate->dayOfWeek; // Используем день недели из текущей плановой даты
-//
-//
-//        $allMaintenanceDates = [];
-//        $currentDate = Carbon::parse($dateFact);
-//        $yearEnd = $currentDate->copy()->endOfYear();
-//
-//
-//        while ($currentDate->lessThanOrEqualTo($yearEnd)) {
-//            switch ($frequency) {
-//                case 'Ежемесячное':
-//                    $nextDate = $plannedMaintenanceDate->addMonth();
-//                    break;
-//                case 'Ежеквартальное':
-//                    $nextDate = $plannedMaintenanceDate->addMonths(3);
-//                    break;
-//                case 'Полугодовое':
-//                    $nextDate = $plannedMaintenanceDate->addMonths(6);
-//                    break;
-//                case 'Ежегодное':
-//                    $nextDate = $plannedMaintenanceDate->addYear();
-//                    break;
-//                default:
-//                    throw new \Exception('Unknown frequency type');
-//            }
-//
-//            while ($nextDate->dayOfWeek !== $dayOfWeek) {
-//                $nextDate->addDay();
-//            }
-//
-//            if ($nextDate->greaterThan($yearEnd)) {
-//                break;
-//            }
-//
-//            $allMaintenanceDates[] = $nextDate->format('Y-m-d');
-//            $plannedMaintenanceDate = $nextDate;
-//        }
-//
-//        $cardObjectServices->prev_maintenance_date = $dateFact;
-//        $cardObjectServices->planned_maintenance_date = $plannedMaintenanceDate->format('Y-m-d');
-//        $cardObjectServices->save();
-
         // Вычисление следующей плановой даты обслуживания
         $prevMaintenanceDate = Carbon::parse($cardObjectServices->prev_maintenance_date);
         $frequency = $cardObjectServices->frequency;
         $plannedMaintenanceDate = Carbon::parse($cardObjectServices->planned_maintenance_date);
         $targetDayOfWeek = $plannedMaintenanceDate->dayOfWeek; // Используем день недели из текущей плановой даты
 
-        $allMaintenanceDates = [];
         $currentDate = Carbon::parse($dateFact);
         $yearEnd = $currentDate->copy()->endOfYear();
         $nextDate = $this->calculateNextDate($prevMaintenanceDate, $frequency);
 
-        // Цикл для расчета всех дат до конца года
+        // Поиск первой ближайшей даты до конца года
+        $closestDate = null;
         while ($nextDate->lessThanOrEqualTo($yearEnd)) {
             $closestDate = $this->findClosestDayOfWeek($nextDate, $targetDayOfWeek);
 
@@ -278,13 +232,17 @@ class workOrderController extends Controller
                 break;
             }
 
-            $allMaintenanceDates[] = $closestDate->format('Y-m-d');
-            $nextDate = $this->calculateNextDate($closestDate, $frequency);
+            // Если нашли ближайшую дату, выходим из цикла
+            break;
         }
-        $nextDate2 = $this->calculateNextDate($closestDate, $frequency);
-        // Обновление даты предыдущего обслуживания и следующей плановой даты обслуживания
+
+        // Если ближайшая дата найдена, используем её
+        if ($closestDate) {
+            $cardObjectServices->planned_maintenance_date = $closestDate->format('Y-m-d');
+        }
+
+        // Обновление даты предыдущего обслуживания
         $cardObjectServices->prev_maintenance_date = $dateFact;
-        $cardObjectServices->planned_maintenance_date = $nextDate2->format('Y-m-d');
         $cardObjectServices->save();
 
         $newWorkOrderHistory = new HistoryCardWorkOrder();
@@ -299,6 +257,7 @@ class workOrderController extends Controller
 
         return response()->json(['message' => 'Заказ-наряд успешно завершен'], 200);
     }
+
     private function calculateNextDate($prevMaintenanceDate, $frequency)
     {
         switch ($frequency) {
