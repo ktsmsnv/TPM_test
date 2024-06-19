@@ -566,14 +566,6 @@
                                 // Если выбрана периодичность "Сменное" или что-то другое, выходим из функции
                                 return;
                         }
-                        // // Переносим дату на ближайший нужный день недели
-                        // while (nextDate.getDay() !== dayOfWeek) {
-                        //     nextDate.setDate(nextDate.getDate() + 1);
-                        // }
-                        //
-                        // // Устанавливаем новую плановую дату обслуживания
-                        // plannedDateInput.val(nextDate.toISOString().slice(0, 10));
-
                         // Поиск ближайшей даты, соответствующей нужному дню недели
                         let closestDate = findClosestDayOfWeek(nextDate, dayOfWeek);
 
@@ -585,7 +577,6 @@
                 function findClosestDayOfWeek(baseDate, targetDayOfWeek) {
                     let prevDate = new Date(baseDate);
                     let nextDate = new Date(baseDate);
-
                     // Ищем ближайшие даты до и после базовой даты
                     while (prevDate.getDay() !== targetDayOfWeek) {
                         prevDate.setDate(prevDate.getDate() - 1);
@@ -593,7 +584,6 @@
                     while (nextDate.getDay() !== targetDayOfWeek) {
                         nextDate.setDate(nextDate.getDate() + 1);
                     }
-
                     // Возвращаем дату, которая ближе к базовой дате
                     if (Math.abs(prevDate - baseDate) <= Math.abs(nextDate - baseDate)) {
                         return prevDate;
@@ -646,11 +636,11 @@
              //------------  обработчик сохранения данных  ------------
                 $(".saveCard").click(function () {
                     // Сброс всех сохраненных выбранных цветов перед созданием новой карточки объекта
-                    resetSelectedColors();
+                 resetSelectedColors();
 
                     // Убираем все выделенные цвета на UI
-                    $('.color-option').removeClass('selected');
-                    $('input[name="selectedColor"]').val('');
+                    // $('.color-option').removeClass('selected');
+                    // $('input[name="selectedColor"]').val('');
 
                     // Выводим сообщение пользователю
                     var popup = $('<div class="popup">Пожалуйста подождите, данные сохраняются</div>');
@@ -729,7 +719,7 @@
                             popup.fadeOut(function() {
                                 $(this).remove();
                             });
-                            // console.log(formData);
+                            console.log(formData);
                             window.location.href = "/home/card-object/" + response.id;
                         },
                         error: function (error) {
