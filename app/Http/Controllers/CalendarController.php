@@ -185,43 +185,63 @@ class CalendarController extends Controller
     {
         $plannedDate = Carbon::parse($service->planned_maintenance_date);
         $frequency = $service->frequency;
+        $dayOfWeek = $plannedDate->dayOfWeek;
 
         $maintenanceDates = [$plannedDate->format('Y-m-d')];
         $yearEnd = Carbon::now()->endOfYear();
-        $dayOfWeek = $plannedDate->dayOfWeek;
 
         while ($plannedDate->lessThanOrEqualTo($yearEnd)) {
-            switch ($frequency) {
-                case 'Ежемесячное':
-                    $nextDate = $plannedDate->copy()->addMonth();
-                    break;
-                case 'Ежеквартальное':
-                    $nextDate = $plannedDate->copy()->addMonths(3);
-                    break;
-                case 'Полугодовое':
-                    $nextDate = $plannedDate->copy()->addMonths(6);
-                    break;
-                case 'Ежегодное':
-                    $nextDate = $plannedDate->copy()->addYear();
-                    break;
-                default:
-                    throw new \Exception('Unknown frequency type');
-            }
+            $nextDate = $this->calculateNextDate($plannedDate, $frequency);
+            $closestDate = $this->findClosestDayOfWeek($nextDate, $dayOfWeek);
 
-            while ($nextDate->dayOfWeek !== $dayOfWeek) {
-                $nextDate->addDay();
-            }
-
-            if ($nextDate->greaterThan($yearEnd)) {
+            if ($closestDate->greaterThan($yearEnd)) {
                 break;
             }
 
-            $maintenanceDates[] = $nextDate->format('Y-m-d');
-            $plannedDate = $nextDate;
+            $maintenanceDates[] = $closestDate->format('Y-m-d');
+            $plannedDate = $closestDate;
         }
 
         return $maintenanceDates;
     }
+
+    private function calculateNextDate($baseDate, $frequency)
+    {
+        switch ($frequency) {
+            case 'Ежемесячное':
+                return $baseDate->copy()->addMonth();
+            case 'Ежеквартальное':
+                return $baseDate->copy()->addMonths(3);
+            case 'Полугодовое':
+                return $baseDate->copy()->addMonths(6);
+            case 'Ежегодное':
+                return $baseDate->copy()->addYear();
+            default:
+                throw new \Exception('Unknown frequency type');
+        }
+    }
+
+    private function findClosestDayOfWeek($baseDate, $targetDayOfWeek)
+    {
+        $prevDate = $baseDate->copy();
+        $nextDate = $baseDate->copy();
+
+        // Ищем ближайшие даты до и после базовой даты
+        while ($prevDate->dayOfWeek !== $targetDayOfWeek) {
+            $prevDate->subDay();
+        }
+        while ($nextDate->dayOfWeek !== $targetDayOfWeek) {
+            $nextDate->addDay();
+        }
+
+        // Возвращаем дату, которая ближе к базовой дате
+        if ($baseDate->diffInDays($prevDate) <= $baseDate->diffInDays($nextDate)) {
+            return $prevDate;
+        } else {
+            return $nextDate;
+        }
+    }
+
 
 
 
