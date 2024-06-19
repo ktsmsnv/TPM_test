@@ -2,8 +2,26 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container custom_tab_style1_outer">
-        <div class="row">
+    <div class="container">
+        @if(isset($existingWorkOrders) && !empty($existingWorkOrders))
+            <div class="alert alert-warning">
+                <h4>Следующие заказ-наряды уже существуют:</h4>
+                <ul>
+                    @foreach($existingWorkOrders as $workOrder)
+                        <li><a target="_blank" href="{{ $workOrder['link'] }}">{{ $workOrder['name'] }}</a></li>
+                    @endforeach
+                </ul>
+                <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
+            </div>
+        @else
+            @if(isset($message))
+                <div class="alert alert-danger">
+                    {{ $message }}
+                </div>
+                <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
+            @endif
+
+            <div class="row">
             {{-- ЗАГОЛОВОК С ПАНЕЛЬЮ КНОПОК --}}
             <div class="col-md-12 text-left">
                 <h1 class="mb-4"><strong>Карточка заказ-наряда №{{$workOrder->number}} объекта "{{$cardObjectMain->name}}"</strong></h1>
@@ -11,7 +29,7 @@
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
                     {{-- <button type="button" class="btn btn-success">Сохранить</button>--}}
-                    <button type="button" class="btn btn-secondary me-5">Закрыть</button>
+                    <a href="/reestr-work-orders" type="button" class="btn btn-secondary me-5">Закрыть</a>
 
                     <a href="{{ route('downloadPDF', ['id' => $workOrder->id]) }}" target="_blank" class="btn btn-success">Выгрузить WORD</a>
 {{--                    <a href="{{ route('downloadWordDocument', ['id' => $workOrder->id]) }}" target="_blank" class="btn btn-success">Выгрузить Word</a>--}}
@@ -40,8 +58,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
-                                    <button class="btn btn-primary end_workOrder{{ $workOrder->status === 'Выполнен' ? ' disabled' : '' }}">
-                                        Завершить заказ</button>
+                                    <button class="btn btn-primary end_workOrder{{ $workOrder->status === 'Выполнен' ? ' disabled' : '' }}">Завершить заказ</button>
                                 </div>
                                 <div class="member-info--inputs d-flex gap-5">
                                     <div class="d-flex flex-column gap-3 w-50">
@@ -72,7 +89,8 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Плановая дата обслуживания</label>
-                                            <input name="planned_maintenance_date" class="form-control w-100" value="{{ $cardObjectServices->planned_maintenance_date }}" readonly
+                                            <input name="planned_maintenance_date" class="form-control w-100"
+                                                   value="{{ date('d.m.Y', strtotime($workOrder->planned_maintenance_date)) ?? 'нет данных' }}" readonly
                                                    data-toggle="tooltip" title="изменить можно в карточке объекта 'обслуживание'">
                                         </div>
                                     </div>
@@ -80,7 +98,8 @@
                                     <div class="d-flex flex-column gap-3 w-50">
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата создания</label>
-                                            <input name="date_create" class="form-control w-100" value="{{ $workOrder->date_create }}" readonly
+                                            <input name="date_create" class="form-control w-100"
+                                                   value="{{ date('d.m.Y', strtotime($workOrder->date_create)) ?? 'нет данных' }}" readonly
                                                    data-toggle="tooltip" title="дата создания заказ-наряда">
                                         </div>
 {{--                                        <div class="d-flex justify-content-between align-items-center gap-3">--}}
@@ -90,7 +109,7 @@
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Фактическая дата</label>
                                             @if ($workOrder && $workOrder->date_fact)
-                                            <input name="date_fact" class="form-control w-100" value="{{ $workOrder->date_fact }}" readonly
+                                            <input name="date_fact" class="form-control w-100" value="{{ date('d.m.Y', strtotime($workOrder->date_fact)) ?? 'нет данных'  }}" readonly
                                                    data-toggle="tooltip" title="дата завершения заказ-наряда">
                                             @else
                                                 <input name="date_fact" class="form-control w-100" value="дата завершения заказа"
@@ -228,8 +247,16 @@
         <script>
             // Обработчик события нажатия на кнопку "Завершить заказ"
             $('.end_workOrder').click(function () {
-                // Открываем модальное окно с вопросом о завершении заказа-наряда
-                $('#confirmEndWorkOrderModal').modal('show');
+                // Проверяем состояние всех чекбоксов
+                var allChecked = $('.type-checkbox:checked').length === $('.type-checkbox').length;
+                // Если все чекбоксы отмечены, делаем кнопку активной; в противном случае - неактивной
+                if (allChecked) {
+                    $('#confirmEndWorkOrderModal').modal('show'); // Открываем модальное окно с вопросом о завершении заказа-наряда
+                } else {
+                    // Если не все чекбоксы отмечены, выводим сообщение об ошибке или просто ничего не делаем
+                    // Например:
+                    alert('Необходимо отметить все виды работ!');
+                }
             });
             // Обработчик события нажатия на кнопку "Да" в модальном окне подтверждения
             $('#confirmEndWorkOrderButton').click(function () {
@@ -254,6 +281,7 @@
                     success: function (response) {
                         // Обработка успешного завершения запроса
                         console.log(response);
+                        location.reload();
                     },
                     error: function (error) {
                         // Обработка ошибки
@@ -270,4 +298,5 @@
                 $("#carObjectTab").show;
             });
         </script>
+    @endif
 @endsection

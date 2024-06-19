@@ -17,7 +17,8 @@
                             data-intro="Обновлять данные в реестре в зависимости от выбранного периода и «Года действия» графика.">
                         Выбрать период действия</button>
                     <button type="button" class="btn btn-success"
-                            id="showActiveBtn" data-title="Работа с реестром графиков" data-step="17"
+                            id="showActiveBtn" data-title="Работа с реестром графиков" data-step="17" data-toggle="tooltip"
+                            title="Отображать только те графики, в карточке которых не заполнена «Дата архивации»"
                             data-intro="Кнопка «Показать активные графики» - отображать только те календари, в карточке которых не заполнена «Дата архивации».">
                         Показать активные графики</button>
                 </div>
@@ -205,7 +206,20 @@
                                     }
                                 }
                             },
-                            {title: 'Куратор', field: 'curator', align: 'center'},
+                            {title: 'Куратор', field: 'curator', align: 'center',
+                                formatter: function(value, row) {
+                                    let curators = []; // Создаем пустой массив для всех ответственных
+                                    if (row.objects && Array.isArray(row.objects) && row.objects.length > 0) {
+                                        row.objects.forEach(function(object) {
+                                            curators.push(object.curator); // Добавляем ответственного в массив
+                                        });
+                                        return curators.length > 0 ? curators : 'Нет куратора'; // Возвращаем массив всех ответственных
+                                    } else {
+                                        console.log('Кураторы',  curators);
+                                        return 'Нет куратора';
+                                    }
+                                }
+                            },
                         ],
                     ],
                     data: data,

@@ -1,5 +1,5 @@
 <?php
-// CardObjectMain.php
+// CardGraph.php
 namespace App\Models;
 
 use MongoDB\Laravel\Eloquent\Model as Eloquent;
@@ -62,4 +62,21 @@ class CardGraph extends Eloquent
     {
         return $this->hasMany(CardObjectServices::class, 'card_object_main_id', 'cards_ids');
     }
+
+    public function objects()
+    {
+        return $this->hasMany(CardObjectMain::class, '_id', 'cards_ids');
+    }
+
+//    public function services()
+//    {
+//        return $this->hasManyThrough(
+//            CardObjectServices::class,
+//            CardObjectMain::class,
+//            '_id',
+//            'card_object_main_id',
+//            'cards_ids',
+//            '_id'
+//        );
+//    }
 }

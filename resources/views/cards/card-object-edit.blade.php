@@ -182,7 +182,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Обслуживание ТРМ {{ $key + 1 }}</h4>
-                                    <button class="btn btn-primary">Обновить даты</button>
+{{--                                    <button class="btn btn-primary">Обновить даты</button>--}}
                                     <div>
                                         <input type="checkbox" class="form-check-input me-1" id="disableInTable_{{ $key + 1 }}"
                                                @if ($service->checked) checked @endif>
@@ -247,7 +247,8 @@
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Плановая дата обслуживания</label>
-                                            <input id="planned_maintenance_date_{{ $key + 1 }}" type="date" class="form-control w-100" name="planned_maintenance_date" value="{{ $service->planned_maintenance_date }}" >
+                                            <input id="planned_maintenance_date_{{ $key + 1 }}" type="date" class="form-control w-100" name="planned_maintenance_date" value="{{ $service->planned_maintenance_date }}"
+                                                   readonly style="opacity: 0.5;">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Цвет в календаре</label>
@@ -255,6 +256,7 @@
                                                 <div class="color-option red" data-color="#ff0000"></div>
                                                 <div class="color-option green" data-color="#00ff00"></div>
                                                 <div class="color-option blue" data-color="#0000ff"></div>
+                                                <div class="color-option yellow" data-color="#fff400"></div>
                                             </div>
                                             <input type="hidden" id="selectedColor_{{ $key + 1 }}" name="selectedColor" value="{{ $service->calendar_color }}" >
                                         </div>
@@ -378,7 +380,7 @@
     </div>
 
     @php
-        $imageSrc = $data_CardObjectMain ? route('getImage', ['id' => $data_CardObjectMain->id]) : 'http://placehold.it/350x450';
+        $imageSrc = $data_CardObjectMain ? route('getImage', ['id' => $data_CardObjectMain->id]) : 'https://placehold.it/350x450';
     @endphp
     <script>
         let uploadedImageSrc = '{{ $imageSrc }}'; // Переменная для хранения пути к загруженному изображению
@@ -431,7 +433,7 @@
                 // Находим родительский элемент кнопки "Удалить"
                 let parent = $(this).closest('.member_card_style.image .member-info');
                 // Удаляем изображение из родительского элемента
-                parent.find('.objectImage img').attr('src', 'http://placehold.it/350x450'); // Устанавливаем атрибут src пустой строкой
+                parent.find('.objectImage img').attr('src', 'https://placehold.it/350x450'); // Устанавливаем атрибут src пустой строкой
                 // Удаляем кнопку "Удалить"
                 $(this).closest('.objectImage__delete').remove();
             });
@@ -450,8 +452,14 @@
             });
             // Определяем следующий номер для вкладки обслуживания
             let serviceTabsCount = maxServiceTabsCount + 1;
+            const maxServiceTabs = 5; // максимальное количество вкладок
             // Обработчик нажатия на кнопку "Создать обслуживание"
             $('.createService').on('click', function () {
+                if (serviceTabsCount >= maxServiceTabs) {
+                    alert('Нельзя добавить больше 4 видов обслуживания');
+                    $(this).prop('disabled', true).css('opacity', 0.5); // Делаем кнопку неактивной и изменяем её стиль
+                    return; // Прекращаем выполнение функции, если достигнут лимит вкладок
+                }
                 // Генерируем id для новой вкладки и ее содержимого
                 let tabId = 'service_' + serviceTabsCount + '-tab';
                 let paneId = 'service_' + serviceTabsCount;
@@ -467,7 +475,7 @@
                                 <div class="member-info"> \
                                     <div class="d-flex justify-content-between mb-4"> \
                                         <h4>Обслуживание ТРМ</h4> \
-                                        <button class="btn btn-primary">Обновить даты</button> \
+                                        <!-- <button class="btn btn-primary">Обновить даты</button> --> \
                                         <div> \
                                             <input type="checkbox" class="form-check-input me-1" id="disableInTable_' + serviceTabsCount + '"> \
                                             <label class="form-check-label disableInTable" for="disableInTable_' + serviceTabsCount + '">Не выводить \
@@ -540,6 +548,7 @@
                                                     <div class="color-option red" data-color="#ff0000"></div> \
                                                     <div class="color-option green" data-color="#00ff00"></div> \
                                                     <div class="color-option blue" data-color="#0000ff"></div> \
+                                                    <div class="color-option yellow" data-color="#fff400"></div> \
                                                 </div> \
                                                 <input type="hidden" id="selectedColor_' + serviceTabsCount + '" name="selectedColor"> \
                                             </div> \
@@ -606,27 +615,44 @@
                 $('#cardObjectTab').append(tab);
                 $('#cardObjectTabContent').append(tabContent);
 
+                // Устанавливаем цвет в календаре для новой вкладки
+                setColorOptions();
+
                 // Обновляем обработчик событий для выбора цвета
                 updateColorPicker();
 
                 // Увеличиваем счетчик вкладок для обслуживания
                 serviceTabsCount++;
             });
+            // Проверка при загрузке страницы, чтобы кнопка была неактивной, если уже достигнут лимит
+            if (serviceTabsCount >= maxServiceTabs) {
+                $('.createService').prop('disabled', true).css('opacity', 0.5);
+            }
+
+            // Функция для установки выбранного цвета
+            function setColorOptions() {
+                $('.color-options').each(function() {
+                    let selectedColor = $(this).siblings('input[name="selectedColor"]').val();
+                    $(this).find('.color-option').each(function() {
+                        if ($(this).data('color') === selectedColor) {
+                            $(this).addClass('selected');
+                        } else {
+                            $(this).removeClass('selected');
+                        }
+                    });
+                });
+            }
+            // Вызов функции установки выбранного цвета при загрузке страницы
+            setColorOptions();
+
             // Функция для обновления обработчика событий для выбора цвета
             function updateColorPicker() {
-                // Получаем все блоки цветов
                 const colorOptions = $('.color-option');
-                // Добавляем обработчик события для каждого блока цвета
-                colorOptions.on('click', function () {
-                    // Убираем рамку у всех блоков цветов
+                colorOptions.on('click', function() {
                     colorOptions.removeClass('selected');
-                    // Добавляем рамку только выбранному блоку цвета
                     $(this).addClass('selected');
-                    // Получаем цвет выбранного блока
                     const selectedColor = $(this).data('color');
-                    // Находим скрытое поле выбранного цвета для текущей вкладки
-                    const selectedColorField = $(this).closest('.tab-pane').find('input[name="selectedColor"]');
-                    // Устанавливаем значение цвета в скрытое поле ввода текущей вкладки
+                    const selectedColorField = $(this).closest('.d-flex').find('input[name="selectedColor"]');
                     selectedColorField.val(selectedColor);
                 });
             }
@@ -723,6 +749,44 @@
                 });
             }
 
+            $(document).on('change', '[id^="service_type_"]', function () {
+                console.log('Выбран вид обслуживания. Обновляем сокращенное название...');
+                // Обновляем плановую дату обслуживания при изменении периодичности или даты предыдущего обслуживания
+                updateInfrastructure();
+            });
+
+            // Функция для обновления сокращенного названия вида обслуживания
+            function updateInfrastructure() {
+                console.log('Обновляем сокращенное название вида обслуживания...');
+                $('[id^="service_type_"]').each(function () {
+                    let index = $(this).attr('id').split('_')[2];
+                    let infrastructure = $('#service_type_' + index).val();
+                    let shortNameInput = $('#short_name_' + index);
+
+                    // Выполняем соответствующие действия в зависимости от выбранного вида обслуживания
+                    switch (infrastructure) {
+                        case 'Регламентные работы':
+                            shortNameInput.val('РР');
+                            break;
+                        case 'Техническое обслуживание':
+                            shortNameInput.val('ТО');
+                            break;
+                        case 'Сервисное техническое обслуживание':
+                            shortNameInput.val('СТО');
+                            break;
+                        case 'Капитальный ремонт':
+                            shortNameInput.val('КР');
+                            break;
+                        case 'Аварийный ремонт':
+                            shortNameInput.val('АР');
+                            break;
+                        default:
+                            // Если выбран неизвестный вид обслуживания, очищаем поле сокращенного названия
+                            shortNameInput.val('');
+                            break;
+                    }
+                });
+            }
 
             //------------  обработчик сохранения данных  ------------
             $(".saveEditObject").click(function () {
@@ -789,7 +853,7 @@
                     success: function (response) {
                         // Обработка успешного ответа от сервера (например, отображение сообщения об успешном сохранении)
                         // alert("Данные для карточки объекта успешно обновлены!");
-                   //     window.location.href = "{{ route('cardObject', ['id' => $data_CardObjectMain->id]) }}";
+                     window.location.href = "{{ route('cardObject', ['id' => $data_CardObjectMain->id]) }}";
                         //console.log(formData);
                     },
                     error: function (error) {

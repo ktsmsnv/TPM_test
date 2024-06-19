@@ -11,7 +11,7 @@
             <div class="btns d-flex mb-5">
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-success saveCard">Сохранить</button>
-                    <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
+                    <button type="button" class="btn btn-secondary me-5 closeCreateCard">Закрыть</button>
 
                     <label for="imageUpload" class="btn btn-primary">Загрузить изображение</label>
                     <input type="file" id="imageUpload" class="d-none" multiple accept="image/*">
@@ -140,7 +140,7 @@
                                     <input type="file" id="imageUpload" class="d-none" multiple accept="image/*">
                                 </div>
                                 <div class="objectImage">
-                                    <img src="http://placehold.it/350x450" id="uploadedImage" alt="Uploaded Image">
+                                    <img src="https://placehold.it/350x450" id="uploadedImage" alt="Uploaded Image">
                                 </div>
                             </div>
                         </div>
@@ -212,6 +212,7 @@
                             uploadedImageSrc = e.target.result; // Сохраняем путь к загруженному изображению
                             $('.objectImage img').attr('src', uploadedImageSrc); // Отображаем изображение на вкладке "Основная"
                             $('.member_card_style.image .objectImage img').attr('src', uploadedImageSrc); // Отображаем изображение на других вкладках
+                            $('.objectImage__delete').remove();
                             $('.member_card_style.image .member-info').append(
                                 '<div class="objectImage__delete mt-4"><button class="btn btn-danger imageDelete">Удалить</button></div>'
                             );
@@ -223,7 +224,7 @@
                     // Находим родительский элемент кнопки "Удалить"
                     let parent = $(this).closest('.member_card_style.image .member-info');
                     // Удаляем изображение из родительского элемента
-                    parent.find('.objectImage img').attr('src', 'http://placehold.it/350x450'); // Устанавливаем атрибут src пустой строкой
+                    parent.find('.objectImage img').attr('src', 'https://placehold.it/350x450'); // Устанавливаем атрибут src пустой строкой
                     // Удаляем кнопку "Удалить"
                     $(this).closest('.objectImage__delete').remove();
                 });
@@ -231,8 +232,14 @@
 
                 // ------------ динамическое создание вкладок обслуживание  ------------
                 let serviceTabsCount = 1; // начальный счетчик вкладок для обслуживания
+                const maxServiceTabs = 5; // максимальное количество вкладок
                 // Обработчик нажатия на кнопку "Создать обслуживание"
                 $('.createService').on('click', function () {
+                    if (serviceTabsCount >= maxServiceTabs) {
+                        alert('Нельзя добавить больше 4 видов обслуживания');
+                        $(this).prop('disabled', true).css('opacity', 0.5); // Делаем кнопку неактивной и изменяем её стиль
+                        return; // Прекращаем выполнение функции, если достигнут лимит вкладок
+                    }
                 // Генерируем id для новой вкладки и ее содержимого
                     let tabId = 'service_' + serviceTabsCount + '-tab';
                     let paneId = 'service_' + serviceTabsCount;
@@ -249,7 +256,7 @@
                                 <div class="member-info"> \
                                     <div class="d-flex justify-content-between mb-4"> \
                                         <h4>Обслуживание ТРМ</h4> \
-                                        <button class="btn btn-primary">Обновить даты</button> \
+                                        <!-- <button class="btn btn-primary">Обновить даты</button> --> \
                                         <div> \
                                             <input type="checkbox" class="form-check-input me-1" id="disableInTable_' + serviceTabsCount + '"> \
                                             <label class="form-check-label disableInTable" for="disableInTable_' + serviceTabsCount + '">Не выводить \
@@ -314,7 +321,7 @@
                                             <div class="d-flex justify-content-between align-items-center gap-3"> \
                                                 <label class="w-100" for="planned_maintenance_date_' + serviceTabsCount + '">Плановая дата обслуживания</label> \
                                                 <input type="date" id="planned_maintenance_date_' + serviceTabsCount + '" name="planned_maintenance_date" class="form-control w-100" \
-                                                    placeholder="Введите плановую дату обслуживания"> \
+                                                    placeholder="Введите плановую дату обслуживания" readonly style="opacity: 0.5;"> \
                                             </div> \
                                             <div class="d-flex justify-content-between align-items-center gap-3"> \
                                                 <label class="w-100">Цвет в календаре</label> \
@@ -322,6 +329,7 @@
                                                     <div class="color-option red" data-color="#ff0000"></div> \
                                                     <div class="color-option green" data-color="#00ff00"></div> \
                                                     <div class="color-option blue" data-color="#0000ff"></div> \
+                                                    <div class="color-option yellow" data-color="#fff400"></div> \
                                                 </div> \
                                                 <input type="hidden" id="selectedColor_' + serviceTabsCount + '" name="selectedColor"> \
                                             </div> \
@@ -390,9 +398,17 @@
                     // Обновляем обработчик событий для выбора цвета
                     updateColorPicker();
 
-                        // Увеличиваем счетчик вкладок для обслуживания
-                        serviceTabsCount++;
+                    // Увеличиваем счетчик вкладок для обслуживания
+                    serviceTabsCount++;
+
+                    // Восстанавливаем выбранный цвет для новой вкладки
+                    restoreSelectedColor(paneId);
                 });
+                // Проверка при загрузке страницы, чтобы кнопка была неактивной, если уже достигнут лимит
+                if (serviceTabsCount >= maxServiceTabs) {
+                    $('.createService').prop('disabled', true).css('opacity', 0.5);
+                }
+
                 // Добавляем обработчик события на кнопку "Удалить"
                 $(document).on('click', '.delete_service', function() {
                     // Находим родительский элемент блока обслуживания
@@ -413,20 +429,20 @@
 
                     // Удаляем блок обслуживания
                     serviceBlock.remove();
+                    serviceTabsCount--;
                     // Удаляем соответствующую кнопку навигации
                     $('#' + tabId).parent().remove();
                 });
-
-
 
                 // Функция для обновления обработчика событий для выбора цвета
                 function updateColorPicker() {
                     // Получаем все блоки цветов
                     const colorOptions = $('.color-option');
+
                     // Добавляем обработчик события для каждого блока цвета
                     colorOptions.on('click', function () {
-                        // Убираем рамку у всех блоков цветов
-                        colorOptions.removeClass('selected');
+                        // Убираем рамку у всех блоков цветов в текущей вкладке
+                        $(this).siblings().removeClass('selected');
                         // Добавляем рамку только выбранному блоку цвета
                         $(this).addClass('selected');
                         // Получаем цвет выбранного блока
@@ -435,10 +451,39 @@
                         const selectedColorField = $(this).closest('.tab-pane').find('input[name="selectedColor"]');
                         // Устанавливаем значение цвета в скрытое поле ввода текущей вкладки
                         selectedColorField.val(selectedColor);
+
+                        // Сохраняем выбранный цвет в localStorage для текущей вкладки
+                        const tabId = $(this).closest('.tab-pane').attr('id');
+                        localStorage.setItem(tabId + '_selectedColor', selectedColor);
                     });
                 }
                 // Вызываем функцию для обновления обработчика событий для выбора цвета
-                updateColorPicker();
+                // Функция для восстановления выбранного цвета из localStorage при загрузке страницы или переключении вкладок
+                function restoreSelectedColor(tabId) {
+                    const selectedColor = localStorage.getItem(tabId + '_selectedColor');
+                    if (selectedColor) {
+                        const colorOption = $('#' + tabId).find(`.color-option[data-color="${selectedColor}"]`);
+                        colorOption.addClass('selected');
+                        colorOption.closest('.tab-pane').find('input[name="selectedColor"]').val(selectedColor);
+                    }
+                }
+
+                // Функция для сброса всех сохраненных выбранных цветов
+                function resetSelectedColors() {
+                    console.log("Clearing selected colors from localStorage:");
+                    let keysToRemove = [];
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key.endsWith('_selectedColor')) {
+                            keysToRemove.push(key);
+                        }
+                    }
+                    // Теперь удаляем все ключи, которые собрали
+                    for (let key of keysToRemove) {
+                        console.log("Removing:", key);
+                        localStorage.removeItem(key);
+                    }
+                }
 
                 // Инициализируем объект typesOfWorkByService
                 let typesOfWorkByService = {};
@@ -570,6 +615,18 @@
 
              //------------  обработчик сохранения данных  ------------
                 $(".saveCard").click(function () {
+                    // Сброс всех сохраненных выбранных цветов перед созданием новой карточки объекта
+                    resetSelectedColors();
+
+                    // Убираем все выделенные цвета на UI
+                    $('.color-option').removeClass('selected');
+                    $('input[name="selectedColor"]').val('');
+
+                    // Выводим сообщение пользователю
+                    var popup = $('<div class="popup">Пожалуйста подождите, данные сохраняются</div>');
+                    $('body').append(popup);
+                    popup.fadeIn();
+
                     // Собираем данные с основной формы
                     formData.append('infrastructure', $("select[name=infrastructure]").val());
                     formData.append('name', $("input[name=name]").val());
@@ -639,16 +696,57 @@
                         success: function (response) {
                             // Обработка успешного ответа от сервера (например, отображение сообщения об успешном сохранении)
                             // alert("Данные успешно сохранены!");
+                            popup.fadeOut(function() {
+                                $(this).remove();
+                            });
                             // console.log(formData);
                             window.location.href = "/home/card-object/" + response.id;
                         },
                         error: function (error) {
+                            popup.fadeOut(function() {
+                                $(this).remove();
+                            });
                             // Обработка ошибки при сохранении данных
                             alert("Ошибка при сохранении данных!");
                             console.log(formData);
                         }
                     });
                 });
+
+                // Обработчик кнопки "Закрыть"
+                $(".closeCreateCard").click(function () {
+
+                    // console.log("Содержимое ДО localStorage:");
+                    // for (let i = 0; i < localStorage.length; i++) {
+                    //     const key = localStorage.key(i);
+                    //     const value = localStorage.getItem(key);
+                    //     console.log(key + ": " + value);
+                    // }
+                    // Сброс всех сохраненных выбранных цветов
+                    // resetSelectedColors();
+
+                    // Убираем все выделенные цвета на UI
+                    // $('.color-option').removeClass('selected');
+                    // $('input[name="selectedColor"]').val('');
+
+                    // console.log("Содержимое ПОСЛЕ localStorage:");
+                    // for (let i = 0; i < localStorage.length; i++) {
+                    //     const key = localStorage.key(i);
+                    //     const value = localStorage.getItem(key);
+                    //     console.log(key + ": " + value);
+                    // }
+
+                    // Перенаправляем пользователя на главную страницу
+                    window.location.href = "/home";
+                });
+
+                // Восстанавливаем выбранные цвета для всех существующих вкладок при загрузке страницы
+                $('.tab-pane').each(function () {
+                    restoreSelectedColor($(this).attr('id'));
+                });
+
+                // Обновляем обработчик событий для выбора цвета при загрузке страницы
+                updateColorPicker();
 
             });
         </script>

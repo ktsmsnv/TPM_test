@@ -23,7 +23,7 @@
     <div class="login__page-block d-flex align-items-center justify-content-center">
         <div class="col-md-3">
             <div class="card mb-5">
-                <div class="login__page-logo pb-3"><img src="{{ asset('/storage/login.png') }}"></div>
+                <div class="login__page-logo pb-3"><img src="{{ asset('storage/login.png') }}"></div>
                 <h3 class="login__page-header text-center pt-5 pb-2">{{ __('Вход') }}</h3>
                 <div>
                     <form method="POST" action="{{ route('login') }}">

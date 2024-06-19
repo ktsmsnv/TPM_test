@@ -10,6 +10,16 @@ use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use App\Models\CardCalendar;
 use Illuminate\Support\Facades\Auth;
 
+use PhpOffice\PhpWord\Exception\CopyFileException;
+use PhpOffice\PhpWord\Exception\CreateTemporaryFileException;
+use PhpOffice\PhpWord\Exception\Exception;
+use PhpOffice\PhpWord\TemplateProcessor;
+use PhpOffice\PhpWord\Shared\Html;
+use PhpOffice\PhpWord\PhpWord;
+use Illuminate\Support\Facades\View;
+use PhpOffice\PhpWord\IOFactory;
+use Dompdf\Dompdf;
+
 //контроллер для отображения данных на страницы
 class CalendarController extends Controller
 {
@@ -156,17 +166,65 @@ class CalendarController extends Controller
         $services = [];
         foreach ($cardCalendar->objects as $object) {
             foreach ($object->services as $service) {
-                $services[] = [
-                    'planned_maintenance_date' => $service->planned_maintenance_date,
-                    'short_name' => $service->short_name,
-                    'calendar_color' => $service->calendar_color,
-                ];
+                $allMaintenanceDates = $this->calculateMaintenanceDates($service);
+                foreach ($allMaintenanceDates as $date) {
+                    $services[] = [
+                        'planned_maintenance_date' => $date,
+                        'short_name' => $service->short_name,
+                        'calendar_color' => $service->calendar_color,
+                    ];
+                }
             }
         }
 
         // Передаем найденные данные в представление
         return view('cards/card-calendar', compact('cardCalendar', 'cardObjectMain', 'services', 'months'));
     }
+
+    private function calculateMaintenanceDates($service)
+    {
+        $plannedDate = Carbon::parse($service->planned_maintenance_date);
+        $frequency = $service->frequency;
+
+        $maintenanceDates = [$plannedDate->format('Y-m-d')];
+        $yearEnd = Carbon::now()->endOfYear();
+        $dayOfWeek = $plannedDate->dayOfWeek;
+
+        while ($plannedDate->lessThanOrEqualTo($yearEnd)) {
+            switch ($frequency) {
+                case 'Ежемесячное':
+                    $nextDate = $plannedDate->copy()->addMonth();
+                    break;
+                case 'Ежеквартальное':
+                    $nextDate = $plannedDate->copy()->addMonths(3);
+                    break;
+                case 'Полугодовое':
+                    $nextDate = $plannedDate->copy()->addMonths(6);
+                    break;
+                case 'Ежегодное':
+                    $nextDate = $plannedDate->copy()->addYear();
+                    break;
+                default:
+                    throw new \Exception('Unknown frequency type');
+            }
+
+            while ($nextDate->dayOfWeek !== $dayOfWeek) {
+                $nextDate->addDay();
+            }
+
+            if ($nextDate->greaterThan($yearEnd)) {
+                break;
+            }
+
+            $maintenanceDates[] = $nextDate->format('Y-m-d');
+            $plannedDate = $nextDate;
+        }
+
+        return $maintenanceDates;
+    }
+
+
+
 
 
     public function archiveCalendarDateButt(Request $request)
@@ -182,6 +240,14 @@ class CalendarController extends Controller
         }
         $calendar->date_archive = $dateArchive;
         $calendar->save();
+
+        $CardCalendar_history = new HistoryCardCalendar();
+        $CardCalendar_history->card_id = $calendar->card_id;
+        $CardCalendar_history->card_calendar_id =  $request->id; // Связываем заказ-наряд с выбранной карточкой объекта
+        $CardCalendar_history->date_create =  $calendar->date_create;
+        $CardCalendar_history->date_archive =  $calendar->date_archive; // Устанавливаем статус
+        $CardCalendar_history->year =  $calendar->year;
+        $CardCalendar_history->save();
 
         return response()->json(['message' => 'Карточка календаря успешно заархивирована'], 200);
     }
@@ -280,5 +346,137 @@ class CalendarController extends Controller
         // Возвращаем успешный ответ или редирект на страницу карточки объекта
         return response()->json(['success' => 'Данные карточки календаря успешно обновлены'], 200);
     }
+
+
+// -------------- выгрузка графика в WORD ---------------
+    public function downloadCalendar($id)
+    {
+        // Создаем Word документ
+        $docxFilePath = $this->downloadCalendar_create($id);
+
+        // Получаем данные для имени файла
+        $data_CardCalendar = CardCalendar::with('objects.services')->find($id);
+        $cardObjectMain = CardObjectMain::find($data_CardCalendar->card_id);
+
+        $name = $cardObjectMain->name;
+        // Определяем имя файла для скачивания
+        $fileName = 'Карточка_календаря_' . $name . '.docx';
+
+        // Возвращаем Word-файл как ответ на запрос с заголовком для скачивания
+        return response()->download($docxFilePath, $fileName);
+    }
+
+// -------------- выгрузка графика в WORD ---------------
+    public function downloadCalendar_create($id)
+    {
+        // Находим заказ-наряд по его ID
+        $cardCalendar = CardCalendar::with('objects.services.services_types')->find($id);
+        if (!$cardCalendar) {
+            abort(404, 'CardCalendar not found');
+        }
+
+        // Получаем данные о связанных записях с предварительной загрузкой связанных услуг и их типов работ
+        $cardObjectMain = CardObjectMain::with(['services.services_types'])->find($cardCalendar->card_id);
+        if (!$cardObjectMain) {
+            abort(404, 'CardObjectMain not found');
+        }
+
+        // Получаем данные для вставки в шаблон
+        $data = [
+            'name' => $cardObjectMain->name,
+            'infrastructure' => $cardObjectMain->infrastructure,
+            'location' => $cardObjectMain->location,
+            'number' => $cardObjectMain->number,
+            'year' => $cardCalendar->year,
+        ];
+
+        // Собираем материалы всех услуг в одну строку, разделяя их запятой
+        $materials = [];
+        foreach ($cardObjectMain->services as $service) {
+            $materials[] = $service->consumable_materials;
+        }
+        $materialsString = implode(', ', $materials);
+        $data['materials'] = $materialsString;
+
+        $templatePath = storage_path('app/templates/calendar_template.docx');
+        $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor($templatePath);
+
+        // Добавляем изображение
+        if ($cardObjectMain->image) {
+            // Получаем бинарные данные изображения
+            $imageData = $cardObjectMain->image->getData();
+
+            // Создаем временный файл для изображения
+            $tempImagePath = storage_path('app/public/images/temp_image_' . $cardObjectMain->id . '.png');
+            file_put_contents($tempImagePath, $imageData);
+
+            // Проверяем, существует ли файл изображения
+            if (file_exists($tempImagePath)) {
+                $templateProcessor->setImageValue('image', [
+                    'path' => $tempImagePath,
+                    'width' => 100, // Установите нужные размеры
+                    'height' => 100,
+                ]);
+            } else {
+                // Выводим сообщение об ошибке, если файл не найден
+                abort(404, 'Image file not found');
+            }
+        }
+
+        // Конструируем массив замен для клонирования блока обслуживания
+        $serviceReplacements = [];
+        foreach ($cardObjectMain->services as $serviceIndex => $service) {
+            $serviceBlock = [
+                'service_type' => $service->service_type,
+                'frequency' => $service->frequency,
+                'performer' => $service->performer,
+                'responsible' => $service->responsible,
+            ];
+
+            // Конструируем массив замен для вложенного блока типов работ
+            $typeWorkReplacements = [];
+            foreach ($service->services_types as $typeWork) {
+                $typeWorkReplacements[] = [
+                    'type_work' => $typeWork->type_work,
+                ];
+            }
+
+            // Добавляем данные для клонирования вложенного блока типов работ
+            $serviceBlock['type_work_block'] = $typeWorkReplacements;
+
+            // Добавляем данные для клонирования блока обслуживания
+            $serviceReplacements[] = $serviceBlock;
+        }
+
+        // Клонируем блок обслуживания
+        $templateProcessor->cloneBlock('service_block', count($serviceReplacements), true, false);
+        foreach ($serviceReplacements as $index => $serviceReplacement) {
+            $templateProcessor->setValue('service_type#' . ($index + 1), $serviceReplacement['service_type']);
+            $templateProcessor->setValue('frequency#' . ($index + 1), $serviceReplacement['frequency']);
+            $templateProcessor->setValue('performer#' . ($index + 1), $serviceReplacement['performer']);
+            $templateProcessor->setValue('responsible#' . ($index + 1), $serviceReplacement['responsible']);
+
+            // Клонируем и заполняем вложенные блоки типов работ
+            $typeWorkReplacements = $serviceReplacement['type_work_block'];
+            $templateProcessor->cloneBlock('type_work_block#' . ($index + 1), count($typeWorkReplacements), true, true);
+            foreach ($typeWorkReplacements as $typeWorkIndex => $typeWorkReplacement) {
+                $templateProcessor->setValue('type_work#' . ($index + 1) . '#' . ($typeWorkIndex + 1), $typeWorkReplacement['type_work']);
+            }
+        }
+
+        // Устанавливаем остальные значения в шаблоне
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $value = implode("\n", $value);
+            }
+            $templateProcessor->setValue($key, (string)$value);
+        }
+
+        $docxFilePath = storage_path('app/generated/calendarProcessed.docx');
+        $templateProcessor->saveAs($docxFilePath);
+
+        return $docxFilePath;
+    }
+
 
 }

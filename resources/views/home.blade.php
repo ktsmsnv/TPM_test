@@ -13,14 +13,14 @@
                 </button>
                 <div class="d-flex gap-2">
                     <a id="showActiveBtn" type="button" class="btn btn-success" data-toggle="tooltip"
-                       title="без даты вывода объекта из эксплуатации"
+                       title="с датой вывода объекта из эксплуатации"
                        data-title="Работа с реестром объектов" data-step="7"
-                       data-intro="По нажатию на данную кнопку отображаются только те объекты, в карточке которых не заполнена «Дата вывода объекта из эксплуатации».">
+                       data-intro="По нажатию на данную кнопку отображаются только те объекты, в карточке которых заполнена «Дата вывода объекта из эксплуатации».">
                         Показать активные объекты</a>
-                    <a href="/home/card-object-create" target="_blank" type="button" class="btn btn-primary"
+                    <button target="_blank" type="button" class="btn btn-primary createCardObjectMain"
                        data-title="Работа с реестром объектов" data-step="8"
                        data-intro="По нажатию на данную кнопку создается новая сущность «Карточка объекта» и открывается в новом окне.">
-                        Создать карточку объекта</a>
+                        Создать карточку объекта</button>
                     <a type="button" class="btn btn-primary btn-primary--2 copy_cardObject" disabled="true"
                        data-title="Работа с реестром объектов" data-step="9"
                        data-intro="Кнопка активна только при выборе галочками одной или нескольких строк в реестре. По нажатию создаются копии сущностей «Карточка объекта» и открываются в новом окне.">
@@ -97,6 +97,8 @@
             let $confirmDelete = $('#confirmDeleteModal'); // Ссылка на модальное окно
             let $confirmDeleteButton = $('#confirmDeleteButton'); // Кнопка "Удалить" в модальном окне
 
+            let originalData = []; // Сохраняем исходные данные таблицы
+
             // ------------------------------------ выбор полей checked ------------------------------------
             function getIdSelections() {
                 return $.map($table.bootstrapTable('getSelections'), function (row) {
@@ -123,6 +125,7 @@
             // ------------------------------------ Функция для инициализации таблицы ------------------------------------
             function initTable(data) {
                 console.log('Данные:', data);
+                originalData = data;
                 // Инициализация таблицы с данными
                 $table.bootstrapTable('destroy').bootstrapTable({
                     locale: $('#locale').val(),
@@ -152,19 +155,34 @@
 
                             {title: 'Дата ввода в эксплуатацию', field: 'date_usage', align: 'center',
                                 formatter: function(value, row) {
-                                    // Преобразование даты в нужный формат (день-месяц-год)
-                                    return new Date(value).toLocaleDateString('ru-RU');
+                                    if (value === null) {
+                                        return null;
+                                    }
+                                    else {
+                                        // Преобразование даты в нужный формат (день-месяц-год)
+                                        return new Date(value).toLocaleDateString('ru-RU');
+                                    }
                                 }
                             },
                             {title: 'Дата вывода из эксплуатации', field: 'date_usage_end', align: 'center',
                                 formatter: function(value, row) {
-                                    // Преобразование даты в нужный формат (день-месяц-год)
-                                    return new Date(value).toLocaleDateString('ru-RU');
+                                    if (value === null) {
+                                        return null;
+                                    }
+                                    else {
+                                        // Преобразование даты в нужный формат (день-месяц-год)
+                                        return new Date(value).toLocaleDateString('ru-RU');
+                                    }
                                 }},
                             {title: 'Дата окончания аттестации/гарантии', field: 'date_cert_end', align: 'center',
                                 formatter: function(value, row) {
-                                    // Преобразование даты в нужный формат (день-месяц-год)
-                                    return new Date(value).toLocaleDateString('ru-RU');
+                                    if (value === null) {
+                                        return null;
+                                    }
+                                    else {
+                                        // Преобразование даты в нужный формат (день-месяц-год)
+                                        return new Date(value).toLocaleDateString('ru-RU');
+                                    }
                                 }},
                             {title: 'Инв./заводской номер', field: 'number', align: 'center'},
 
@@ -174,9 +192,12 @@
                                 field: 'planned_maintenance_date',
                                 align: 'center',
                                 formatter: function(value, row) {
+                                    console.log('Services:', row.services);
+                                    console.log('Services length:', row.services.length);
+
                                     let nearestMaintenanceDate = null;
-                                    if (row.services && Array.isArray(row.services) && row.services.length > 0) {
-                                        row.services.forEach(function(service) {
+                                    if (row.services && Object.keys(row.services).length > 0) {
+                                        Object.values(row.services).forEach(function(service) {
                                             if (!nearestMaintenanceDate || new Date(service.planned_maintenance_date) < new Date(nearestMaintenanceDate)) {
                                                 nearestMaintenanceDate = service.planned_maintenance_date;
                                             }
@@ -193,8 +214,8 @@
                                 align: 'center',
                                 formatter: function(value, row) {
                                     let nearestService = null;
-                                    if (row.services && Array.isArray(row.services) && row.services.length > 0) {
-                                        row.services.forEach(function(service) {
+                                    if (row.services && Object.keys(row.services).length > 0) {
+                                        Object.values(row.services).forEach(function(service) {
                                             if (!nearestService || new Date(service.planned_maintenance_date) < new Date(nearestService.planned_maintenance_date)) {
                                                 nearestService = service;
                                             }
@@ -211,8 +232,8 @@
                                 align: 'center',
                                 formatter: function(value, row) {
                                     let nearestService = null;
-                                    if (row.services && Array.isArray(row.services) && row.services.length > 0) {
-                                        row.services.forEach(function(service) {
+                                    if (row.services && Object.keys(row.services).length > 0) {
+                                        Object.values(row.services).forEach(function(service) {
                                             if (!nearestService || new Date(service.planned_maintenance_date) < new Date(nearestService.planned_maintenance_date)) {
                                                 nearestService = service;
                                             }
@@ -229,8 +250,8 @@
                                 align: 'center',
                                 formatter: function(value, row) {
                                     let nearestService = null;
-                                    if (row.services && Array.isArray(row.services) && row.services.length > 0) {
-                                        row.services.forEach(function(service) {
+                                    if (row.services && Object.keys(row.services).length > 0) {
+                                        Object.values(row.services).forEach(function(service) {
                                             if (!nearestService || new Date(service.planned_maintenance_date) < new Date(nearestService.planned_maintenance_date)) {
                                                 nearestService = service;
                                             }
@@ -247,8 +268,8 @@
                                 align: 'center',
                                 formatter: function(value, row) {
                                     let nearestService = null;
-                                    if (row.services && Array.isArray(row.services) && row.services.length > 0) {
-                                        row.services.forEach(function(service) {
+                                    if (row.services && Object.keys(row.services).length > 0) {
+                                        Object.values(row.services).forEach(function(service) {
                                             if (!nearestService || new Date(service.planned_maintenance_date) < new Date(nearestService.planned_maintenance_date)) {
                                                 nearestService = service;
                                             }
@@ -264,11 +285,14 @@
                                 field: 'work_order',
                                 align: 'center',
                                 formatter: function(value, row) {
-                                    if (row.services && row.services.length > 0) {
-                                        let nearestService = row.services.reduce((nearest, current) => {
-                                            return (!nearest || new Date(current.planned_maintenance_date) < new Date(nearest.planned_maintenance_date)) ? current : nearest;
+                                    if (row.services && Object.keys(row.services).length > 0) {
+                                        let nearestService = null;
+                                        Object.values(row.services).forEach(function(service) {
+                                            if (!nearestService || new Date(service.planned_maintenance_date) < new Date(nearestService.planned_maintenance_date)) {
+                                                nearestService = service;
+                                            }
                                         });
-                                        if (nearestService.work_order) {
+                                        if (nearestService && nearestService.work_order) {
                                             return '<a href="' + nearestService.work_order + '" target="_blank" class="tool-tip" title="открыть карточку заказ-наряда">открыть</a>';
                                         } else {
                                             return 'Нет заказа-наряда';
@@ -278,6 +302,7 @@
                                     }
                                 }
                             },
+
 
                             {
                                 title: 'Календарь TPM',
@@ -306,6 +331,39 @@
                     }
                 });
             }
+
+            // Функция для сброса всех сохраненных выбранных цветов
+            function resetSelectedColors() {
+                // console.log("Clearing selected colors from localStorage:");
+                let keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.endsWith('_selectedColor')) {
+                        keysToRemove.push(key);
+                    }
+                }
+                // Теперь удаляем все ключи, которые собрали
+                for (let key of keysToRemove) {
+                    // console.log("Removing:", key);
+                    localStorage.removeItem(key);
+                }
+            }
+
+            $(".createCardObjectMain").click(function () {
+                // Сброс всех сохраненных выбранных цветов
+                resetSelectedColors();
+
+                // console.log(localStorage.length);
+
+                // Убираем все выделенные цвета на UI
+                $('.color-option').removeClass('selected');
+                $('input[name="selectedColor"]').val('');
+
+
+                // Перенаправляем пользователя на главную страницу
+                window.location.href = "/home/card-object-create";
+            });
+
             //Вызов функции для получения данных с сервера
             getObjectsFromServer().done(function(data) {
                 initTable(data); // Инициализируем таблицу с новыми данными
@@ -319,11 +377,32 @@
                     $generateGraphTPM.prop('disabled', !$table.bootstrapTable('getSelections').length)
                     $('.create_workOrder').prop('disabled', !$table.bootstrapTable('getSelections').length)
                     $('.createCalendar').prop('disabled', !$table.bootstrapTable('getSelections').length)
-                        selections = getIdSelections();
+                    selections = getIdSelections();
                     updateCopyButtonState();
+
+                    let selectedRows = $table.bootstrapTable('getSelections');
+                    if (selectedRows.length === 1) { // Проверяем, что выбрана только одна запись
+                        let infrastructure = selectedRows[0].infrastructure; // Получаем вид инфраструктуры выбранной строки
+                        filterTable(infrastructure); // Фильтруем таблицу по виду инфраструктуры выбранной карточки объекта
+                    }
+            });
+
+            // // Изменяем обработчик события на изменение состояния чекбокса
+            // $table.on('check.bs.table uncheck.bs.table' + 'check-all.bs.table uncheck-all.bs.table',
+            //     function () {
+            //     let selectedRows = $table.bootstrapTable('getSelections');
+            //     if (selectedRows.length === 1) { // Проверяем, что выбрана только одна запись
+            //         let infrastructure = selectedRows[0].infrastructure; // Получаем вид инфраструктуры выбранной строки
+            //         filterTable(infrastructure); // Фильтруем таблицу по виду инфраструктуры выбранной карточки объекта
+            //     }
+            // });
+
+            function filterTable(infrastructure) {
+                let filteredData = originalData.filter(function (row) {
+                    return row.infrastructure === infrastructure;
                 });
-
-
+                $table.bootstrapTable('load', filteredData);
+            }
 
             // ------------------------------------ обработчик нажатия по кнопке удаления ------------------------------------
             $remove.click(function () {
@@ -332,15 +411,6 @@
                     showConfirmDeleteModal();
                 }
             });
-
-            // $generateGraphTPM.click(function (){
-            //     let ids = getIdSelections();
-            //     console.log(ids);
-            //     if (ids.length > 0) {
-            //         // Сформируйте URL с ID выбранных записей и перенаправьте пользователя на страницу формирования графика TPM
-            //         window.location.href = "/pageReestrGraph/card-graph-create?ids=" + ids.join(',');
-            //     }
-            // });
 
             // Функция для отображения модального окна удаления
             function showConfirmDeleteModal() {
@@ -409,7 +479,7 @@
             function showActiveObjects() {
                 let data = $table.bootstrapTable('getData');
                 let activeObjects = data.filter(function (row) {
-                    return !row.date_usage_end;
+                    return row.date_usage_end;
                 });
 
                 // Функция для отображения модального окна удаления
@@ -426,6 +496,7 @@
             }
             // Функция для сброса фильтрации и отображения всех объектов
             function resetFilter() {
+                // $table.bootstrapTable('load', originalData);
                 refreshTable(); // Перезагружаем таблицу, чтобы сбросить фильтр
                 isActiveFilter = false; // Устанавливаем флаг фильтрации в неактивное состояние
             }
@@ -479,34 +550,50 @@
 
             // ------------------------------------ создание заказ-наряда ------------------------------------
             $('.create_workOrder').click(function () {
-                // Получаем ID выбранных записей
                 var selectedRows = $table.bootstrapTable('getSelections');
                 var selectedIds = selectedRows.map(row => row.id);
 
-                // Отправляем AJAX-запрос на создание заказ-наряда с передачей выбранных ID
                 $.ajax({
                     type: "POST",
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     url: "{{ route('create-work-order') }}",
-                    data: { selected_ids: selectedIds }, // Передаем выбранные ID как данные для создания заказ-наряда
+                    data: { selected_ids: selectedIds },
                     success: function (response) {
-                        // Проверяем наличие сообщения в ответе
-                        if (response.message) {
-                            // Выводим уведомление о существующем заказе-наряде
-                            alert(response.message);
+                        if (response.existingWorkOrders && response.existingWorkOrders.length > 0) {
+                            var html = '<div class="container">' +
+                                '<div class="alert alert-warning">' +
+                                '<h4>Следующие заказ-наряды уже существуют:</h4>' +
+                                '<ul>';
+
+                            response.existingWorkOrders.forEach(function (workOrder) {
+                                html += '<li><a target="_blank" href="' + workOrder.link + '">' + workOrder.name + '</a></li>';
+                            });
+
+                            html += '</ul>' +
+                                '<a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>' +
+                                '</div></div>';
+
+                            $('body').html(html);
                         } else {
-                            // Открываем страницу нового заказ-наряда в новой вкладке
-                            window.open(response.url, '_blank');
+                            response.results.forEach(function (result) {
+                                if (result.status === 'success') {
+                                    window.open(result.url, '_blank');
+                                } else {
+                                    alert(result.message);
+                                }
+                            });
                         }
                     },
                     error: function (xhr, status, error) {
-                        // Показываем всплывающее окно с текстом ошибки
                         alert("Произошла ошибка при выполнении запроса: " + xhr.responseText);
                     }
                 });
             });
+
+
+
 
             $('.createCalendar').click(function () {
                 let selectedRows = $table.bootstrapTable('getSelections');
@@ -519,10 +606,6 @@
                     });
                 }
             });
-
-
-
-
 
         });
     </script>

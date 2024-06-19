@@ -58,7 +58,7 @@ class workOrderController extends Controller
                     ($userRole == 'curator' || $userRole == 'admin')) {
                     $formattedWorkOrder = [
                         'id' => $workOrder->id,
-                        'infrastructure' => $workOrder->cardObjectServices->cardObjectMain->infrastructure,
+                        'infrastructure' => $workOrder->cardObjectServices->cardObjectMain->infrastructure ?? null,
                         'name' => $workOrder->cardObjectServices->cardObjectMain->name,
                         'number' => $workOrder->cardObjectServices->cardObjectMain->number,
                         'location' => $workOrder->cardObjectServices->cardObjectMain->location,
@@ -107,57 +107,83 @@ class workOrderController extends Controller
 // --------------- создание карточки заказ-наряда ---------------
     public function create(Request $request)
     {
-        // Получаем ID выбранных записей из запроса
         $selectedIds = $request->selected_ids;
         $now = Carbon::now();
-        // Создаем новый заказ-наряд для каждого выбранного ID
+        $results = [];
+        $existingWorkOrders = [];
+
         foreach ($selectedIds as $selectedId) {
-            // Находим карточку объекта по ID
             $cardObjectMain = CardObjectMain::findOrFail($selectedId);
 
-            // Проверяем, существует ли заказ-наряд для данной карточки объекта и ее обслуживания
+            // Проверяем, существует ли заказ-наряд для данной карточки объекта и ее обслуживания, который не имеет значения date_fact
             $existingWorkOrder = CardWorkOrder::where('card_id', $selectedId)
                 ->whereIn('card_object_services_id', $cardObjectMain->services->pluck('id'))
-                ->exists();
-            // Если заказ-наряд уже существует, отправляем уведомление
+                ->whereNull('date_fact')
+                ->first();
+
             if ($existingWorkOrder) {
-                return response()->json(['message' => 'Заказ-наряд уже существует для выбранного объекта'], 400);
+                $existingWorkOrders[] = [
+                    'id' => $existingWorkOrder->id,
+                    'link' => route('workOrder.show', ['id' => $existingWorkOrder->id]),
+                    'name' => 'Заказ-наряд для объекта ID ' . $selectedId,
+                ];
+                $results[] = [
+                    'id' => $existingWorkOrder->id,
+                    'status' => 'error',
+                    'message' => 'Заказ-наряд уже существует для объекта ID ' . $selectedId,
+                    'url' => route('workOrder.show', ['id' => $existingWorkOrder->id]),
+                ];
+                continue;
             }
 
-            // Находим количество заказов-нарядов для данной карточки объекта
-            $existingOrdersCount = CardWorkOrder::where('card_id', $selectedId)->count();
-
-            // Находим ближайшее обслуживание для карточки объекта
             $nearestService = $cardObjectMain->services->sortBy('planned_maintenance_date')->first();
 
-            // Если ближайшее обслуживание найдено, создаем новый заказ-наряд и связываем его с этим обслуживанием
             if ($nearestService) {
+                $plannedDate = Carbon::parse($nearestService->planned_maintenance_date); // Преобразуем дату в объект Carbon
+
                 $newWorkOrder = new CardWorkOrder();
-                $newWorkOrder->card_id = $selectedId; // Связываем заказ-наряд с выбранной карточкой объекта
-                $newWorkOrder->card_object_services_id = $nearestService->id; // Связываем заказ-наряд с ближайшей услугой
-                $newWorkOrder->date_create = $now->format('d-m-Y');
-                // $newWorkOrder->date_last_save = $now->format('d-m-Y');
-                $newWorkOrder->status = 'В работе'; // Устанавливаем статус
-                // Присваиваем номер заказа-наряда
-                $newWorkOrder->number = $existingOrdersCount + 1;
+                $newWorkOrder->card_id = $selectedId;
+                $newWorkOrder->card_object_services_id = $nearestService->id;
+                $newWorkOrder->date_create = $now->format('Y-m-d'); // Используем формат ISO для хранения
+                $newWorkOrder->status = 'В работе';
+                $newWorkOrder->number = CardWorkOrder::where('card_id', $selectedId)->count() + 1;
+                $newWorkOrder->planned_maintenance_date = $plannedDate->format('Y-m-d');
                 $newWorkOrder->save();
 
                 $newWorkOrder_history = new HistoryCardWorkOrder();
-                $newWorkOrder_history->card_id = $selectedId; // Связываем заказ-наряд с выбранной карточкой объекта
-                $newWorkOrder_history->card_object_services_id = $nearestService->id; // Связываем заказ-наряд с ближайшей услугой
-                $newWorkOrder_history->date_create = $now->format('d-m-Y');
-                $newWorkOrder_history->status = 'В работе'; // Устанавливаем статус
-                // Присваиваем номер заказа-наряда
-                $newWorkOrder_history->number = $existingOrdersCount + 1;
+                $newWorkOrder_history->card_id = $selectedId;
+                $newWorkOrder_history->card_object_services_id = $nearestService->id;
+                $newWorkOrder_history->date_create = $now->format('Y-m-d');
+                $newWorkOrder_history->status = 'В работе';
+                $newWorkOrder_history->number = $newWorkOrder->number;
+                $newWorkOrder_history->planned_maintenance_date = $plannedDate->format('Y-m-d');
                 $newWorkOrder_history->save();
+
+                $results[] = [
+                    'id' => $newWorkOrder->id,
+                    'status' => 'success',
+                    'message' => 'Заказ-наряд создан для объекта ID ' . $selectedId,
+                    'url' => route('workOrder.show', ['id' => $newWorkOrder->id]),
+                ];
+            } else {
+                $results[] = [
+                    'id' => $selectedId,
+                    'status' => 'error',
+                    'message' => 'Не найдено запланированное обслуживание для объекта ID ' . $selectedId,
+                ];
             }
         }
 
-        // Возвращаем URL страницы нового заказ-наряда
-        $url = route('workOrder.show', ['id' => $newWorkOrder->id]);
+        if (!empty($existingWorkOrders)) {
+            return response()->json(['existingWorkOrders' => $existingWorkOrders], 200);
+        }
 
-        return response()->json(['url' => $url], 200);
+        return response()->json(['results' => $results], 200);
     }
+
+
+
+
 
 // --------------- удаление карточки заказ-наряда ---------------
     public function deleteWorkOrder(Request $request)
@@ -176,35 +202,75 @@ class workOrderController extends Controller
     public function endWorkOrder(Request $request)
     {
         $workOrderId = $request->id;
-        $dateFact = Carbon::now()->format('d-m-Y');
+        $dateFact = Carbon::now()->format('Y-m-d');
         $status = $request->status;
 
-        // Найдите заказ-наряд по его ID и обновите фактическую дату и статус
         $workOrder = CardWorkOrder::findOrFail($workOrderId);
         $workOrder->date_fact = $dateFact;
         $workOrder->status = $status;
         $workOrder->save();
 
-        // Обновите дату предыдущего обслуживания в объекте CardObjectServices
         $cardObjectServicesId = $workOrder->card_object_services_id;
         $cardObjectServices = CardObjectServices::findOrFail($cardObjectServicesId);
+
+        // Вычисление следующей плановой даты обслуживания
+        $prevMaintenanceDate = Carbon::parse($cardObjectServices->prev_maintenance_date);
+        $frequency = $cardObjectServices->frequency;
+        $plannedMaintenanceDate = Carbon::parse($cardObjectServices->planned_maintenance_date);
+        $dayOfWeek = $plannedMaintenanceDate->dayOfWeek; // Используем день недели из текущей плановой даты
+
+
+        $allMaintenanceDates = [];
+        $currentDate = Carbon::parse($dateFact);
+        $yearEnd = $currentDate->copy()->endOfYear();
+
+        while ($currentDate->lessThanOrEqualTo($yearEnd)) {
+            switch ($frequency) {
+                case 'Ежемесячное':
+                    $nextDate = $plannedMaintenanceDate->addMonth();
+                    break;
+                case 'Ежеквартальное':
+                    $nextDate = $plannedMaintenanceDate->addMonths(3);
+                    break;
+                case 'Полугодовое':
+                    $nextDate = $plannedMaintenanceDate->addMonths(6);
+                    break;
+                case 'Ежегодное':
+                    $nextDate = $plannedMaintenanceDate->addYear();
+                    break;
+                default:
+                    throw new \Exception('Unknown frequency type');
+            }
+
+            while ($nextDate->dayOfWeek !== $dayOfWeek) {
+                $nextDate->addDay();
+            }
+
+            if ($nextDate->greaterThan($yearEnd)) {
+                break;
+            }
+
+            $allMaintenanceDates[] = $nextDate->format('Y-m-d');
+            $plannedMaintenanceDate = $nextDate;
+        }
+
         $cardObjectServices->prev_maintenance_date = $dateFact;
+        $cardObjectServices->planned_maintenance_date = $plannedMaintenanceDate->format('Y-m-d');
         $cardObjectServices->save();
 
-        $newWorkOrder_history = new HistoryCardWorkOrder();
-        $newWorkOrder_history->card_id = $workOrder->card_id; // Связываем заказ-наряд с выбранной карточкой объекта
-        $newWorkOrder_history->card_object_services_id = $workOrder->card_object_services_id; // Связываем заказ-наряд с ближайшей услугой
-        $newWorkOrder_history->date_create =  $workOrder->date_create;
-        $newWorkOrder_history->status =  $request->status; // Устанавливаем статус
-        $newWorkOrder_history->date_fact = $dateFact;
-        // Присваиваем номер заказа-наряда
-        $newWorkOrder_history->number = $workOrder->number;
-        $newWorkOrder_history->save();
 
+        $newWorkOrderHistory = new HistoryCardWorkOrder();
+        $newWorkOrderHistory->card_id = $workOrder->card_id;
+        $newWorkOrderHistory->card_object_services_id = $workOrder->card_object_services_id;
+        $newWorkOrderHistory->date_create = Carbon::parse($workOrder->date_create)->format('Y-m-d');
+        $newWorkOrderHistory->status = $status;
+        $newWorkOrderHistory->date_fact = $dateFact;
+        $newWorkOrderHistory->number = $workOrder->number;
+        $newWorkOrderHistory->planned_maintenance_date = $cardObjectServices->planned_maintenance_date;
+        $newWorkOrderHistory->save();
 
         return response()->json(['message' => 'Заказ-наряд успешно завершен'], 200);
     }
-
 
     /**
      * @throws CopyFileException
@@ -215,7 +281,6 @@ class workOrderController extends Controller
     {
         // Находим заказ-наряд по его ID
         $workOrder = CardWorkOrder::findOrFail($id);
-
         // Получаем данные о связанных записях с предварительной загрузкой связанных услуг и их типов работ
         $cardObjectMain = CardObjectMain::with(['services' => function ($query) use ($workOrder) {
             $query->with(['services_types'])->where('_id', $workOrder->card_object_services_id);
@@ -235,7 +300,7 @@ class workOrderController extends Controller
             'responsible' => $cardObjectServices->responsible,
             'location' => $cardObjectMain->location,
             'number' => $cardObjectMain->number,
-            'planned_maintenance_date' => $cardObjectServices->planned_maintenance_date,
+            'planned_maintenance_date' => $workOrder->planned_maintenance_date,
             'consumable_materials' => $cardObjectServices->consumable_materials,
             'service_type' => $cardObjectServices->service_type,
             'frequency' => $cardObjectServices->frequency,
@@ -299,8 +364,14 @@ class workOrderController extends Controller
         // Создаем Word документ
         $docxFilePath = $this->downloadPDF_create($id);
 
+        $data_CardWork =  CardWorkOrder::findOrFail($id);
+        $cardObjectMain = CardObjectMain::with(['services' => function ($query) use ($data_CardWork) {
+            $query->with(['services_types'])->where('_id', $data_CardWork->card_object_services_id);
+        }])->find($data_CardWork->card_id);
+        $name = $cardObjectMain->name;
+
         // Определяем имя файла для скачивания
-        $fileName = 'Карточка_заказ-наряда_' . $id . '.docx';
+        $fileName = 'Карточка_заказ-наряда_' . $name . '.docx';
 
         // Возвращаем Word-файл как ответ на запрос с заголовком для скачивания
         return response()->download($docxFilePath, $fileName);

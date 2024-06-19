@@ -28,9 +28,9 @@ class Kernel extends ConsoleKernel
             foreach ($objects as $object) {
                 foreach ($object->services as $service) {
                     // Проверяем, имеет ли услуга флаг checked
-                    if ($service->checked) {
-                        continue; // Пропускаем эту услугу, если она помечена checked
-                    }
+//                    if ($service->checked) {
+//                        continue; // Пропускаем эту услугу, если она помечена checked
+//                    }
                     $plannedMaintenanceDate = Carbon::parse($service->planned_maintenance_date);
                     $notificationDate = $plannedMaintenanceDate->subDays(14); // Получаем дату уведомления за 14 дней до плановой даты обслуживания
                     if ($now->isSameDay($notificationDate)) {
@@ -58,7 +58,33 @@ class Kernel extends ConsoleKernel
         })->everySecond();
 
     }
+    /**
+     * Send notifications.
+     *
+     * @param  mixed  $object
+     * @param  mixed  $service
+     * @param  mixed  $newWorkOrder
+     * @return void
+     */
+    protected function sendNotifications($object, $service, $newWorkOrder)
+    {
+        $performer = User::where('name', $service->performer)->first();
+        $responsible = User::where('name', $service->responsible)->first();
+        $curator = User::where('name', $object->curator)->first();
 
+        $recipients = collect([$performer, $responsible, $curator])->filter();
+
+        foreach ($recipients as $recipient) {
+            if ($recipient && $recipient->email) {
+                try {
+                    Mail::to($recipient->email)->send(new WorkOrderNotification($newWorkOrder, $object, $service));
+                    Log::info("Уведомление отправлено на {$recipient->email} для объекта {$object->name}");
+                } catch (\Exception $e) {
+                    Log::error("Ошибка при отправке почты на {$recipient->email}: " . $e->getMessage());
+                }
+            }
+        }
+    }
 //    protected function sendNotifications($object, $service, $workOrder)
 //    {
 //        $performer = User::where('name', $service->performer)->first();
@@ -68,39 +94,21 @@ class Kernel extends ConsoleKernel
 //        $recipients = collect([$performer, $responsible, $curator])->filter();
 //
 //        foreach ($recipients as $recipient) {
-//            if ($recipient && $recipient->email) {
-//                try {
-//                    Mail::to($recipient->email)->send(new WorkOrderNotification($workOrder, $object, $service));
-//                    Log::info("Уведомление отправлено на {$recipient->email} для объекта {$object->name}");
-//                } catch (\Exception $e) {
-//                    Log::error("Ошибка при отправке почты на {$recipient->email}: " . $e->getMessage());
-//                }
+//            if ($recipient) {
+//                Notification::create([
+//                    'user_id' => $recipient->id,
+//                    'title' => 'Новый заказ-наряд',
+//                    'message' => "Создан новый заказ-наряд для объекта {$object->name} ({$object->location}). Тип работы: {$service->service_type}. Дата обслуживания: {$service->planned_maintenance_date}. Номер заказа-наряда: {$workOrder->number}.",
+//                ]);
 //            }
 //        }
 //    }
-    protected function sendNotifications($object, $service, $workOrder)
-    {
-        $performer = User::where('name', $service->performer)->first();
-        $responsible = User::where('name', $service->responsible)->first();
-        $curator = User::where('name', $object->curator)->first();
-
-        $recipients = collect([$performer, $responsible, $curator])->filter();
-
-        foreach ($recipients as $recipient) {
-            if ($recipient) {
-                Notification::create([
-                    'user_id' => $recipient->id,
-                    'title' => 'Новый заказ-наряд',
-                    'message' => "Создан новый заказ-наряд для объекта {$object->name} ({$object->location}). Тип работы: {$service->service_type}. Дата обслуживания: {$service->planned_maintenance_date}. Номер заказа-наряда: {$workOrder->number}.",
-                ]);
-            }
-        }
-    }
-
 
 
     /**
      * Register the commands for the application.
+     *
+     * @return void
      */
     protected function commands(): void
     {

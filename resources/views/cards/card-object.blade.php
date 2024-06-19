@@ -13,7 +13,7 @@
                 <div class="d-flex gap-2">
                     <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
                     <a type="button" class="btn btn-primary btn-primary--2 copy_cardObject">Скопировать карточку объекта</a>
-                    <a href="{{ route('cardObject-edit', ['id' => $data_CardObjectMain->_id]) }}" target="_blank" type="button" class="btn btn-outline-danger">Редактировать</a>
+                    <button type="button" class="btn btn-outline-danger editCardObjectMain">Редактировать</button>
                 </div>
             </div>
 
@@ -79,22 +79,22 @@
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата прихода</label>
                                             <input class="form-control w-100" name="" readonly
-                                                   value="{{ isset($data_CardObjectMain->date_arrival) ? date('d-m-Y', strtotime($data_CardObjectMain->date_arrival)) : 'нет данных' }}">
+                                                   value="{{ isset($data_CardObjectMain->date_arrival) ? date('d.m.Y', strtotime($data_CardObjectMain->date_arrival)) : 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата ввода в эксплуатацию</label>
                                             <input class="form-control w-100" name="" readonly
-                                                   value="{{ isset($data_CardObjectMain->date_usage) ? date('d-m-Y', strtotime($data_CardObjectMain->date_usage)) : 'нет данных' }}">
+                                                   value="{{ isset($data_CardObjectMain->date_usage) ? date('d.m.Y', strtotime($data_CardObjectMain->date_usage)) : 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата окончания аттестации/гарантии</label>
                                             <input class="form-control w-100" name="" readonly
-                                                   value="{{ isset($data_CardObjectMain->date_cert_end) ?  date('d-m-Y', strtotime($data_CardObjectMain->date_cert_end)) : 'нет данных' }}">
+                                                   value="{{ isset($data_CardObjectMain->date_cert_end) ?  date('d.m.Y', strtotime($data_CardObjectMain->date_cert_end)) : 'нет данных' }}">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата вывода из эксплуатации</label>
                                             <input class="form-control  w-100" name="" readonly
-                                                   value="{{ isset($data_CardObjectMain->date_usage_end) ? date('d-m-Y', strtotime($data_CardObjectMain->date_usage_end)) : 'нет данных' }}">
+                                                   value="{{ isset($data_CardObjectMain->date_usage_end) ? date('d.m.Y', strtotime($data_CardObjectMain->date_usage_end)) : 'нет данных' }}">
                                         </div>
                                     </div>
                                 </div>
@@ -162,7 +162,7 @@
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Обслуживание ТРМ {{ $key + 1 }}</h4>
-                                    <button class="btn btn-primary">Обновить даты</button>
+{{--                                    <button class="btn btn-primary">Обновить даты</button>--}}
                                     <div data-toggle="tooltip"
                                          title="для изменения нажмите кнопку РЕДАКТИРОВАТЬ">
                                         <input type="checkbox" class="form-check-input me-1" id="disableInTable_{{ $key + 1 }}"
@@ -197,13 +197,18 @@
                                             <label class="w-100">Периодичность</label>
                                             <input class="form-control w-100" name="" value="{{ $service->frequency }}" readonly>
                                         </div>
+                                        {{-- Дата предыдущего обслуживания --}}
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата предыдущего обслуживания</label>
-                                            <input class="form-control w-100" name="" value="{{ date('d-m-Y', strtotime($service->prev_maintenance_date)) }}" readonly>
+                                            <input class="form-control w-100" name="" value="{{ !empty($service->prev_maintenance_date) ? date('d.m.Y', strtotime($service->prev_maintenance_date)) : '-' }}" readonly
+                                                   @if(empty($service->prev_maintenance_date))
+                                                       data-toggle="tooltip" title="Дата появится после завершения заказ-наряда"
+                                                @endif>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Плановая дата обслуживания</label>
-                                            <input class="form-control w-100" name="" value="{{ date('d-m-Y', strtotime($service->planned_maintenance_date)) }}" readonly>
+                                            <input class="form-control w-100" name="" value="{{ date('d.m.Y', strtotime($service->planned_maintenance_date)) }}"
+                                                   readonly style="opacity: 0.5;">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Цвет в календаре</label>
@@ -237,11 +242,9 @@
                                                     @php
                                                         $title = $type->checked ? 'снять отметку выполненное' : 'отметить как выполненное';
                                                     @endphp
-                                                    <input type="checkbox" class="form-check-input type-checkbox"
-                                                           id="type_{{ $type->id }}" data-id="{{ $type->id }}"
-                                                           {{ $type->checked ? 'checked' : '' }}
-                                                           data-toggle="tooltip" title="{{ $title }}">
-                                                    <label class="form-check-label" for="type_{{ $type->id }}">
+{{--                                                    <input type="text" class="form-input"--}}
+{{--                                                           id="type_{{ $type->id }}" data-id="{{ $type->id }}">--}}
+                                                    <label class="form-label" for="type_{{ $type->id }}">
                                                         {{ $type->type_work }}
                                                     </label>
                                                 </div>
@@ -337,6 +340,37 @@
                     }
                 });
             });
+
+
+            // Функция для сброса всех сохраненных выбранных цветов
+            function resetSelectedColors() {
+                console.log("Clearing selected colors from localStorage:");
+                let keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.endsWith('_selectedColor')) {
+                        keysToRemove.push(key);
+                    }
+                }
+                // Теперь удаляем все ключи, которые собрали
+                for (let key of keysToRemove) {
+                    console.log("Removing:", key);
+                    localStorage.removeItem(key);
+                }
+            }
+
+
+
+            $(".editCardObjectMain").click(function () {
+                resetSelectedColors();
+
+                // Убираем все выделенные цвета на UI
+                $('.color-option').removeClass('selected');
+                $('input[name="selectedColor"]').val('');
+
+                window.location.href = "{{ route('cardObject-edit', ['id' => $data_CardObjectMain->_id]) }}";
+            });
+
         });
     </script>
 @endsection

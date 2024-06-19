@@ -99,7 +99,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/pageReestrGraph/card-graph/{id}', [App\Http\Controllers\GraphController::class, 'index'])->name('cardGraph');
         //СОЗДАНИЕ новой карточки графика TPM
         Route::get('/pageReestrGraph/card-graph-create', [App\Http\Controllers\GraphController::class, 'createGraphPage'])->name('cardGraph-create');
-    Route::post('/pageReestrGraph/card-graph-create', [App\Http\Controllers\GraphController::class, 'createGraphPage'])->name('cardGraph-create');
+        Route::post('/pageReestrGraph/card-graph-create', [App\Http\Controllers\GraphController::class, 'createGraphPage'])->name('cardGraph-create');
 
         Route::post('/save-cardGraph-data/{id}', [App\Http\Controllers\GraphController::class, 'saveCardGraph'])->name('cardGraph-create-save');
         // РЕДАКТИРОВАНИЕ существующей карточки графика TPM
@@ -107,11 +107,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/edit-card-graph/save/{id}', [App\Http\Controllers\GraphController::class, 'editSave'])->name('cardGraph-editSave');
         Route::post('/archiveGraphDateButt',  [App\Http\Controllers\GraphController::class, 'archiveGraphDateButt'])->name('archiveGraphDateButt');
 
-        // Маршрут для получения списка карточек объектов, которые не привязаны к другим карточкам графика
-        Route::get('/get-unlinked-object-cards', [App\Http\Controllers\GraphController::class, 'getUnlinkedObjectCards'])->name('getUnlinkedObjectCards');
+        // Маршрут для получения карточек объектов к карточке графика по виду инфраструктуры
+        Route::get('/get-all-card-objects', [App\Http\Controllers\GraphController::class, 'getAllCardObjects']);
+        Route::post('/add-card-objects-to-graph', [App\Http\Controllers\GraphController::class, 'addCardObjectsToGraph'])->name('addCardObjectsToGraph');
 
-        // Маршрут для добавления выбранных карточек объектов к карточке графика
-        Route::post('/add-object-cards', [App\Http\Controllers\GraphController::class, 'addObjectCards'])->name('addObjectCards');
+
+        Route::get('/download-graph/{id}', [App\Http\Controllers\GraphController::class, 'downloadGraph'])->name('downloadGraph');
     // -----------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -125,28 +126,30 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/edit-card-calendar/save/{id}', [App\Http\Controllers\CalendarController::class, 'editSave'])->name('cardCalendar-editSave');
 
         Route::post('/archiveCalendarDateButt',  [App\Http\Controllers\CalendarController::class, 'archiveCalendarDateButt'])->name('archiveCalendarDateButt');
+
+    Route::get('/download-calendar/{id}', [App\Http\Controllers\CalendarController::class, 'downloadCalendar'])->name('downloadCalendar');
     // ----------------------------------------------------------------------------------------------------------------
 
 
 // routes/web.php
-    Route::get('/send-test-email', function () {
-        $user = \App\Models\User::first(); // Получаем первого пользователя из базы данных
-        try {
-            if ($user) {
-                $workOrder = CardWorkOrder::first(); // Получаем первый заказ-наряд
-                $object = CardObjectMain::first(); // Получаем первый объект
-                $service = CardObjectServices::first(); // Получаем первую услугу
-                \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\WorkOrderNotification($workOrder, $object, $service));
-                return 'Письмо отправлено на адрес: ' . $user->email;
-            } else {
-                return 'Нет доступных пользователей с адресом электронной почты.';
-            }
-        } catch (\Exception $e) {
-            return 'Ошибка: ' . $e->getMessage();
-        }
-    });
+//    Route::get('/send-test-email', function () {
+//        $user = \App\Models\User::first(); // Получаем первого пользователя из базы данных
+//        try {
+//            if ($user) {
+//                $workOrder = CardWorkOrder::first(); // Получаем первый заказ-наряд
+//                $object = CardObjectMain::first(); // Получаем первый объект
+//                $service = CardObjectServices::first(); // Получаем первую услугу
+//                \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\WorkOrderNotification($workOrder, $object, $service));
+//                return 'Письмо отправлено на адрес: ' . $user->email;
+//            } else {
+//                return 'Нет доступных пользователей с адресом электронной почты.';
+//            }
+//        } catch (\Exception $e) {
+//            return 'Ошибка: ' . $e->getMessage();
+//        }
+//    });
 
 
-
+    Route::get('/send-test-mail',  [App\Http\Controllers\MailTestController::class, 'sendTestEmail']);
 });
 

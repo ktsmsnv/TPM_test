@@ -52,31 +52,31 @@
                                             <label class="w-100">Вид инфраструктуры</label>
                                             <input name="infrastructure" value="{{ $cardObjectMain->infrastructure }}"
                                                    class="form-control w-100" readonly style="opacity: 0.5;"
-                                                   data-toggle="tooltip" title="изменить можно в карточке объекта 'основная'">
+                                                   data-toggle="tooltip" title="Изменить можно в карточке объекта 'основная'">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Наименование объекта</label>
                                             <input name="name" value="{{ $cardObjectMain->name }}"
                                                    class="form-control w-100" readonly style="opacity: 0.5;"
-                                                   data-toggle="tooltip" title="изменить можно в карточке объекта 'основная'">
+                                                   data-toggle="tooltip" title="Изменить можно в карточке объекта 'основная'">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Инв./заводской №</label>
                                             <input class="form-control w-100" name="number" value="{{ $cardObjectMain->number }}"
                                                    readonly style="opacity: 0.5;"
-                                                   data-toggle="tooltip" title="изменить можно в карточке объекта 'основная'">
+                                                   data-toggle="tooltip" title="Изменить можно в карточке объекта 'основная'">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Место установки</label>
                                             <input class="form-control  w-100" name="location" value="{{ $cardObjectMain->location }}"
                                                    readonly style="opacity: 0.5;"
-                                                   data-toggle="tooltip" title="изменить можно в карточке объекта 'основная'">
+                                                   data-toggle="tooltip" title="Изменить можно в карточке объекта 'основная'">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Куратор</label>
                                             <input class="form-control  w-100" name="curator" value="{{ $cardObjectMain->curator }}"
                                                    readonly style="opacity: 0.5;"
-                                                   data-toggle="tooltip" title="изменить можно в карточке объекта 'основная'">
+                                                   data-toggle="tooltip" title="Изменить можно в карточке объекта 'основная'">
                                         </div>
                                         {{--                                        <div class="d-flex justify-content-between align-items-center gap-3">--}}
                                         {{--                                            <label class="w-100">Куратор</label>--}}
@@ -88,14 +88,14 @@
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Год действия</label>
                                             <input type="number" name="year" value="{{ $cardCalendar -> year }}" class="form-control w-100"
-                                                   data-toggle="tooltip" title="изменить можно нажав кнопку редактировать">
+                                                   data-toggle="tooltip" title="Изменить можно нажав кнопку редактировать">
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата создания</label>
                                             <input type="date" name="date_create" class="form-control w-100"
                                                    value="{{ $cardCalendar -> date_create }}"
                                                    readonly style="opacity: 0.5;"
-                                                   data-toggle="tooltip" title="дата создания календаря">
+                                                   data-toggle="tooltip" title="Дата создания календаря">
                                         </div>
                                         {{--                                        <div class="d-flex justify-content-between align-items-center gap-3">--}}
                                         {{--                                            <label class="w-100">Дата последнего сохранения</label>--}}
@@ -105,7 +105,7 @@
                                         <div class="d-flex justify-content-between align-items-center gap-3">
                                             <label class="w-100">Дата архивации</label>
                                             <input type="date" name="date_archive" placeholder="Дата архивации" class="form-control w-100"
-                                                   readonly style="opacity: 0.5;"
+                                                   readonly style="opacity: 0.5;" data-toggle="tooltip" title="Дата архивации создаётся после нажатия на кнопку 'Заархивировать'
                                                    value="{{ isset($cardCalendar->date_archive) ?$cardCalendar->date_archive : 'нет данных' }}">
                                         </div>
                                     </div>

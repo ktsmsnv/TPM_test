@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CardGraph;
 use App\Models\HistoryCardObjectMain;
 use App\Models\HistoryCardObjectMainDoc;
 use App\Models\HistoryCardObjectServices;
@@ -98,6 +99,7 @@ class ObjectController extends Controller
         $curators = User::all();
         $data_CardObjectMain = CardObjectMain::find($id);
         $data_CardObjectMainDocs = CardObjectMainDoc::where('card_object_main_id', $id)->get();
+//        dd($data_CardObjectMainDocs);
 //        $breadcrumbs = Breadcrumbs::generate('/card-object/edit');
         return view('cards/card-object-edit', compact('data_CardObjectMain', 'data_CardObjectMainDocs', 'executors', 'responsibles', 'curators'));
     }
@@ -162,7 +164,13 @@ class ObjectController extends Controller
                 $newService->performer = $service['performer'];
                 $newService->responsible = $service['responsible'];
                 $newService->frequency = $service['frequency'];
-                $newService->prev_maintenance_date = $service['prev_maintenance_date'];
+               // $newService->prev_maintenance_date = $service['prev_maintenance_date'];
+                // Проверяем, была ли передана дата предыдущего обслуживания
+                if (isset($service['prev_maintenance_date'])) {
+                    $newService->prev_maintenance_date = $service['prev_maintenance_date'];
+                } else {
+                    $newService->prev_maintenance_date = null; // Устанавливаем значение null
+                }
                 $newService->planned_maintenance_date = $service['planned_maintenance_date'];
                 $newService->calendar_color = $service['selectedColor'];
                 $newService->consumable_materials = $service['materials'];
@@ -287,6 +295,9 @@ class ObjectController extends Controller
 
         // Сохраняем изменения
         $card->save();
+
+        // Обновляем куратора во всех связанных карточках графиков
+        $this->updateCuratorInGraphs($card->_id, $card->curator);
 
         // Обновляем изображения (если есть новые изображения)
         if ($request->hasFile('images')) {
@@ -453,6 +464,15 @@ class ObjectController extends Controller
 
         // Возвращаем успешный ответ или редирект на страницу карточки объекта
         return response()->json(['success' => 'Данные карточки объекта успешно обновлены'], 200);
+    }
+
+    private function updateCuratorInGraphs($cardId, $curator)
+    {
+        $graphs = CardGraph::where('cards_ids', 'like', '%"'.$cardId.'"%')->get();
+        foreach ($graphs as $graph) {
+            $graph->curator = $curator;
+            $graph->save();
+        }
     }
 
     //------------------ УДАЛЕНИЕ ОБСЛУЖИВАНИЯ У КАРТЧОЧКИ ------------------

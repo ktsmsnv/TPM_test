@@ -163,17 +163,34 @@
                             {title: 'Инв./заводской номер', field: 'number', align: 'center'},
                             {title: 'Место установки', field: 'location', align: 'center'},
                             {title: 'Вид ближайшего обслуживания', field: 'service_type', align: 'center'},
-                            {title: 'Плановая дата обслуживания',  field: 'planned_maintenance_date', align: 'center',
+                            {title: 'Плановая дата обслуживания', field: 'planned_maintenance_date', align: 'center',
                                 formatter: function(value, row) {
-                                    // Преобразование даты в нужный формат (день-месяц-год)
-                                    return new Date(value).toLocaleDateString('ru-RU');
+                                    if (value === null) {
+                                        return null;
+                                    } else {
+                                        let date = new Date(value);
+                                        if (isNaN(date)) {
+                                            return '-'; // Если дата некорректна
+                                        } else {
+                                            return date.toLocaleDateString('ru-RU');
+                                        }
+                                    }
                                 }
                             },
                             {title: 'Фактическая дата предыдущего обслуживания', field: 'prev_maintenance_date', align: 'center',
                                 formatter: function(value, row) {
-                                    // Преобразование даты в нужный формат (день-месяц-год)
-                                    return new Date(value).toLocaleDateString('ru-RU');
-                                }},
+                                    if (value === null) {
+                                        return null;
+                                    } else {
+                                        let date = new Date(value);
+                                        if (isNaN(date)) {
+                                            return '-'; // Если дата некорректна
+                                        } else {
+                                            return date.toLocaleDateString('ru-RU');
+                                        }
+                                    }
+                                }
+                            },
                             {
                                 title: 'Статус заказ-наряда',
                                 field: 'status',
@@ -191,8 +208,16 @@
 
                             {title: 'Дата создания', field: 'date_create', align: 'center',
                                 formatter: function(value, row) {
-                                    // Преобразование даты в нужный формат (день-месяц-год)
-                                    return new Date(value).toLocaleDateString('ru-RU');
+                                    if (value === null) {
+                                        return null;
+                                    } else {
+                                        let date = new Date(value);
+                                        if (isNaN(date)) {
+                                            return '-'; // Если дата некорректна
+                                        } else {
+                                            return date.toLocaleDateString('ru-RU');
+                                        }
+                                    }
                                 }
                             },
                             // {title: 'Дата последнего сохранения', field: 'date_last_save', align: 'center'},

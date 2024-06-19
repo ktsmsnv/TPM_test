@@ -14,6 +14,7 @@ class CardWorkOrder extends Eloquent
 //        'date_last_save',
         'date_fact',
         'status',
+        'planned_maintenance_date',
     ];
 
     // Определяем связь с объектом обслуживания (CardObjectServices)
