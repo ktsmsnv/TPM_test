@@ -141,45 +141,45 @@ class CalendarController extends Controller
 
     public function index($id)
     {
-        // Находим карточку календаря по переданному ID
+        // Находим карточку календаря по переданному ID с загрузкой связанных объектов и услуг
         $cardCalendar = CardCalendar::with('objects.services')->find($id);
 
         // Проверяем, найдена ли карточка
         if (!$cardCalendar) {
-            // Если карточка не найдена, возвращаем ошибку или редирект
             return response()->json(['error' => 'Карточка календаря не найдена'], 404);
         }
 
-        // Находим связанную с карточкой календаря карточку объекта
+        // Находим карточку объекта, связанную с карточкой календаря
         $cardObjectMain = CardObjectMain::find($cardCalendar->card_id);
 
         // Проверяем, найдена ли карточка объекта
         if (!$cardObjectMain) {
-            // Если карточка объекта не найдена, возвращаем ошибку или редирект
             return response()->json(['error' => 'Карточка объекта не найдена'], 404);
         }
 
-        // Определяем массив месяцев
-        $months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
-
         // Собираем все услуги для календаря
-        $services = [];
+        $services = collect();
         foreach ($cardCalendar->objects as $object) {
             foreach ($object->services as $service) {
                 $allMaintenanceDates = $this->calculateMaintenanceDates($service);
                 foreach ($allMaintenanceDates as $date) {
-                    $services[] = [
+                    $services->push([
                         'planned_maintenance_date' => $date,
                         'short_name' => $service->short_name,
                         'calendar_color' => $service->calendar_color,
-                    ];
+                    ]);
                 }
             }
         }
 
+        // Фильтруем коллекцию услуг по уникальным short_name
+        $uniqueServices = $services->unique('short_name');
+
         // Передаем найденные данные в представление
-        return view('cards/card-calendar', compact('cardCalendar', 'cardObjectMain', 'services', 'months'));
+        return view('cards.card-calendar', compact('cardCalendar', 'cardObjectMain', 'uniqueServices', 'services'));
     }
+
+
 
     private function calculateMaintenanceDates($service)
     {

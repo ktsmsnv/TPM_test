@@ -10,7 +10,7 @@ class MailTestController extends Controller
 {
     public function sendTestEmail()
     {
-        $recipientEmail = 'test@example.com'; // Замените на нужный адрес
+        $recipientEmail = 'e.samsonova@kst-energo.ru'; // Замените на нужный адрес
         $workOrder = [
             'id' => 1,
             'date_create' => '2024-06-01',
