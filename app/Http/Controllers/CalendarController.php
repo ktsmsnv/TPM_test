@@ -180,18 +180,18 @@ class CalendarController extends Controller
     }
 
 
-
     private function calculateMaintenanceDates($service)
     {
         $plannedDate = Carbon::parse($service->planned_maintenance_date);
         $frequency = $service->frequency;
+        $initialDay = $plannedDate->day;
         $dayOfWeek = $plannedDate->dayOfWeek;
 
         $maintenanceDates = [$plannedDate->format('Y-m-d')];
         $yearEnd = Carbon::now()->endOfYear();
 
         while ($plannedDate->lessThanOrEqualTo($yearEnd)) {
-            $nextDate = $this->calculateNextDate($plannedDate, $frequency);
+            $nextDate = $this->calculateNextDate($plannedDate, $frequency, $initialDay);
             $closestDate = $this->findClosestDayOfWeek($nextDate, $dayOfWeek);
 
             if ($closestDate->greaterThan($yearEnd)) {
@@ -205,17 +205,17 @@ class CalendarController extends Controller
         return $maintenanceDates;
     }
 
-    private function calculateNextDate($baseDate, $frequency)
+    private function calculateNextDate($baseDate, $frequency, $initialDay)
     {
         switch ($frequency) {
             case 'Ежемесячное':
-                return $baseDate->copy()->addMonth();
+                return $baseDate->copy()->addMonth()->day($initialDay);
             case 'Ежеквартальное':
-                return $baseDate->copy()->addMonths(3);
+                return $baseDate->copy()->addMonths(3)->day($initialDay);
             case 'Полугодовое':
-                return $baseDate->copy()->addMonths(6);
+                return $baseDate->copy()->addMonths(6)->day($initialDay);
             case 'Ежегодное':
-                return $baseDate->copy()->addYear();
+                return $baseDate->copy()->addYear()->day($initialDay);
             default:
                 throw new \Exception('Unknown frequency type');
         }
@@ -241,6 +241,67 @@ class CalendarController extends Controller
             return $nextDate;
         }
     }
+
+//    private function calculateMaintenanceDates($service)
+//    {
+//        $plannedDate = Carbon::parse($service->planned_maintenance_date);
+//        $frequency = $service->frequency;
+//        $dayOfWeek = $plannedDate->dayOfWeek;
+//
+//        $maintenanceDates = [$plannedDate->format('Y-m-d')];
+//        $yearEnd = Carbon::now()->endOfYear();
+//
+//        while ($plannedDate->lessThanOrEqualTo($yearEnd)) {
+//            $nextDate = $this->calculateNextDate($plannedDate, $frequency);
+//            $closestDate = $this->findClosestDayOfWeek($nextDate, $dayOfWeek);
+//
+//            if ($closestDate->greaterThan($yearEnd)) {
+//                break;
+//            }
+//
+//            $maintenanceDates[] = $closestDate->format('Y-m-d');
+//            $plannedDate = $closestDate;
+//        }
+//
+//        return $maintenanceDates;
+//    }
+//
+//    private function calculateNextDate($baseDate, $frequency)
+//    {
+//        switch ($frequency) {
+//            case 'Ежемесячное':
+//                return $baseDate->copy()->addMonth();
+//            case 'Ежеквартальное':
+//                return $baseDate->copy()->addMonths(3);
+//            case 'Полугодовое':
+//                return $baseDate->copy()->addMonths(6);
+//            case 'Ежегодное':
+//                return $baseDate->copy()->addYear();
+//            default:
+//                throw new \Exception('Unknown frequency type');
+//        }
+//    }
+//
+//    private function findClosestDayOfWeek($baseDate, $targetDayOfWeek)
+//    {
+//        $prevDate = $baseDate->copy();
+//        $nextDate = $baseDate->copy();
+//
+//        // Ищем ближайшие даты до и после базовой даты
+//        while ($prevDate->dayOfWeek !== $targetDayOfWeek) {
+//            $prevDate->subDay();
+//        }
+//        while ($nextDate->dayOfWeek !== $targetDayOfWeek) {
+//            $nextDate->addDay();
+//        }
+//
+//        // Возвращаем дату, которая ближе к базовой дате
+//        if ($baseDate->diffInDays($prevDate) <= $baseDate->diffInDays($nextDate)) {
+//            return $prevDate;
+//        } else {
+//            return $nextDate;
+//        }
+//    }
 
 
 

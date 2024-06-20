@@ -31,7 +31,7 @@
                                 Исполнитель обслуживания
                             @elseif(Auth::user()->role == 'curator')
                                 Куратор
-                            @elseif(Auth::user()->role == 'administrator')
+                            @elseif(Auth::user()->role == 'admin')
                                 Администратор
                             @else
                                 Неопределено
@@ -42,7 +42,7 @@
                         </h5>
                         <div class="buttons d-flex gap-3 justify-content-center">
                             <div class="buttons d-flex gap-3 justify-content-center">
-                                <a href="" class="btn btn-outline-primary px-4"
+                                <a href="" class="d-none btn btn-outline-primary px-4"
                                    data-title="Профиль пользователя" data-step="32" data-position="bottom"
                                    data-intro="По этой кнопке можно подключить telegram бота для получения уведомлений о заказ-нарядах.За 14 календарных дней до плановой даты обслуживания,уведомление со ссылкой на сформированный заказ-наряд на обслуживание объекта.
                                    Уведомление о просрочке со ссылкой на заказ-наряд.">
@@ -55,6 +55,16 @@
                                         data-intro="По нажатию можно сменить пароль">Сменить пароль</button>
                             </div>
                         </div>
+
+                        @if(Auth::user()->role == 'admin')
+                            <div class="mt-4">
+                                <h5>{{ __('Регистрация нового пользователя') }}</h5>
+                                <form method="GET" action="{{ route('register') }}">
+                                    <button type="submit" class="btn btn-primary">{{ __('Зарегистрировать нового пользователя') }}</button>
+                                </form>
+                            </div>
+                        @endif
+
                     </div>
                 </div>
             </div>
