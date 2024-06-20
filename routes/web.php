@@ -24,6 +24,12 @@ Route::middleware(['auth'])->group(function () {
 
     // ---------------------------- ЛИЧНЫЙ КАБИНЕТ --------------------------------------------------------------------
         Route::get('/home/profile', [App\Http\Controllers\HomeController::class, 'profile'])->name('profile');
+    // Маршрут для формы регистрации пользователей, доступной только администратору
+    Route::middleware(['can:register-users'])->group(function () {
+        Route::get('/register', [App\Http\Controllers\RegisterController::class, 'showRegistrationForm'])->name('register');
+        Route::post('/register', [App\Http\Controllers\RegisterController::class, 'register']);
+    });
+
         // обновление данных профиля
         Route::put('/home/profile/update', [App\Http\Controllers\HomeController::class, 'updateProfile'])->name('profile.update');
         // изменение пароля профиля

@@ -103,7 +103,7 @@
                     </form>
                 </div>
             </div>
-            <a href="{{ route('register') }}">зарегистрироваться</a>
+{{--            <a href="{{ route('register') }}">зарегистрироваться</a>--}}
         </div>
     </div>
 </div>

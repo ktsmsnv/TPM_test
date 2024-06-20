@@ -213,38 +213,11 @@ class workOrderController extends Controller
         $cardObjectServicesId = $workOrder->card_object_services_id;
         $cardObjectServices = CardObjectServices::findOrFail($cardObjectServicesId);
 
-        // Вычисление следующей плановой даты обслуживания
-        $prevMaintenanceDate = Carbon::parse($cardObjectServices->prev_maintenance_date);
-        $frequency = $cardObjectServices->frequency;
-        $plannedMaintenanceDate = Carbon::parse($cardObjectServices->planned_maintenance_date);
-        $targetDayOfWeek = $plannedMaintenanceDate->dayOfWeek; // Используем день недели из текущей плановой даты
-
-        $currentDate = Carbon::parse($dateFact);
-        $yearEnd = $currentDate->copy()->endOfYear();
-        $nextDate = $this->calculateNextDate($prevMaintenanceDate, $frequency);
-
-        // Поиск первой ближайшей даты до конца года
-        $closestDate = null;
-        while ($nextDate->lessThanOrEqualTo($yearEnd)) {
-            $closestDate = $this->findClosestDayOfWeek($nextDate, $targetDayOfWeek);
-
-            if ($closestDate->greaterThan($yearEnd)) {
-                break;
-            }
-
-            // Если нашли ближайшую дату, выходим из цикла
-            break;
-        }
-
-        // Если ближайшая дата найдена, используем её
-        if ($closestDate) {
-            $cardObjectServices->planned_maintenance_date = $closestDate->format('Y-m-d');
-        }
-
-        // Обновление даты предыдущего обслуживания
+        // Сохранение фактической даты в дату предыдущего обслуживания
         $cardObjectServices->prev_maintenance_date = $dateFact;
         $cardObjectServices->save();
 
+        // Создание новой записи в истории заказ-нарядов
         $newWorkOrderHistory = new HistoryCardWorkOrder();
         $newWorkOrderHistory->card_id = $workOrder->card_id;
         $newWorkOrderHistory->card_object_services_id = $workOrder->card_object_services_id;
@@ -258,17 +231,17 @@ class workOrderController extends Controller
         return response()->json(['message' => 'Заказ-наряд успешно завершен'], 200);
     }
 
-    private function calculateNextDate($prevMaintenanceDate, $frequency)
+    private function calculateNextDate($baseDate, $frequency, $initialDay)
     {
         switch ($frequency) {
             case 'Ежемесячное':
-                return $prevMaintenanceDate->copy()->addMonth();
+                return $baseDate->copy()->addMonth()->day($initialDay);
             case 'Ежеквартальное':
-                return $prevMaintenanceDate->copy()->addMonths(3);
+                return $baseDate->copy()->addMonths(3)->day($initialDay);
             case 'Полугодовое':
-                return $prevMaintenanceDate->copy()->addMonths(6);
+                return $baseDate->copy()->addMonths(6)->day($initialDay);
             case 'Ежегодное':
-                return $prevMaintenanceDate->copy()->addYear();
+                return $baseDate->copy()->addYear()->day($initialDay);
             default:
                 throw new \Exception('Unknown frequency type');
         }
@@ -294,6 +267,103 @@ class workOrderController extends Controller
             return $nextDate;
         }
     }
+
+
+//    public function endWorkOrder(Request $request)
+//    {
+//        $workOrderId = $request->id;
+//        $dateFact = Carbon::now()->format('Y-m-d');
+//        $status = $request->status;
+//
+//        $workOrder = CardWorkOrder::findOrFail($workOrderId);
+//        $workOrder->date_fact = $dateFact;
+//        $workOrder->status = $status;
+//        $workOrder->save();
+//
+//        $cardObjectServicesId = $workOrder->card_object_services_id;
+//        $cardObjectServices = CardObjectServices::findOrFail($cardObjectServicesId);
+//
+//        // Вычисление следующей плановой даты обслуживания
+//        $prevMaintenanceDate = Carbon::parse($cardObjectServices->prev_maintenance_date);
+//        $frequency = $cardObjectServices->frequency;
+//        $plannedMaintenanceDate = Carbon::parse($cardObjectServices->planned_maintenance_date);
+//        $targetDayOfWeek = $plannedMaintenanceDate->dayOfWeek; // Используем день недели из текущей плановой даты
+//
+//        $currentDate = Carbon::parse($dateFact);
+//        $yearEnd = $currentDate->copy()->endOfYear();
+//        $nextDate = $this->calculateNextDate($prevMaintenanceDate, $frequency);
+//
+//        // Поиск первой ближайшей даты до конца года
+//        $closestDate = null;
+//        while ($nextDate->lessThanOrEqualTo($yearEnd)) {
+//            $closestDate = $this->findClosestDayOfWeek($nextDate, $targetDayOfWeek);
+//
+//            if ($closestDate->greaterThan($yearEnd)) {
+//                break;
+//            }
+//
+//            // Если нашли ближайшую дату, выходим из цикла
+//            break;
+//        }
+//
+//        // Если ближайшая дата найдена, используем её
+//        if ($closestDate) {
+//            $cardObjectServices->planned_maintenance_date = $closestDate->format('Y-m-d');
+//        }
+//
+//        // Обновление даты предыдущего обслуживания
+//        $cardObjectServices->prev_maintenance_date = $dateFact;
+//        $cardObjectServices->save();
+//
+//        $newWorkOrderHistory = new HistoryCardWorkOrder();
+//        $newWorkOrderHistory->card_id = $workOrder->card_id;
+//        $newWorkOrderHistory->card_object_services_id = $workOrder->card_object_services_id;
+//        $newWorkOrderHistory->date_create = Carbon::parse($workOrder->date_create)->format('Y-m-d');
+//        $newWorkOrderHistory->status = $status;
+//        $newWorkOrderHistory->date_fact = $dateFact;
+//        $newWorkOrderHistory->number = $workOrder->number;
+//        $newWorkOrderHistory->planned_maintenance_date = $cardObjectServices->planned_maintenance_date;
+//        $newWorkOrderHistory->save();
+//
+//        return response()->json(['message' => 'Заказ-наряд успешно завершен'], 200);
+//    }
+//
+//    private function calculateNextDate($prevMaintenanceDate, $frequency)
+//    {
+//        switch ($frequency) {
+//            case 'Ежемесячное':
+//                return $prevMaintenanceDate->copy()->addMonth();
+//            case 'Ежеквартальное':
+//                return $prevMaintenanceDate->copy()->addMonths(3);
+//            case 'Полугодовое':
+//                return $prevMaintenanceDate->copy()->addMonths(6);
+//            case 'Ежегодное':
+//                return $prevMaintenanceDate->copy()->addYear();
+//            default:
+//                throw new \Exception('Unknown frequency type');
+//        }
+//    }
+//
+//    private function findClosestDayOfWeek($baseDate, $targetDayOfWeek)
+//    {
+//        $prevDate = $baseDate->copy();
+//        $nextDate = $baseDate->copy();
+//
+//        // Ищем ближайшие даты до и после базовой даты
+//        while ($prevDate->dayOfWeek !== $targetDayOfWeek) {
+//            $prevDate->subDay();
+//        }
+//        while ($nextDate->dayOfWeek !== $targetDayOfWeek) {
+//            $nextDate->addDay();
+//        }
+//
+//        // Возвращаем дату, которая ближе к базовой дате
+//        if ($baseDate->diffInDays($prevDate) <= $baseDate->diffInDays($nextDate)) {
+//            return $prevDate;
+//        } else {
+//            return $nextDate;
+//        }
+//    }
 
 
     /**
