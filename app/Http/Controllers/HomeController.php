@@ -171,18 +171,18 @@ class HomeController extends Controller
             CardCalendar::where('card_id', $id)->delete();
 
             // Удалить записи из графиков
-            $graphs = CardGraph::where('cards_ids', 'like', '%"'.$id.'"%')->get();
-            foreach ($graphs as $graph) {
-                $graph->cards_ids = array_filter($graph->cards_ids, function($cardId) use ($id) {
-                    return $cardId !== $id;
-                });
-                $graph->save();
-
-                // Если в графике не осталось объектов, удалить сам график
-                if (empty($graph->cards_ids)) {
-                    $graph->delete();
-                }
-            }
+//            $graphs = CardGraph::where('cards_ids', 'like', '%"'.$id.'"%')->get();
+//            foreach ($graphs as $graph) {
+//                $graph->cards_ids = array_filter($graph->cards_ids, function($cardId) use ($id) {
+//                    return $cardId !== $id;
+//                });
+//                $graph->save();
+//
+//                // Если в графике не осталось объектов, удалить сам график
+//                if (empty($graph->cards_ids)) {
+//                    $graph->delete();
+//                }
+//            }
 
             // Удалить запись из основной таблицы
             CardObjectMain::find($id)->delete();

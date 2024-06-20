@@ -19,6 +19,11 @@ return [
     */
 
     'default' => env('LOG_CHANNEL', 'stack'),
+    'mail' => [
+        'driver' => 'single',
+        'path' => storage_path('logs/laravel-mail.log'),
+        'level' => 'debug',
+    ],
 
     /*
     |--------------------------------------------------------------------------

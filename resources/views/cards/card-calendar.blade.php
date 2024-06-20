@@ -151,62 +151,56 @@
                         </div>
                     </div>
                 </div>
-                {{-- ВКЛАДКА "КАЛЕНДАРЬ" --}}
-                <div class="tab-pane fade" id="service_1" role="tabpanel" aria-labelledby="service_1-tab">
-                    <div id="service__blocks" class="d-grid">
-                        {{-- КАЛЕНДАРЬ ТРМ --}}
-                        <div class="member_card_style services">
-                            <div class="member-info">
-                                <h4>Календарь ТРМ</h4>
-                                <div class="member-info--inputs">
-                                    {{-- КАЛЕНДАРЬ --}}
-                                    <div id="calendar-container">
-                                        <table class="calendar">
-                                            <tbody></tbody>
-                                        </table>
-                                    </div>
-{{--                                    <div class="calendar" id="calendar">--}}
-{{--                                        @for($i = 0; $i < 12; $i++)--}}
-{{--                                            <div class="month">--}}
-{{--                                                <div class="month-title">--}}
-{{--                                                    {{ $months[$i] }}--}}
-{{--                                                </div>--}}
-{{--                                                <div class="month-body">--}}
-{{--                                                    @foreach($services as $service)--}}
-{{--                                                        @if(Carbon\Carbon::parse($service['planned_maintenance_date'])->month == $i + 1)--}}
-{{--                                                            <div class="event" style="background-color: {{ $service['calendar_color'] }}">--}}
-{{--                                                                <span>{{ Carbon\Carbon::parse($service['planned_maintenance_date'])->format('d') }} - {{ $service['short_name'] }}</span>--}}
-{{--                                                            </div>--}}
-{{--                                                        @endif--}}
-{{--                                                    @endforeach--}}
-{{--                                                </div>--}}
-{{--                                            </div>--}}
-{{--                                        @endfor--}}
-{{--                                    </div>--}}
-                                </div>
+        {{-- ВКЛАДКА "КАЛЕНДАРЬ" --}}
+        <div class="tab-pane fade" id="service_1" role="tabpanel" aria-labelledby="service_1-tab">
+            <div id="service__blocks" class="d-grid">
+                {{-- КАЛЕНДАРЬ ТРМ --}}
+                <div class="member_card_style services">
+                    <div class="member-info">
+                        <h4>Календарь ТРМ</h4>
+                        <div class="member-info--inputs">
+                            {{-- КАЛЕНДАРЬ --}}
+                            <div id="calendar-container">
+                                <table class="calendar">
+                                    <tbody></tbody>
+                                </table>
                             </div>
                         </div>
-                        {{-- ИЗОБРАЖЕНИЕ --}}
-                        <div class="member_card_style image">
-                            <div class="member-info">
-                                <div class="d-flex justify-content-between mb-4">
-                                    <h4>Изображение объекта</h4>
-                                </div>
-                                <div class="objectImage">
-                                    @if ($cardObjectMain && $cardObjectMain->image)
-                                        <!-- Если у объекта есть изображение, отобразите его -->
-                                        <img src="{{ route('getImage', ['id' => $cardObjectMain->id]) }}" alt="Image">
-                                    @else
-                                        <!-- Если у объекта нет изображения, отобразите сообщение -->
-                                        <p>Нет доступных изображений</p>
-                                    @endif
-                                </div>
-                            </div>
+                    </div>
+                </div>
+                {{-- Легенда --}}
+                <div class="member_card_style services service-legend">
+                    <h4>Легенда</h4>
+                    <ul class="legend-list">
+                        @foreach($uniqueServices as $service)
+                            <li>
+                                <span class="color-block" style="background-color: {{ $service['calendar_color'] }};"></span>
+                                {{ $service['short_name'] }}
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+                {{-- ИЗОБРАЖЕНИЕ --}}
+                <div class="member_card_style image">
+                    <div class="member-info">
+                        <div class="d-flex justify-content-between mb-4">
+                            <h4>Изображение объекта</h4>
+                        </div>
+                        <div class="objectImage">
+                            @if ($cardObjectMain && $cardObjectMain->image)
+                                <!-- Если у объекта есть изображение, отобразите его -->
+                                <img src="{{ route('getImage', ['id' => $cardObjectMain->id]) }}" alt="Image">
+                            @else
+                                <!-- Если у объекта нет изображения, отобразите сообщение -->
+                                <p>Нет доступных изображений</p>
+                            @endif
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    </div>
 
         <!-- Модальное окно подтверждения завершения архивации -->
         <div class="modal fade" id="confirmArchiveModal" tabindex="-1" aria-labelledby="confirmArchiveModalLabel" aria-hidden="true">
@@ -304,8 +298,25 @@
             .service {
                 background-color: blue;
             }
+            .service-legend {
+                margin-bottom: 20px;
+            }
+            .legend-list {
+                list-style: none;
+                padding: 0;
+            }
+            .legend-list li {
+                display: flex;
+                align-items: center;
+                margin-bottom: 5px;
+            }
+            .color-block {
+                width: 20px;
+                height: 20px;
+                display: inline-block;
+                margin-right: 10px;
+            }
         </style>
-
         <script>
             const services = @json($services);
             console.log(services);

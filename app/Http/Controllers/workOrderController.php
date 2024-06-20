@@ -217,47 +217,33 @@ class workOrderController extends Controller
         $prevMaintenanceDate = Carbon::parse($cardObjectServices->prev_maintenance_date);
         $frequency = $cardObjectServices->frequency;
         $plannedMaintenanceDate = Carbon::parse($cardObjectServices->planned_maintenance_date);
-        $dayOfWeek = $plannedMaintenanceDate->dayOfWeek; // Используем день недели из текущей плановой даты
+        $targetDayOfWeek = $plannedMaintenanceDate->dayOfWeek; // Используем день недели из текущей плановой даты
 
-
-        $allMaintenanceDates = [];
         $currentDate = Carbon::parse($dateFact);
         $yearEnd = $currentDate->copy()->endOfYear();
+        $nextDate = $this->calculateNextDate($prevMaintenanceDate, $frequency);
 
-        while ($currentDate->lessThanOrEqualTo($yearEnd)) {
-            switch ($frequency) {
-                case 'Ежемесячное':
-                    $nextDate = $plannedMaintenanceDate->addMonth();
-                    break;
-                case 'Ежеквартальное':
-                    $nextDate = $plannedMaintenanceDate->addMonths(3);
-                    break;
-                case 'Полугодовое':
-                    $nextDate = $plannedMaintenanceDate->addMonths(6);
-                    break;
-                case 'Ежегодное':
-                    $nextDate = $plannedMaintenanceDate->addYear();
-                    break;
-                default:
-                    throw new \Exception('Unknown frequency type');
-            }
+        // Поиск первой ближайшей даты до конца года
+        $closestDate = null;
+        while ($nextDate->lessThanOrEqualTo($yearEnd)) {
+            $closestDate = $this->findClosestDayOfWeek($nextDate, $targetDayOfWeek);
 
-            while ($nextDate->dayOfWeek !== $dayOfWeek) {
-                $nextDate->addDay();
-            }
-
-            if ($nextDate->greaterThan($yearEnd)) {
+            if ($closestDate->greaterThan($yearEnd)) {
                 break;
             }
 
-            $allMaintenanceDates[] = $nextDate->format('Y-m-d');
-            $plannedMaintenanceDate = $nextDate;
+            // Если нашли ближайшую дату, выходим из цикла
+            break;
         }
 
-        $cardObjectServices->prev_maintenance_date = $dateFact;
-        $cardObjectServices->planned_maintenance_date = $plannedMaintenanceDate->format('Y-m-d');
-        $cardObjectServices->save();
+        // Если ближайшая дата найдена, используем её
+        if ($closestDate) {
+            $cardObjectServices->planned_maintenance_date = $closestDate->format('Y-m-d');
+        }
 
+        // Обновление даты предыдущего обслуживания
+        $cardObjectServices->prev_maintenance_date = $dateFact;
+        $cardObjectServices->save();
 
         $newWorkOrderHistory = new HistoryCardWorkOrder();
         $newWorkOrderHistory->card_id = $workOrder->card_id;
@@ -271,6 +257,44 @@ class workOrderController extends Controller
 
         return response()->json(['message' => 'Заказ-наряд успешно завершен'], 200);
     }
+
+    private function calculateNextDate($prevMaintenanceDate, $frequency)
+    {
+        switch ($frequency) {
+            case 'Ежемесячное':
+                return $prevMaintenanceDate->copy()->addMonth();
+            case 'Ежеквартальное':
+                return $prevMaintenanceDate->copy()->addMonths(3);
+            case 'Полугодовое':
+                return $prevMaintenanceDate->copy()->addMonths(6);
+            case 'Ежегодное':
+                return $prevMaintenanceDate->copy()->addYear();
+            default:
+                throw new \Exception('Unknown frequency type');
+        }
+    }
+
+    private function findClosestDayOfWeek($baseDate, $targetDayOfWeek)
+    {
+        $prevDate = $baseDate->copy();
+        $nextDate = $baseDate->copy();
+
+        // Ищем ближайшие даты до и после базовой даты
+        while ($prevDate->dayOfWeek !== $targetDayOfWeek) {
+            $prevDate->subDay();
+        }
+        while ($nextDate->dayOfWeek !== $targetDayOfWeek) {
+            $nextDate->addDay();
+        }
+
+        // Возвращаем дату, которая ближе к базовой дате
+        if ($baseDate->diffInDays($prevDate) <= $baseDate->diffInDays($nextDate)) {
+            return $prevDate;
+        } else {
+            return $nextDate;
+        }
+    }
+
 
     /**
      * @throws CopyFileException
