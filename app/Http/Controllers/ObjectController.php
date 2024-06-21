@@ -401,6 +401,7 @@ class ObjectController extends Controller
                     $newService = new CardObjectServices();
                     $newService->fill($service); // Заполняем модель данными из массива
                     $newService->card_object_main_id = $id;
+                    $newService->calendar_color = $service['selectedColor'];
                     $newService->save();
 
                     // Создаем виды работ для новой услуги
