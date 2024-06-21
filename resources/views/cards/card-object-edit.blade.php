@@ -740,6 +740,12 @@
                     case 'Ежегодное':
                         nextDate.setFullYear(nextDate.getFullYear() + 1);
                         break;
+                    case 'Сменное':
+                        nextDate.setDate(nextDate.getDate() + 1);
+                        while (isWeekend(nextDate)) {
+                            nextDate.setDate(nextDate.getDate() + 1);
+                        }
+                        return nextDate;
                     default:
                         return;
                 }
@@ -771,7 +777,10 @@
                     return nextDate;
                 }
             }
-
+            function isWeekend(date) {
+                let day = date.getDay();
+                return day === 0 || day === 6; // Воскресенье (0) или Суббота (6)
+            }
             // Обработчик изменения значения даты предыдущего обслуживания или периодичности
             // $(document).on('change', '[id^="prev_maintenance_date_"], [id^="frequency_"]', function () {
             //     // Обновляем плановую дату обслуживания при изменении периодичности или даты предыдущего обслуживания

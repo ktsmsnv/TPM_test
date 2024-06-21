@@ -179,7 +179,6 @@ class CalendarController extends Controller
         return view('cards.card-calendar', compact('cardCalendar', 'cardObjectMain', 'uniqueServices', 'services'));
     }
 
-
     private function calculateMaintenanceDates($service)
     {
         $plannedDate = Carbon::parse($service->planned_maintenance_date);
@@ -191,35 +190,45 @@ class CalendarController extends Controller
         $yearEnd = Carbon::now()->endOfYear();
 
         while ($plannedDate->lessThanOrEqualTo($yearEnd)) {
-            $nextDate = $this->calculateNextDate($plannedDate, $frequency, $initialDay);
-            $closestDate = $this->findClosestDayOfWeek($nextDate, $dayOfWeek);
+            $nextDate = $this->calculateNextDate($plannedDate, $frequency, $initialDay, $dayOfWeek);
 
-            if ($closestDate->greaterThan($yearEnd)) {
+            if ($nextDate->greaterThan($yearEnd)) {
                 break;
             }
 
-            $maintenanceDates[] = $closestDate->format('Y-m-d');
-            $plannedDate = $closestDate;
+            $maintenanceDates[] = $nextDate->format('Y-m-d');
+            $plannedDate = $nextDate;
         }
-        // dasd
 
         return $maintenanceDates;
     }
 
-    private function calculateNextDate($baseDate, $frequency, $initialDay)
+    private function calculateNextDate($baseDate, $frequency, $initialDay, $initialDayOfWeek)
     {
         switch ($frequency) {
             case 'Ежемесячное':
-                return $baseDate->copy()->addMonth()->day($initialDay);
+                $nextDate = $baseDate->copy()->addMonth()->day($initialDay);
+                break;
             case 'Ежеквартальное':
-                return $baseDate->copy()->addMonths(3)->day($initialDay);
+                $nextDate = $baseDate->copy()->addMonths(3)->day($initialDay);
+                break;
             case 'Полугодовое':
-                return $baseDate->copy()->addMonths(6)->day($initialDay);
+                $nextDate = $baseDate->copy()->addMonths(6)->day($initialDay);
+                break;
             case 'Ежегодное':
-                return $baseDate->copy()->addYear()->day($initialDay);
+                $nextDate = $baseDate->copy()->addYear()->day($initialDay);
+                break;
+            case 'Сменное':
+                $nextDate = $baseDate->copy()->addDay();
+                while ($this->isWeekend($nextDate)) {
+                    $nextDate->addDay();
+                }
+                return $nextDate;
             default:
                 throw new \Exception('Unknown frequency type');
         }
+
+        return $this->findClosestDayOfWeek($nextDate, $initialDayOfWeek);
     }
 
     private function findClosestDayOfWeek($baseDate, $targetDayOfWeek)
@@ -241,6 +250,11 @@ class CalendarController extends Controller
         } else {
             return $nextDate;
         }
+    }
+
+    private function isWeekend($date)
+    {
+        return $date->dayOfWeek === Carbon::SATURDAY || $date->dayOfWeek === Carbon::SUNDAY;
     }
 
 //    private function calculateMaintenanceDates($service)

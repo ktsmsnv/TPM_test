@@ -217,6 +217,16 @@ class workOrderController extends Controller
         $cardObjectServices->prev_maintenance_date = $dateFact;
         $cardObjectServices->save();
 
+        // Расчет следующей плановой даты обслуживания
+        $frequency = $cardObjectServices->frequency;
+        $initialDay = Carbon::parse($dateFact)->day;
+        $initialDayOfWeek = Carbon::parse($dateFact)->dayOfWeek;
+        $nextMaintenanceDate = $this->calculateNextDate(Carbon::parse($dateFact), $frequency, $initialDay, $initialDayOfWeek);
+
+        // Обновление следующей плановой даты обслуживания
+        $cardObjectServices->planned_maintenance_date = $nextMaintenanceDate->format('Y-m-d');
+        $cardObjectServices->save();
+
         // Создание новой записи в истории заказ-нарядов
         $newWorkOrderHistory = new HistoryCardWorkOrder();
         $newWorkOrderHistory->card_id = $workOrder->card_id;
@@ -231,20 +241,32 @@ class workOrderController extends Controller
         return response()->json(['message' => 'Заказ-наряд успешно завершен'], 200);
     }
 
-    private function calculateNextDate($baseDate, $frequency, $initialDay)
+    private function calculateNextDate($baseDate, $frequency, $initialDay, $initialDayOfWeek)
     {
         switch ($frequency) {
             case 'Ежемесячное':
-                return $baseDate->copy()->addMonth()->day($initialDay);
+                $nextDate = $baseDate->copy()->addMonth()->day($initialDay);
+                break;
             case 'Ежеквартальное':
-                return $baseDate->copy()->addMonths(3)->day($initialDay);
+                $nextDate = $baseDate->copy()->addMonths(3)->day($initialDay);
+                break;
             case 'Полугодовое':
-                return $baseDate->copy()->addMonths(6)->day($initialDay);
+                $nextDate = $baseDate->copy()->addMonths(6)->day($initialDay);
+                break;
             case 'Ежегодное':
-                return $baseDate->copy()->addYear()->day($initialDay);
+                $nextDate = $baseDate->copy()->addYear()->day($initialDay);
+                break;
+            case 'Сменное':
+                $nextDate = $baseDate->copy()->addDay();
+                while ($this->isWeekend($nextDate)) {
+                    $nextDate->addDay();
+                }
+                return $nextDate;
             default:
                 throw new \Exception('Unknown frequency type');
         }
+
+        return $this->findClosestDayOfWeek($nextDate, $initialDayOfWeek);
     }
 
     private function findClosestDayOfWeek($baseDate, $targetDayOfWeek)
@@ -267,6 +289,12 @@ class workOrderController extends Controller
             return $nextDate;
         }
     }
+
+    private function isWeekend($date)
+    {
+        return $date->dayOfWeek === Carbon::SATURDAY || $date->dayOfWeek === Carbon::SUNDAY;
+    }
+
 
 
 //    public function endWorkOrder(Request $request)
