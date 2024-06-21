@@ -460,7 +460,14 @@ class ObjectController extends Controller
                 }
             }
         }
-
+// Обновляем плановые даты в связанных заказах-нарядах
+        $card->load('services.cardWorkOrders');
+        foreach ($card->services as $service) {
+            foreach ($service->cardWorkOrders as $workOrder) {
+                $workOrder->planned_maintenance_date = $service->planned_maintenance_date;
+                $workOrder->save();
+            }
+        }
 
         // Возвращаем успешный ответ или редирект на страницу карточки объекта
         return response()->json(['success' => 'Данные карточки объекта успешно обновлены'], 200);

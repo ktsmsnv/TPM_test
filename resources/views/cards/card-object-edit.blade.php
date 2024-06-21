@@ -701,12 +701,10 @@
             });
 
 
-            // Обработчик изменения значения даты предыдущего обслуживания или периодичности
             $(document).on('change', '[id^="prev_maintenance_date_"], [id^="frequency_"]', function () {
-                // Обновляем плановую дату обслуживания при изменении периодичности или даты предыдущего обслуживания
                 updatePlannedMaintenanceDate();
             });
-            // Функция для обновления плановой даты обслуживания
+
             function updatePlannedMaintenanceDate() {
                 $('[id^="prev_maintenance_date_"]').each(function () {
                     let index = $(this).attr('id').split('_')[3];
@@ -715,39 +713,134 @@
                     let frequency = $('#frequency_' + index).val();
                     let dateUsageInput = $('input[name="date_usage"]');
 
-                    // Если дата предыдущего обслуживания не указана и дата ввода в эксплуатацию отсутствует, выходим из функции
                     if (!prevDateInput.val() && !dateUsageInput.val()) return;
 
-                    // Если дата предыдущего обслуживания не указана, используем дату ввода в эксплуатацию
-                    let prevMaintenanceDate = prevDateInput.val() ? new Date(prevDateInput.val()) : new Date(dateUsageInput.val());
-                    let plannedMaintenanceDate = new Date(prevMaintenanceDate);
+                    let initialDate = prevDateInput.val() ? new Date(prevDateInput.val()) : new Date(dateUsageInput.val());
+                    let initialDay = initialDate.getDate();
+                    let initialDayOfWeek = initialDate.getDay();
 
-                    // Выполняем соответствующие расчеты в зависимости от выбранной периодичности
-                    switch (frequency) {
-                        case 'Сменное':
-                            plannedMaintenanceDate.setDate(plannedMaintenanceDate.getDate() + 1);
-                            break;
-                        case 'Ежемесячное':
-                            plannedMaintenanceDate.setMonth(plannedMaintenanceDate.getMonth() + 1);
-                            break;
-                        case 'Ежеквартальное':
-                            plannedMaintenanceDate.setMonth(plannedMaintenanceDate.getMonth() + 3);
-                            break;
-                        case 'Полугодовое':
-                            plannedMaintenanceDate.setMonth(plannedMaintenanceDate.getMonth() + 6);
-                            break;
-                        case 'Ежегодное':
-                            plannedMaintenanceDate.setFullYear(plannedMaintenanceDate.getFullYear() + 1);
-                            break;
-                        default:
-                            // Если выбрана периодичность "Сменное" или что-то другое, выходим из функции
-                            return;
-                    }
-
-                    // Устанавливаем новую плановую дату обслуживания
-                    plannedDateInput.val(plannedMaintenanceDate.toISOString().slice(0, 10));
+                    let nextMaintenanceDate = calculateNextMaintenanceDate(initialDate, frequency, initialDay, initialDayOfWeek);
+                    plannedDateInput.val(nextMaintenanceDate.toISOString().slice(0, 10));
                 });
             }
+
+            function calculateNextMaintenanceDate(baseDate, frequency, initialDay, initialDayOfWeek) {
+                let nextDate = new Date(baseDate);
+
+                switch (frequency) {
+                    case 'Ежемесячное':
+                        nextDate.setMonth(nextDate.getMonth() + 1);
+                        break;
+                    case 'Ежеквартальное':
+                        nextDate.setMonth(nextDate.getMonth() + 3);
+                        break;
+                    case 'Полугодовое':
+                        nextDate.setMonth(nextDate.getMonth() + 6);
+                        break;
+                    case 'Ежегодное':
+                        nextDate.setFullYear(nextDate.getFullYear() + 1);
+                        break;
+                    default:
+                        return;
+                }
+
+                nextDate.setDate(initialDay);
+                let closestDate = findClosestDayOfWeek(nextDate, initialDayOfWeek);
+                return closestDate;
+            }
+
+            function findClosestDayOfWeek(baseDate, targetDayOfWeek) {
+                let nextDate = new Date(baseDate);
+
+                if (nextDate.getDay() === targetDayOfWeek) {
+                    return nextDate;
+                }
+
+                let prevDate = new Date(baseDate);
+                while (prevDate.getDay() !== targetDayOfWeek) {
+                    prevDate.setDate(prevDate.getDate() - 1);
+                }
+
+                while (nextDate.getDay() !== targetDayOfWeek) {
+                    nextDate.setDate(nextDate.getDate() + 1);
+                }
+
+                if (Math.abs(prevDate - baseDate) <= Math.abs(nextDate - baseDate)) {
+                    return prevDate;
+                } else {
+                    return nextDate;
+                }
+            }
+
+            // Обработчик изменения значения даты предыдущего обслуживания или периодичности
+            // $(document).on('change', '[id^="prev_maintenance_date_"], [id^="frequency_"]', function () {
+            //     // Обновляем плановую дату обслуживания при изменении периодичности или даты предыдущего обслуживания
+            //     updatePlannedMaintenanceDate();
+            // });
+            // // Функция для обновления плановой даты обслуживания
+            // function updatePlannedMaintenanceDate() {
+            //     $('[id^="prev_maintenance_date_"]').each(function () {
+            //         let index = $(this).attr('id').split('_')[3];
+            //         let prevDateInput = $('#prev_maintenance_date_' + index);
+            //         let plannedDateInput = $('#planned_maintenance_date_' + index);
+            //         let frequency = $('#frequency_' + index).val();
+            //         let dateUsageInput = $('input[name="date_usage"]');
+            //
+            //         // Если дата предыдущего обслуживания не указана и дата ввода в эксплуатацию отсутствует, выходим из функции
+            //         if (!prevDateInput.val() && !dateUsageInput.val()) return;
+            //
+            //         // Если дата предыдущего обслуживания не указана, используем дату ввода в эксплуатацию
+            //         let prevMaintenanceDate = prevDateInput.val() ? new Date(prevDateInput.val()) : new Date(dateUsageInput.val());
+            //         let plannedMaintenanceDate = new Date(prevMaintenanceDate);
+            //         let dayOfWeek = plannedMaintenanceDate.getDay();
+            //
+            //         let nextDate = new Date(prevMaintenanceDate);
+            //         // Выполняем соответствующие расчеты в зависимости от выбранной периодичности
+            //         switch (frequency) {
+            //             case 'Ежемесячное':
+            //                 nextDate.setMonth(nextDate.getMonth() + 1);
+            //                 break;
+            //             case 'Ежеквартальное':
+            //                 nextDate.setMonth(nextDate.getMonth() + 3);
+            //                 break;
+            //             case 'Полугодовое':
+            //                 nextDate.setMonth(nextDate.getMonth() + 6);
+            //                 break;
+            //             case 'Ежегодное':
+            //                 nextDate.setFullYear(nextDate.getFullYear() + 1);
+            //                 break;
+            //             default:
+            //                 // Если выбрана периодичность "Сменное" или что-то другое, выходим из функции
+            //                 return;
+            //         }
+            //
+            //         // Поиск ближайшей даты, соответствующей нужному дню недели
+            //         let closestDate = findClosestDayOfWeek(nextDate, dayOfWeek);
+            //
+            //         // Устанавливаем новую плановую дату обслуживания
+            //         plannedDateInput.val(closestDate.toISOString().slice(0, 10));
+            //     });
+            // }
+            // // Функция для поиска ближайшего нужного дня недели
+            // function findClosestDayOfWeek(baseDate, targetDayOfWeek) {
+            //     let prevDate = new Date(baseDate);
+            //     let nextDate = new Date(baseDate);
+            //
+            //     // Ищем ближайшие даты до и после базовой даты
+            //     while (prevDate.getDay() !== targetDayOfWeek) {
+            //         prevDate.setDate(prevDate.getDate() - 1);
+            //     }
+            //     while (nextDate.getDay() !== targetDayOfWeek) {
+            //         nextDate.setDate(nextDate.getDate() + 1);
+            //     }
+            //
+            //     // Возвращаем дату, которая ближе к базовой дате
+            //     if (Math.abs(prevDate - baseDate) <= Math.abs(nextDate - baseDate)) {
+            //         return prevDate;
+            //     } else {
+            //         return nextDate;
+            //     }
+            // }
 
             $(document).on('change', '[id^="service_type_"]', function () {
                 console.log('Выбран вид обслуживания. Обновляем сокращенное название...');
