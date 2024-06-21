@@ -174,7 +174,7 @@
                             <ul class="legend-list">
                                 @foreach($uniqueServices as $service)
                                     <li>
-                                        <span class="color-block" style="background-color: {{ $service['calendar_color'] }};"></span>
+                                        <span class="color-block" style="background-color: {{ $service['calendar_color'] }}; border: 2px solid #000;"></span>
                                         {{ $service['short_name'] }}
                                     </li>
                                 @endforeach
