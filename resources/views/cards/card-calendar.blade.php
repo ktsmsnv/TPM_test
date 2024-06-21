@@ -13,7 +13,7 @@
                 <div class="d-flex gap-2">
                     <a href="/pageReestrCalendar" type="button" class="btn btn-secondary me-5">Закрыть</a>
                     <a href="{{ route('cardCalendar-edit', ['id' => $cardCalendar->_id]) }}"
-                      type="button" class="btn btn-outline-danger">Редактировать</a>
+                       type="button" class="btn btn-outline-danger">Редактировать</a>
                     <a href="{{ route('downloadCalendar', ['id' => $cardCalendar->_id]) }}" target="_blank" class="btn btn-success">Выгрузить WORD</a>
                     <a href="/home/card-object/{{$cardObjectMain->id}}" target="_blank" type="button" class="btn btn-primary me-5">Открыть карточку объекта</a>
                 </div>
@@ -120,12 +120,12 @@
                                             <div class="d-flex align-items-center gap-0">
                                                 <label class="w-100">Исполнитель</label>
                                                 <input name="services[{{ $index }}][performer]" value="{{ $service->performer }}"  class="form-control w-100" readonly
-                                                 data-toggle="tooltip" title="{{ $service->performer }}">
+                                                       data-toggle="tooltip" title="{{ $service->performer }}">
                                             </div>
                                             <div class="d-flex align-items-center gap-0">
                                                 <label class="w-100">Ответственный</label>
                                                 <input name="services[{{ $index }}][responsible]" value="{{ $service->responsible }}"  class="form-control w-100" readonly
-                                                 data-toggle="tooltip" title="{{ $service->responsible }}">
+                                                       data-toggle="tooltip" title="{{ $service->responsible }}">
                                             </div>
                                         </div>
                                     </div>
@@ -151,56 +151,56 @@
                         </div>
                     </div>
                 </div>
-        {{-- ВКЛАДКА "КАЛЕНДАРЬ" --}}
-        <div class="tab-pane fade" id="service_1" role="tabpanel" aria-labelledby="service_1-tab">
-            <div id="service__blocks" class="d-grid">
-                {{-- КАЛЕНДАРЬ ТРМ --}}
-                <div class="member_card_style services">
-                    <div class="member-info">
-                        <h4>Календарь ТРМ</h4>
-                        <div class="member-info--inputs">
-                            {{-- КАЛЕНДАРЬ --}}
-                            <div id="calendar-container">
-                                <table class="calendar">
-                                    <tbody></tbody>
-                                </table>
+                {{-- ВКЛАДКА "КАЛЕНДАРЬ" --}}
+                <div class="tab-pane fade" id="service_1" role="tabpanel" aria-labelledby="service_1-tab">
+                    <div id="service__blocks" class="d-grid">
+                        {{-- КАЛЕНДАРЬ ТРМ --}}
+                        <div class="member_card_style services">
+                            <div class="member-info">
+                                <h4>Календарь ТРМ</h4>
+                                <div class="member-info--inputs">
+                                    {{-- КАЛЕНДАРЬ --}}
+                                    <div id="calendar-container">
+                                        <table class="calendar">
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                {{-- Легенда --}}
-                <div class="member_card_style services service-legend">
-                    <h4>Легенда</h4>
-                    <ul class="legend-list">
-                        @foreach($uniqueServices as $service)
-                            <li>
-                                <span class="color-block" style="background-color: {{ $service['calendar_color'] }};"></span>
-                                {{ $service['short_name'] }}
-                            </li>
-                        @endforeach
-                    </ul>
-                </div>
-                {{-- ИЗОБРАЖЕНИЕ --}}
-                <div class="member_card_style image">
-                    <div class="member-info">
-                        <div class="d-flex justify-content-between mb-4">
-                            <h4>Изображение объекта</h4>
+                        {{-- Легенда --}}
+                        <div class="member_card_style services service-legend">
+                            <h4>Легенда</h4>
+                            <ul class="legend-list">
+                                @foreach($uniqueServices as $service)
+                                    <li>
+                                        <span class="color-block" style="background-color: {{ $service['calendar_color'] }};"></span>
+                                        {{ $service['short_name'] }}
+                                    </li>
+                                @endforeach
+                            </ul>
                         </div>
-                        <div class="objectImage">
-                            @if ($cardObjectMain && $cardObjectMain->image)
-                                <!-- Если у объекта есть изображение, отобразите его -->
-                                <img src="{{ route('getImage', ['id' => $cardObjectMain->id]) }}" alt="Image">
-                            @else
-                                <!-- Если у объекта нет изображения, отобразите сообщение -->
-                                <p>Нет доступных изображений</p>
-                            @endif
+                        {{-- ИЗОБРАЖЕНИЕ --}}
+                        <div class="member_card_style image">
+                            <div class="member-info">
+                                <div class="d-flex justify-content-between mb-4">
+                                    <h4>Изображение объекта</h4>
+                                </div>
+                                <div class="objectImage">
+                                    @if ($cardObjectMain && $cardObjectMain->image)
+                                        <!-- Если у объекта есть изображение, отобразите его -->
+                                        <img src="{{ route('getImage', ['id' => $cardObjectMain->id]) }}" alt="Image">
+                                    @else
+                                        <!-- Если у объекта нет изображения, отобразите сообщение -->
+                                        <p>Нет доступных изображений</p>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    </div>
 
         <!-- Модальное окно подтверждения завершения архивации -->
         <div class="modal fade" id="confirmArchiveModal" tabindex="-1" aria-labelledby="confirmArchiveModalLabel" aria-hidden="true">
@@ -212,7 +212,7 @@
                     </div>
                     <div class="modal-body">
                         Вы уверены, что хотите архивировать данный календарь объекта
-                       "{{$cardObjectMain->name}}" ?
+                        "{{$cardObjectMain->name}}" ?
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
@@ -288,6 +288,7 @@
                 border: 1px solid #ddd;
                 padding: 8px;
                 text-align: center;
+                position: relative;
             }
             .calendar th {
                 background-color: #f2f2f2;
@@ -316,6 +317,17 @@
                 display: inline-block;
                 margin-right: 10px;
             }
+            .calendar td > div {
+                display: flex;
+                height: 100%;
+                width: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+            .calendar td > div > div {
+                /*height: 100%;*/
+            }
         </style>
         <script>
             const services = @json($services);
@@ -329,6 +341,18 @@
                 const year = currentDate.getFullYear(); // Получаем текущий год
                 const months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
                 const daysOfWeek = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт'];
+
+                // Group services by date
+                const servicesByDate = {};
+                services.forEach(service => {
+                    const date = new Date(service.planned_maintenance_date);
+                    const dateKey = date.toISOString().split('T')[0];
+                    if (!servicesByDate[dateKey]) {
+                        servicesByDate[dateKey] = [];
+                    }
+                    servicesByDate[dateKey].push(service);
+                });
+
 
                 // Добавляем заголовки для дней недели
                 let headerRow = '<tr><th class="daysMonths"></th>';
@@ -359,19 +383,27 @@
                             break;
                         }
                         // Проверяем, что день недели не суббота или воскресенье
-                        if (j % 7 !== 0 && j % 7 !== 6) {
-                            let service = services.find(s => {
-                                let serviceDate = new Date(s.planned_maintenance_date);
-                                return serviceDate.getDate() === dayCounter && serviceDate.getMonth() === i;
-                            });
-                            if (service) {
-                                row += `<td style="background-color: ${service.calendar_color}">${dayCounter}</td>`;
+                        if (j % 7 !== 0 && j % 7 !== 6) { // Skip weekends
+                            const dateKey = `${year}-${String(i + 1).padStart(2, '0')}-${String(dayCounter).padStart(2, '0')}`;
+                            const servicesOnThisDay = servicesByDate[dateKey] || [];
+                            if (servicesOnThisDay.length > 0) {
+                                let colorBlocks = '';
+                                let numColors = Math.min(servicesOnThisDay.length, 4); // Max 4 colors
+                                let width = 100 / numColors; // Divide cell width by number of colors
+                                servicesOnThisDay.slice(0, 4).forEach(service => {
+                                    colorBlocks += `<div style="width: ${width}%; background-color: ${service.calendar_color}; height: 100%;"></div>`;
+                                });
+                                row += `<td style="padding: 0; position: relative; z-index: 99;"><div style="display: flex; height: 100%; position: absolute; top: 0; left: 0; width: 100%;">${colorBlocks}</div>
+                     <div style="position: absolute; top: 25%; left: 0; width: 100%; height: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 1;">
+                    <div style="padding: 1px 1px; background-color: rgba(255, 255, 255, 1); border-radius: 1px;">${dayCounter}</div>
+                    </div></td>`;
                             } else {
                                 row += `<td>${dayCounter}</td>`;
-                            }
+                            }//test
                             dayCounter++;
                         } else {
-                            dayCounter++; // Если суббота или воскресенье, добавляем пустую ячейку
+                            // row += `<td></td>`;
+                            dayCounter++;
                         }
 
                     }

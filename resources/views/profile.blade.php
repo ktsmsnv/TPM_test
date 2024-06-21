@@ -84,7 +84,7 @@
                     @method('PUT')
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="name" class="form-label">Фамилия Имя</label>
+                            <label for="name" class="form-label">ФИО  </label>
                             <input type="text" class="form-control" id="name" name="name"
                                    value="{{ auth()->user()->name }}" required>
                         </div>
