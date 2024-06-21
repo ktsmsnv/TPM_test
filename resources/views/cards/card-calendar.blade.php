@@ -326,7 +326,7 @@
                 left: 0;
             }
             .calendar td > div > div {
-                height: 100%;
+                /*height: 100%;*/
             }
         </style>
         <script>
@@ -394,8 +394,8 @@
                                     colorBlocks += `<div style="width: ${width}%; background-color: ${service.calendar_color}; height: 100%;"></div>`;
                                 });
                                 row += `<td style="padding: 0; position: relative; z-index: 99;"><div style="display: flex; height: 100%; position: absolute; top: 0; left: 0; width: 100%;">${colorBlocks}</div>
-                     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 1;">
-                    <div style="padding: 2px 5px; background-color: rgba(0, 0, 0, 0.5); border-radius: 4px; color: white;">${dayCounter}</div>
+                     <div style="position: absolute; top: 25%; left: 0; width: 100%; height: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 1;">
+                    <div style="padding: 1px 1px; background-color: rgba(255, 255, 255, 1); border-radius: 1px;">${dayCounter}</div>
                     </div></td>`;
                             } else {
                                 row += `<td>${dayCounter}</td>`;
