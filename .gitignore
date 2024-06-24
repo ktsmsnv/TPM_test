@@ -2,7 +2,7 @@
 /public/build
 /public/hot
 /storage/*.key
-/vendor
+#/vendor
 .env
 .env.backup
 .env.production
@@ -16,4 +16,4 @@ yarn-error.log
 /.idea
 /.vscode
 
-/node_modules/
+#/node_modules/
