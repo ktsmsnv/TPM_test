@@ -397,8 +397,8 @@ class ComposerStaticInita0ef24d2b8dea1c17192e7fdf68773eb
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -644,7 +644,9 @@ class ComposerStaticInita0ef24d2b8dea1c17192e7fdf68773eb
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\GraphController' => __DIR__ . '/../..' . '/app/Http/Controllers/GraphController.php',
         'App\\Http\\Controllers\\HomeController' => __DIR__ . '/../..' . '/app/Http/Controllers/HomeController.php',
+        'App\\Http\\Controllers\\MailTestController' => __DIR__ . '/../..' . '/app/Http/Controllers/MailTestController.php',
         'App\\Http\\Controllers\\ObjectController' => __DIR__ . '/../..' . '/app/Http/Controllers/ObjectController.php',
+        'App\\Http\\Controllers\\RegisterController' => __DIR__ . '/../..' . '/app/Http/Controllers/RegisterController.php',
         'App\\Http\\Controllers\\workOrderController' => __DIR__ . '/../..' . '/app/Http/Controllers/workOrderController.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
         'App\\Http\\Middleware\\Authenticate' => __DIR__ . '/../..' . '/app/Http/Middleware/Authenticate.php',
