@@ -223,8 +223,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="confirmAddCardObjectModalLabel">Выберите карточку графика, которую
-                            хотите добавить</h5>
+                        <h5 class="modal-title" id="confirmAddCardObjectModalLabel">Выберите карточку(-и) объекта, которую(-ые) хотите добавить</h5>
                         <button type="button" class="btn-close" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
