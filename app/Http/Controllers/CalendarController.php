@@ -318,11 +318,6 @@ class CalendarController extends Controller
 //        }
 //    }
 
-
-
-
-
-
     public function archiveCalendarDateButt(Request $request)
     {
 
@@ -391,20 +386,26 @@ class CalendarController extends Controller
         $months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
 
         // Собираем все услуги для календаря
-        $services = [];
+        $services = collect();
         foreach ($cardCalendar->objects as $object) {
             foreach ($object->services as $service) {
-                $services[] = [
-                    'planned_maintenance_date' => $service->planned_maintenance_date,
-                    'short_name' => $service->short_name,
-                    'calendar_color' => $service->calendar_color,
-                ];
+                $allMaintenanceDates = $this->calculateMaintenanceDates($service);
+                foreach ($allMaintenanceDates as $date) {
+                    $services->push([
+                        'planned_maintenance_date' => $date,
+                        'short_name' => $service->short_name,
+                        'calendar_color' => $service->calendar_color,
+                    ]);
+                }
             }
         }
 
+        // Фильтруем коллекцию услуг по уникальным short_name
+        $uniqueServices = $services->unique('short_name');
+
         // Передаем данные в представление
         return view('cards/card-calendar-edit', compact('cardCalendar',
-            'cardObjectMain', 'services', 'months'));
+            'cardObjectMain', 'uniqueServices', 'services', 'months'));
     }
 
     public function editSave(Request $request, $id)
