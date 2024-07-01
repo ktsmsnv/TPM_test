@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
+import fs from 'fs';
+import path from 'path';
 
 export default defineConfig({
     plugins: [
@@ -11,6 +13,14 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    // server: {
+    //     https: {
+    //         key: fs.readFileSync(path.resolve(__dirname, 'storage/app/ssl/privat_key.key')),
+    //         cert: fs.readFileSync(path.resolve(__dirname, 'storage/app/ssl/certificate.crt')),
+    //     },
+    //     host: 'localhost',
+    //     port: 5173,
+    // },
     optimizeDeps: {
         include: ['intro.js'],
     },
