@@ -106,8 +106,26 @@ class CalendarController extends Controller
         $calendarEntries = CardCalendar::where('card_id', $id)->get();
         $isInCalendar = $calendarEntries->isNotEmpty();
 
-        // Передаем выбранный объект и информацию о его наличии в календаре в представление
-        return view('cards/card-calendar-create', compact('cardObjectMain', 'isInCalendar'));
+        foreach ($calendarEntries as $entry) {
+            $dateArchive = $entry->date_archive;
+            $findDateAcrhive_CardCalendar = empty($dateArchive);
+            // Здесь вы можете делать что-то с $dateArchive для каждой записи
+        }
+//
+//        if ($calendarEntries->date_archive == null) {
+//            $findDateAcrhive_CardCalendar = true;
+//        } else {
+//            $findDateAcrhive_CardCalendar = false;
+//        }
+//        $findDateAcrhive_CardCalendar = empty($calendarEntries->pluck('date_archive'));
+//        $findDateAcrhive_CardCalendar = (bool) !empty($cardCalendar->date_archive);
+//        $test = $findDateAcrhive_CardCalendar === false;
+//        $test2 = $test . ' = '. $findDateAcrhive_CardCalendar. ' + false';
+//        dd($findDateAcrhive_CardCalendar);
+//        $dateArchive = !empty($calendarEntries->pluck('date_archive'));
+//dd($findDateAcrhive_CardCalendar);
+        // Передаем выбранныsй объект и информацию о его наличии в календаре в представление
+        return view('cards/card-calendar-create', compact('cardObjectMain', 'isInCalendar', 'findDateAcrhive_CardCalendar'));
     }
 
 
