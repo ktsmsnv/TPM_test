@@ -105,9 +105,16 @@ class CalendarController extends Controller
 
         $calendarEntries = CardCalendar::where('card_id', $id)->get();
         $isInCalendar = $calendarEntries->isNotEmpty();
+        
+        //Передаём существование даты в date_archive
+        foreach ($calendarEntries as $entry) {
+            $dateArchive = $entry->date_archive;
+            $findDateAcrhive_CardCalendar = empty($dateArchive);
+            // Здесь вы можете делать что-то с $dateArchive для каждой записи
+        }
 
         // Передаем выбранный объект и информацию о его наличии в календаре в представление
-        return view('cards/card-calendar-create', compact('cardObjectMain', 'isInCalendar'));
+        return view('cards/card-calendar-create', compact('cardObjectMain', 'isInCalendar', 'findDateAcrhive_CardCalendar'));
     }
 
 

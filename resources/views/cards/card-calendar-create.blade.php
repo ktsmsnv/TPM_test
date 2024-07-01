@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-    @if($isInCalendar)
+    @if($isInCalendar && $findDateAcrhive_CardCalendar === true)
         <!-- Здесь можно добавить дополнительные действия или сообщение, если объект уже существует в календаре -->
         <div class="alert alert-warning">На выбранный объект <a href="/home/card-object/{{$cardObjectMain->id}}">{{ $cardObjectMain->name }}</a> уже существует календарь.</div>
         <a href="/home" type="button" class="btn btn-secondary me-5">Закрыть</a>
