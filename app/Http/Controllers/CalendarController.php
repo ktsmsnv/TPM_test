@@ -105,7 +105,9 @@ class CalendarController extends Controller
 
         $calendarEntries = CardCalendar::where('card_id', $id)->get();
         $isInCalendar = $calendarEntries->isNotEmpty();
-        
+
+        // Инициализируем переменную перед циклом
+        $findDateAcrhive_CardCalendar = true;
         //Передаём существование даты в date_archive
         foreach ($calendarEntries as $entry) {
             $dateArchive = $entry->date_archive;
