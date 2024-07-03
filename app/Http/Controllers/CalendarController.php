@@ -112,10 +112,11 @@ class CalendarController extends Controller
         foreach ($calendarEntries as $entry) {
             $dateArchive = $entry->date_archive;
             $findDateAcrhive_CardCalendar = empty($dateArchive);
+            // Здесь вы можете делать что-то с $dateArchive для каждой записи
         }
-        // Передаем выбранныsй объект и информацию о его наличии в календаре в представление
-        return view('cards/card-calendar-create', compact('cardObjectMain', 'isInCalendar',
-            'findDateAcrhive_CardCalendar'));
+
+        // Передаем выбранный объект и информацию о его наличии в календаре в представление
+        return view('cards/card-calendar-create', compact('cardObjectMain', 'isInCalendar', 'findDateAcrhive_CardCalendar'));
     }
 
 

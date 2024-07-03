@@ -59,16 +59,16 @@ class workOrderController extends Controller
                     $formattedWorkOrder = [
                         'id' => $workOrder->id,
                         'infrastructure' => $workOrder->cardObjectServices->cardObjectMain->infrastructure ?? null,
-                        'name' => $workOrder->cardObjectServices->cardObjectMain->name,
-                        'number' => $workOrder->cardObjectServices->cardObjectMain->number,
-                        'location' => $workOrder->cardObjectServices->cardObjectMain->location,
-                        'service_type' => $workOrder->cardObjectServices->service_type,
-                        'planned_maintenance_date' => $workOrder->cardObjectServices->planned_maintenance_date,
-                        'prev_maintenance_date' => $workOrder->cardObjectServices->prev_maintenance_date,
-                        'status' => $workOrder->status,
-                        'date_create' => $workOrder->date_create,
-                        'performer' => $workOrder->cardObjectServices->performer,
-                        'responsible' => $workOrder->cardObjectServices->responsible,
+                        'name' => $workOrder->cardObjectServices->cardObjectMain->name ?? null,
+                        'number' => $workOrder->cardObjectServices->cardObjectMain->number ?? null,
+                        'location' => $workOrder->cardObjectServices->cardObjectMain->location ?? null,
+                        'service_type' => $workOrder->cardObjectServices->service_type ?? null,
+                        'planned_maintenance_date' => $workOrder->cardObjectServices->planned_maintenance_date ?? null,
+                        'prev_maintenance_date' => $workOrder->cardObjectServices->prev_maintenance_date ?? null,
+                        'status' => $workOrder->status ?? null,
+                        'date_create' => $workOrder->date_create ?? null,
+                        'performer' => $workOrder->cardObjectServices->performer ?? null,
+                        'responsible' => $workOrder->cardObjectServices->responsible ?? null,
                     ];
 
                     // Добавляем заказ-наряд к массиву с отформатированными данными

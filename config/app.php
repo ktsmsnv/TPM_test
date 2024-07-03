@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'TPM'), //или оставить " TPM "
 
     /*
     |--------------------------------------------------------------------------
@@ -55,7 +55,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL', 'https://tpm.kst-energo.ru/'),
 
     'asset_url' => env('ASSET_URL'),
 
@@ -70,7 +70,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Yekaterinburg',
 
     /*
     |--------------------------------------------------------------------------
@@ -83,7 +83,7 @@ return [
     |
     */
 
-    'locale' => 'en',
+    'locale' => 'ru',
 
     /*
     |--------------------------------------------------------------------------
@@ -96,8 +96,7 @@ return [
     |
     */
 
-    'fallback_locale' => 'en',
-
+    'fallback_locale' => 'ru',
     /*
     |--------------------------------------------------------------------------
     | Faker Locale
