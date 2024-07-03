@@ -58,7 +58,7 @@ return [
         'mongodb' => [
             'driver'   => 'mongodb',
             'dsn'      => env('DB_URI', 'mongodb://localhost:27017'),
-            'database' => env('DB_DATABASE', 'TRM'),
+            'database' => env('DB_DATABASE', 'TPM'),
         ],
 
 

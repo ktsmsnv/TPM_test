@@ -9,7 +9,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'TRM') }}</title>
+    <title>{{ config('app.name', 'TPM') }}</title>
 
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 
