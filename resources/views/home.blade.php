@@ -192,8 +192,8 @@
                                 field: 'planned_maintenance_date',
                                 align: 'center',
                                 formatter: function(value, row) {
-                                    console.log('Services:', row.services);
-                                    console.log('Services length:', row.services.length);
+                                    // console.log('Services:', row.services);
+                                    // console.log('Services length:', row.services.length);
 
                                     let nearestMaintenanceDate = null;
                                     if (row.services && Object.keys(row.services).length > 0) {
@@ -202,10 +202,22 @@
                                                 nearestMaintenanceDate = service.planned_maintenance_date;
                                             }
                                         });
-                                        return nearestMaintenanceDate ? new Date(nearestMaintenanceDate).toLocaleDateString('ru-RU') : 'Нет запланированных обслуживаний';
+                                    }
+
+                                    if (nearestMaintenanceDate) {
+                                        let date = new Date(nearestMaintenanceDate);
+                                        if (date instanceof Date && !isNaN(date)) {
+                                            return date.toLocaleDateString('ru-RU');
+                                        } else {
+                                            return '-';
+                                        }
                                     } else {
                                         return 'Нет запланированных обслуживаний';
                                     }
+                                    //     return nearestMaintenanceDate ? new Date(nearestMaintenanceDate).toLocaleDateString('ru-RU') : 'Нет запланированных обслуживаний';
+                                    // } else {
+                                    //     return 'Нет запланированных обслуживаний';
+                                    // }
                                 }
                             },
                             {
@@ -220,10 +232,22 @@
                                                 nearestService = service;
                                             }
                                         });
-                                        return nearestService ? new Date(nearestService.prev_maintenance_date).toLocaleDateString('ru-RU') : 'Нет даты предыдущего обслуживания';
+                                    }
+
+                                    if (nearestService && nearestService.prev_maintenance_date) {
+                                        let date = new Date(nearestService.prev_maintenance_date);
+                                        if (date instanceof Date && !isNaN(date)) {
+                                            return date.toLocaleDateString('ru-RU');
+                                        } else {
+                                            return '-';
+                                        }
                                     } else {
                                         return 'Нет даты предыдущего обслуживания';
                                     }
+                                    //     return nearestService ? new Date(nearestService.prev_maintenance_date).toLocaleDateString('ru-RU') : 'Нет даты предыдущего обслуживания';
+                                    // } else {
+                                    //     return 'Нет даты предыдущего обслуживания';
+                                    // }
                                 }
                             },
                             {
