@@ -106,8 +106,16 @@ class CalendarController extends Controller
         $calendarEntries = CardCalendar::where('card_id', $id)->get();
         $isInCalendar = $calendarEntries->isNotEmpty();
 
-        // Передаем выбранный объект и информацию о его наличии в календаре в представление
-        return view('cards/card-calendar-create', compact('cardObjectMain', 'isInCalendar'));
+        // Инициализируем переменную перед циклом
+        $findDateAcrhive_CardCalendar = true;
+        //Передаём существование даты в date_archive
+        foreach ($calendarEntries as $entry) {
+            $dateArchive = $entry->date_archive;
+            $findDateAcrhive_CardCalendar = empty($dateArchive);
+        }
+        // Передаем выбранныsй объект и информацию о его наличии в календаре в представление
+        return view('cards/card-calendar-create', compact('cardObjectMain', 'isInCalendar',
+            'findDateAcrhive_CardCalendar'));
     }
 
 
@@ -179,7 +187,6 @@ class CalendarController extends Controller
         return view('cards.card-calendar', compact('cardCalendar', 'cardObjectMain', 'uniqueServices', 'services'));
     }
 
-
     private function calculateMaintenanceDates($service)
     {
         $plannedDate = Carbon::parse($service->planned_maintenance_date);
@@ -191,35 +198,45 @@ class CalendarController extends Controller
         $yearEnd = Carbon::now()->endOfYear();
 
         while ($plannedDate->lessThanOrEqualTo($yearEnd)) {
-            $nextDate = $this->calculateNextDate($plannedDate, $frequency, $initialDay);
-            $closestDate = $this->findClosestDayOfWeek($nextDate, $dayOfWeek);
+            $nextDate = $this->calculateNextDate($plannedDate, $frequency, $initialDay, $dayOfWeek);
 
-            if ($closestDate->greaterThan($yearEnd)) {
+            if ($nextDate->greaterThan($yearEnd)) {
                 break;
             }
 
-            $maintenanceDates[] = $closestDate->format('Y-m-d');
-            $plannedDate = $closestDate;
+            $maintenanceDates[] = $nextDate->format('Y-m-d');
+            $plannedDate = $nextDate;
         }
-        // dasd
 
         return $maintenanceDates;
     }
 
-    private function calculateNextDate($baseDate, $frequency, $initialDay)
+    private function calculateNextDate($baseDate, $frequency, $initialDay, $initialDayOfWeek)
     {
         switch ($frequency) {
             case 'Ежемесячное':
-                return $baseDate->copy()->addMonth()->day($initialDay);
+                $nextDate = $baseDate->copy()->addMonth()->day($initialDay);
+                break;
             case 'Ежеквартальное':
-                return $baseDate->copy()->addMonths(3)->day($initialDay);
+                $nextDate = $baseDate->copy()->addMonths(3)->day($initialDay);
+                break;
             case 'Полугодовое':
-                return $baseDate->copy()->addMonths(6)->day($initialDay);
+                $nextDate = $baseDate->copy()->addMonths(6)->day($initialDay);
+                break;
             case 'Ежегодное':
-                return $baseDate->copy()->addYear()->day($initialDay);
+                $nextDate = $baseDate->copy()->addYear()->day($initialDay);
+                break;
+            case 'Сменное':
+                $nextDate = $baseDate->copy()->addDay();
+                while ($this->isWeekend($nextDate)) {
+                    $nextDate->addDay();
+                }
+                return $nextDate;
             default:
                 throw new \Exception('Unknown frequency type');
         }
+
+        return $this->findClosestDayOfWeek($nextDate, $initialDayOfWeek);
     }
 
     private function findClosestDayOfWeek($baseDate, $targetDayOfWeek)
@@ -241,6 +258,11 @@ class CalendarController extends Controller
         } else {
             return $nextDate;
         }
+    }
+
+    private function isWeekend($date)
+    {
+        return $date->dayOfWeek === Carbon::SATURDAY || $date->dayOfWeek === Carbon::SUNDAY;
     }
 
 //    private function calculateMaintenanceDates($service)
@@ -303,11 +325,6 @@ class CalendarController extends Controller
 //            return $nextDate;
 //        }
 //    }
-
-
-
-
-
 
     public function archiveCalendarDateButt(Request $request)
     {
@@ -377,20 +394,26 @@ class CalendarController extends Controller
         $months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
 
         // Собираем все услуги для календаря
-        $services = [];
+        $services = collect();
         foreach ($cardCalendar->objects as $object) {
             foreach ($object->services as $service) {
-                $services[] = [
-                    'planned_maintenance_date' => $service->planned_maintenance_date,
-                    'short_name' => $service->short_name,
-                    'calendar_color' => $service->calendar_color,
-                ];
+                $allMaintenanceDates = $this->calculateMaintenanceDates($service);
+                foreach ($allMaintenanceDates as $date) {
+                    $services->push([
+                        'planned_maintenance_date' => $date,
+                        'short_name' => $service->short_name,
+                        'calendar_color' => $service->calendar_color,
+                    ]);
+                }
             }
         }
 
+        // Фильтруем коллекцию услуг по уникальным short_name
+        $uniqueServices = $services->unique('short_name');
+
         // Передаем данные в представление
         return view('cards/card-calendar-edit', compact('cardCalendar',
-            'cardObjectMain', 'services', 'months'));
+            'cardObjectMain', 'uniqueServices', 'services', 'months'));
     }
 
     public function editSave(Request $request, $id)

@@ -172,7 +172,12 @@ class ObjectController extends Controller
                     $newService->prev_maintenance_date = null; // Устанавливаем значение null
                 }
                 $newService->planned_maintenance_date = $service['planned_maintenance_date'];
-                $newService->calendar_color = $service['selectedColor'];
+                // Если частота "Сменное", задаем цвет по умолчанию
+                if ($service['frequency'] === 'Сменное') {
+                    $newService->calendar_color = '#fff';
+                } else {
+                    $newService->calendar_color = $service['selectedColor'];
+                }
                 $newService->consumable_materials = $service['materials'];
                 $newService->checked = $service['checked'];
                 $newService->card_object_main_id = $cardId;
@@ -247,7 +252,12 @@ class ObjectController extends Controller
                 $history_newService->frequency = $service['frequency'];
                 $history_newService->prev_maintenance_date = $service['prev_maintenance_date'];
                 $history_newService->planned_maintenance_date = $service['planned_maintenance_date'];
-                $history_newService->calendar_color = $service['selectedColor'];
+                // Если частота "Сменное", задаем цвет по умолчанию
+                if ($service['frequency'] === 'Сменное') {
+                    $history_newService->calendar_color = '#fff';
+                } else {
+                    $history_newService->calendar_color = $service['selectedColor'];
+                }
                 $history_newService->consumable_materials = $service['materials'];
                 $history_newService->checked = $service['checked'];
                 $history_newService->card_object_main_id = $history_card->id;
@@ -391,6 +401,7 @@ class ObjectController extends Controller
                     $newService = new CardObjectServices();
                     $newService->fill($service); // Заполняем модель данными из массива
                     $newService->card_object_main_id = $id;
+                    $newService->calendar_color = $service['selectedColor'];
                     $newService->save();
 
                     // Создаем виды работ для новой услуги
