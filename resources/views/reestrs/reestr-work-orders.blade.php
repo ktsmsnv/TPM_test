@@ -177,7 +177,7 @@
                                     }
                                 }
                             },
-                            {title: 'Фактическая дата предыдущего обслуживания', field: 'prev_maintenance_date', align: 'center',
+                            {title: 'Фактическая дата обслуживания', field: 'date_fact', align: 'center',
                                 formatter: function(value, row) {
                                     if (value === null) {
                                         return null;

@@ -64,7 +64,7 @@ class workOrderController extends Controller
                         'location' => $workOrder->cardObjectServices->cardObjectMain->location ?? null,
                         'service_type' => $workOrder->cardObjectServices->service_type ?? null,
                         'planned_maintenance_date' => $workOrder->cardObjectServices->planned_maintenance_date ?? null,
-                        'prev_maintenance_date' => $workOrder->cardObjectServices->prev_maintenance_date ?? null,
+                        'date_fact' => $workOrder->date_fact ?? null,
                         'status' => $workOrder->status ?? null,
                         'date_create' => $workOrder->date_create ?? null,
                         'performer' => $workOrder->cardObjectServices->performer ?? null,
