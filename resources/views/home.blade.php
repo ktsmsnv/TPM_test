@@ -141,9 +141,9 @@
                         [
                             {field: 'state', checkbox: true, align: 'center', valign: 'middle'},
                             {title: 'Item ID', field: 'id', align: 'center', valign: 'middle',  visible: false },
-                            {title: 'Вид инфраструктуры', field: 'infrastructure', align: 'center'},
+                            {title: 'Вид<br>инфраструктуры', field: 'infrastructure', align: 'center'},
                             {
-                                title: 'Наименование объекта',
+                                title: 'Наименование<br>объекта',
                                 field: 'name',
                                 align: 'center',
                                 formatter: function(value, row) {
@@ -153,7 +153,7 @@
                                 }
                             },
 
-                            {title: 'Дата ввода в эксплуатацию', field: 'date_usage', align: 'center',
+                            {title: 'Дата ввода<br>в эксплуатацию', field: 'date_usage', align: 'center',
                                 formatter: function(value, row) {
                                     if (value === null) {
                                         return null;
@@ -164,7 +164,7 @@
                                     }
                                 }
                             },
-                            {title: 'Дата вывода из эксплуатации', field: 'date_usage_end', align: 'center',
+                            {title: 'Дата вывода<br>из эксплуатации', field: 'date_usage_end', align: 'center',
                                 formatter: function(value, row) {
                                     if (value === null) {
                                         return null;
@@ -174,7 +174,7 @@
                                         return new Date(value).toLocaleDateString('ru-RU');
                                     }
                                 }},
-                            {title: 'Дата окончания аттестации/гарантии', field: 'date_cert_end', align: 'center',
+                            {title: 'Дата окончания<br>аттестации/гарантии', field: 'date_cert_end', align: 'center',
                                 formatter: function(value, row) {
                                     if (value === null) {
                                         return null;
@@ -184,11 +184,11 @@
                                         return new Date(value).toLocaleDateString('ru-RU');
                                     }
                                 }},
-                            {title: 'Инв./заводской номер', field: 'number', align: 'center'},
+                            {title: 'Инв./заводской<br>номер', field: 'number', align: 'center'},
 
-                            {title: 'Место установки', field: 'location', align: 'center'},
+                            {title: 'Место<br>установки', field: 'location', align: 'center'},
                             {
-                                title: 'Плановая дата обслуживания',
+                                title: 'Плановая дата<br>обслуживания',
                                 field: 'planned_maintenance_date',
                                 align: 'center',
                                 formatter: function(value, row) {
@@ -221,7 +221,7 @@
                                 }
                             },
                             {
-                                title: 'Фактическая дата предыдущего обслуживания',
+                                title: 'Фактическая дата<br>предыдущего обслуживания',
                                 field: 'prev_maintenance_date',
                                 align: 'center',
                                 formatter: function(value, row) {
@@ -251,7 +251,7 @@
                                 }
                             },
                             {
-                                title: 'Вид ближайшего обслуживания',
+                                title: 'Вид ближайшего<br>обслуживания',
                                 field: 'service_type',
                                 align: 'center',
                                 formatter: function(value, row) {
@@ -305,7 +305,7 @@
                                 }
                             },
                             {
-                                title: 'Заказ-наряд',
+                                title: 'Заказ-<br>наряд',
                                 field: 'work_order',
                                 align: 'center',
                                 formatter: function(value, row) {
@@ -326,10 +326,8 @@
                                     }
                                 }
                             },
-
-
                             {
-                                title: 'Календарь TPM',
+                                title: 'Календарь<br>TPM',
                                 field: 'calendar',
                                 align: 'center',
                                 formatter: function(value, row) {
