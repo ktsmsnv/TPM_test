@@ -136,7 +136,13 @@ class workOrderController extends Controller
                 continue;
             }
 
-            $nearestService = $cardObjectMain->services->sortBy('planned_maintenance_date')->first();
+            // Фильтруем сервисы, исключая те, у которых checked = true
+            $filteredServices = $cardObjectMain->services->filter(function($service) {
+                return !$service->checked;
+            });
+
+            // Найти ближайшее обслуживание среди отфильтрованных сервисов
+            $nearestService = $filteredServices->sortBy('planned_maintenance_date')->first();
 
             if ($nearestService) {
                 $plannedDate = Carbon::parse($nearestService->planned_maintenance_date); // Преобразуем дату в объект Carbon
