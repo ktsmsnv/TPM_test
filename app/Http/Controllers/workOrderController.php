@@ -136,7 +136,13 @@ class workOrderController extends Controller
                 continue;
             }
 
-            $nearestService = $cardObjectMain->services->sortBy('planned_maintenance_date')->first();
+            // Фильтруем сервисы, исключая те, у которых checked = true
+            $filteredServices = $cardObjectMain->services->filter(function($service) {
+                return !$service->checked;
+            });
+
+            // Найти ближайшее обслуживание среди отфильтрованных сервисов
+            $nearestService = $filteredServices->sortBy('planned_maintenance_date')->first();
 
             if ($nearestService) {
                 $plannedDate = Carbon::parse($nearestService->planned_maintenance_date); // Преобразуем дату в объект Carbon
@@ -147,6 +153,7 @@ class workOrderController extends Controller
                 $newWorkOrder->date_create = $now->format('Y-m-d'); // Используем формат ISO для хранения
                 $newWorkOrder->status = 'В работе';
                 $newWorkOrder->number = CardWorkOrder::where('card_id', $selectedId)->count() + 1;
+
                 $newWorkOrder->planned_maintenance_date = $plannedDate->format('Y-m-d');
                 $newWorkOrder->save();
 
