@@ -36,8 +36,8 @@ return [
     'connections' => [
         'mongodb' => [
             'driver'   => 'mongodb',
-            'dsn'      => env('DB_URI', 'mongodb://192.168.60.75:27018'),
-            // 'dsn'      => env('DB_URI', 'mongodb://localhost:27017'),
+            //'dsn'      => env('DB_URI', 'mongodb://192.168.60.75:27017'),
+            'dsn'      => env('DB_URI', 'mongodb://localhost:27017'),
             'database' => env('DB_DATABASE', 'TPM'),
         ],
         'sqlite' => [
