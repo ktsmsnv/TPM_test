@@ -338,8 +338,10 @@ main {
         color: #a52834;
     }
     .color-options {
-        display: flex;
-        gap: 5px;
+            display: flex;
+            gap: 5px;
+            border: 1px solid #000;
+            border-radius: 50%;
         .color-option {
             width: 30px;
             height: 30px;
