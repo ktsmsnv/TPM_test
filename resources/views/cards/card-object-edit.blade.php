@@ -330,7 +330,10 @@
                     //------------  обработчик удаления данных об обслуживании ------------
                     $(".delete_service").click(function () {
                         let serviceIndex = $(this).closest('.tab-pane').index() + 1; // Индекс вкладки обслуживания
-                        let serviceId = "{{ $data_CardObjectMain->services[$key]->id }}"; // Идентификатор обслуживания
+                        {{--let serviceId = "{{ $data_CardObjectMain->services[$key]->id }}"; // Идентификатор обслуживания--}}
+
+                        // Получаем ID обслуживания, связанного с текущей кнопкой удаления
+                        let serviceId = $(this).closest('.tab-pane').find('input[type=hidden]').val();
                         // Отправляем запрос на удаление обслуживания на сервер
                         $.ajax({
                             type: "DELETE",
