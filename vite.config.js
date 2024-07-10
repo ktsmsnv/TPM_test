@@ -13,14 +13,14 @@ export default defineConfig({
             refresh: true,
         }),
     ],
-    server: {
-        // https: {
-        //     key: fs.readFileSync(path.resolve(__dirname, 'storage/app/ssl/privat_key.key')),
-        //     cert: fs.readFileSync(path.resolve(__dirname, 'storage/app/ssl/certificate.crt')),
-        // },
-        host: '192.168.60.75',
-        port: 5173,
-    },
+    // server: {
+    //     // https: {
+    //     //     key: fs.readFileSync(path.resolve(__dirname, 'storage/app/ssl/privat_key.key')),
+    //     //     cert: fs.readFileSync(path.resolve(__dirname, 'storage/app/ssl/certificate.crt')),
+    //     // },
+    //     host: '192.168.60.75',
+    //     port: 5173,
+    // },
     optimizeDeps: {
         include: ['intro.js'],
     },

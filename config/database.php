@@ -36,9 +36,9 @@ return [
     'connections' => [
         'mongodb' => [
             'driver'   => 'mongodb',
-            'dsn'      => env('DB_URI', 'mongodb://192.168.60.75:27017'),
-            // 'dsn'      => env('DB_URI', 'mongodb://localhost:27017'),
-            'database' => env('DB_DATABASE', 'TPM'),
+//            'dsn'      => env('DB_URI', 'mongodb://192.168.60.75:27017'),
+             'dsn'      => env('DB_URI', 'mongodb://localhost:27017'),
+            'database' => env('DB_DATABASE', 'TRM'),
         ],
         'sqlite' => [
             'driver' => 'sqlite',
@@ -51,7 +51,7 @@ return [
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
-            'host' => env('DB_HOST', '192.168.60.75'),
+            'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE', 'forge'),
             'username' => env('DB_USERNAME', 'forge'),
