@@ -326,6 +326,7 @@
                                             <div class="d-flex justify-content-between align-items-center gap-3"> \
                                                 <label class="w-100">Цвет в календаре</label> \
                                                 <div class="color-options" data-toggle="tooltip" title="нажмите на выбранный цвет"> \
+                                                \<div class="color-option white" data-color="#fff"></div> \
                                                     <div class="color-option red" data-color="#ff0000"></div> \
                                                     <div class="color-option green" data-color="#00ff00"></div> \
                                                     <div class="color-option blue" data-color="#0000ff"></div> \
@@ -397,6 +398,7 @@
 
                     // Обновляем обработчик событий для выбора цвета
                     updateColorPicker();
+                    handleFrequencyChange();
 
                     // Увеличиваем счетчик вкладок для обслуживания
                     serviceTabsCount++;
@@ -457,6 +459,42 @@
                         localStorage.setItem(tabId + '_selectedColor', selectedColor);
                     });
                 }
+                // Функция для обработки изменения периодичности
+                function handleFrequencyChange() {
+                    // Получаем все селекторы периодичности
+                    const frequencySelectors = $('select[name="frequency"]');
+
+                    // Добавляем обработчик события для каждого селектора периодичности
+                    frequencySelectors.on('change', function () {
+                        const selectedFrequency = $(this).val();
+                        const colorOptions = $(this).closest('.tab-pane').find('.color-option');
+
+                        if (selectedFrequency === 'Сменное') {
+                            // Установить цвет "white" и заблокировать выбор других цветов
+                            colorOptions.each(function () {
+                                if ($(this).data('color') !== '#fff') {
+                                    $(this).css('opacity', 0.5).css('pointer-events', 'none');
+                                } else {
+                                    $(this).css('opacity', 1).css('pointer-events', 'auto').addClass('selected');
+                                }
+                            });
+                            const selectedColorField = $(this).closest('.tab-pane').find('input[name="selectedColor"]');
+                            selectedColorField.val('#fff');
+                        } else {
+                            // Разблокировать все цвета кроме "white"
+                            colorOptions.each(function () {
+                                if ($(this).data('color') === '#fff') {
+                                    $(this).css('opacity', 0.5).css('pointer-events', 'none').removeClass('selected');
+                                } else {
+                                    $(this).css('opacity', 1).css('pointer-events', 'auto');
+                                }
+                            });
+                            const selectedColorField = $(this).closest('.tab-pane').find('input[name="selectedColor"]');
+                            selectedColorField.val('');
+                        }
+                    });
+                }
+
                 // Вызываем функцию для обновления обработчика событий для выбора цвета
                 // Функция для восстановления выбранного цвета из localStorage при загрузке страницы или переключении вкладок
                 function restoreSelectedColor(tabId) {
@@ -848,7 +886,7 @@
 
                 // Обновляем обработчик событий для выбора цвета при загрузке страницы
                 updateColorPicker();
-
+                handleFrequencyChange();
             });
         </script>
 @endsection
