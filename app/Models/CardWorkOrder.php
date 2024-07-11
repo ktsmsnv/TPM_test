@@ -22,4 +22,10 @@ class CardWorkOrder extends Eloquent
     {
         return $this->belongsTo(CardObjectServices::class, 'card_object_services_id', '_id');
     }
+
+    // Определяем связь с основным объектом (CardObjectMain)
+    public function cardObject()
+    {
+        return $this->belongsTo(CardObjectMain::class, 'card_id', '_id');
+    }
 }

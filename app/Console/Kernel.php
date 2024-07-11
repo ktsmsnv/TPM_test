@@ -60,23 +60,36 @@ class Kernel extends ConsoleKernel
     {
         $now = now();
         $workOrders = CardWorkOrder::where('status', '!=', 'Завершено')->get();
-    // Log::info('Проверка просроченных обслуживаний. Заказ-наряды: ' . $workOrders);
 
         foreach ($workOrders as $workOrder) {
-            $plannedMaintenanceDate = Carbon::parse($workOrder->planned_maintenance_date);
+            $service = $workOrder->cardObjectServices;
+
+            if (!$service) {
+                Log::error('Связь с CardObjectServices не установлена для заказ-наряда ID: ' . $workOrder->id);
+                continue;
+            }
+
+            $plannedMaintenanceDate = Carbon::parse($service->planned_maintenance_date);
+            Log::info('Плановая дата: ' . $plannedMaintenanceDate);
             $overdueDays = $now->diffInDays($plannedMaintenanceDate, false);
 
             if ($overdueDays < -7) {
                 $object = $workOrder->cardObject;
-                $service = $workOrder->service;
+
+                if (!$object) {
+                    Log::error('Связь с CardObjectMain не установлена для заказ-наряда ID: ' . $workOrder->id);
+                    continue;
+                }
+
                 $this->sendOverdueNotifications($object, $service, $workOrder);
-                Log::info('Просроченные:' .  $service);
+                Log::info('Просроченные: ' . $service->short_name);
             }
-            Log::info('Просроченных нет');
         }
 
         Log::info('Проверка просроченных обслуживаний завершена');
     }
+
+
 
     protected function sendNotifications($object, $service, $newWorkOrder)
     {
@@ -107,6 +120,7 @@ class Kernel extends ConsoleKernel
             }
         }
     }
+
 
     private function sendEmail($recipientEmail, $workOrder, $object, $service)
     {
