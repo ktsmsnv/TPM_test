@@ -157,5 +157,8 @@ Route::middleware(['auth'])->group(function () {
 
 
     Route::get('/send-test-mail',  [App\Http\Controllers\MailTestController::class, 'sendTestEmail']);
+
+    Route::get('/sendmail',  [App\Http\Controllers\MailTestController::class, 'sendEmail']);
+
 });
 
