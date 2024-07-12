@@ -546,8 +546,8 @@ class CalendarController extends Controller
             if (file_exists($tempImagePath)) {
                 $templateProcessor->setImageValue('image', [
                     'path' => $tempImagePath,
-                    'width' => 100, // Установите нужные размеры
-                    'height' => 100,
+                    'width' => 165, // Установите нужные размеры
+                    'height' => 165,
                 ]);
             } else {
                 // Выводим сообщение об ошибке, если файл не найден
@@ -558,8 +558,9 @@ class CalendarController extends Controller
         if ($imagePath && file_exists($imagePath)) {
             $templateProcessor->setImageValue('calendar', [
                 'path' => $imagePath,
-                'width' => 1000, // Установите нужные размеры
-                'height' => 1000,
+                'width' => 885, // Установите нужные размеры
+                'height' => 400,
+                'ratio' => false
             ]);
         }
         // Конструируем массив замен для клонирования блока обслуживания

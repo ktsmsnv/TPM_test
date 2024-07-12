@@ -16,7 +16,7 @@
                        type="button" class="btn btn-outline-danger">Редактировать</a>
 {{--                    <a href="{{ route('downloadCalendar', ['id' => $cardCalendar->_id]) }}" target="_blank" class="btn btn-success">Выгрузить WORD</a>--}}
                     <a id="downloadWord" href="#" data-id="{{ $cardCalendar->_id }}" class="btn btn-success">Выгрузить WORD</a>
-                    <button id="downloadImage">Скачать картинку календаря</button>
+{{--                   <button id="downloadImage">Скачать картинку календаря</button>--}}
 
                     <a href="/home/card-object/{{$cardObjectMain->id}}" target="_blank" type="button" class="btn btn-primary me-5">Открыть карточку объекта</a>
                 </div>
