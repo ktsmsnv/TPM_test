@@ -14,7 +14,10 @@
                     <a href="/pageReestrCalendar" type="button" class="btn btn-secondary me-5">Закрыть</a>
                     <a href="{{ route('cardCalendar-edit', ['id' => $cardCalendar->_id]) }}"
                        type="button" class="btn btn-outline-danger">Редактировать</a>
-                    <a href="{{ route('downloadCalendar', ['id' => $cardCalendar->_id]) }}" target="_blank" class="btn btn-success">Выгрузить WORD</a>
+{{--                    <a href="{{ route('downloadCalendar', ['id' => $cardCalendar->_id]) }}" target="_blank" class="btn btn-success">Выгрузить WORD</a>--}}
+                    <a id="downloadWord" href="#" data-id="{{ $cardCalendar->_id }}" class="btn btn-success">Выгрузить WORD</a>
+                    <button id="downloadImage">Скачать картинку календаря</button>
+
                     <a href="/home/card-object/{{$cardObjectMain->id}}" target="_blank" type="button" class="btn btn-primary me-5">Открыть карточку объекта</a>
                 </div>
             </div>
@@ -37,7 +40,7 @@
                 <div class="tab-pane fade show active" id="main" role="tabpanel" aria-labelledby="main-tab">
                     <div id="main__blocks_calendar" class="d-grid">
                         {{-- ОБЩИЕ ДАННЫЕ --}}
-                        <div class="member_card_style general">
+                        <div  class="member_card_style general">
                             <div class="member-info">
                                 <div class="d-flex justify-content-between mb-4">
                                     <h4>Общие данные</h4>
@@ -146,6 +149,21 @@
                                         <!-- Если у объекта нет изображения, отобразите сообщение -->
                                         <p>Нет доступных изображений</p>
                                     @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        {{--   скрытый календарь для ворда   --}}
+                        <div class="member_card_style services" style="opacity: 0; position: absolute; z-index: -100; pointer-events: none;">
+                            <div class="member-info">
+                                <h4>Календарь ТРМ</h4>
+                                <div class="member-info--inputs" id="caaard">
+                                    {{-- КАЛЕНДАРЬ --}}
+                                    <div id="calendar-container">
+                                        <table class="calendar">
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -412,5 +430,81 @@
                     $('.calendar tbody').append(row);
                 }
             }
+        </script>
+
+        <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const downloadButton = document.getElementById('downloadImage');
+
+                downloadButton.addEventListener('click', function(event) {
+                    event.preventDefault();
+
+                    // Захват блока с id 'caaard' с помощью html2canvas
+                    html2canvas(document.getElementById('caaard')).then(function(canvas) {
+                        // Преобразование canvas в URL изображения в формате JPG
+                        canvas.toBlob(function(blob) {
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.style.display = 'none';
+                            a.href = url;
+                            a.download = 'calendar.jpg'; // Имя файла для скачивания
+
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                        }, 'image/jpeg'); // Указание формата изображения
+                    });
+                });
+            });
+        </script>
+
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const downloadLink = document.getElementById('downloadWord');
+                const calendarId = downloadLink.getAttribute('data-id');
+
+                downloadLink.addEventListener('click', function(event) {
+                    event.preventDefault();
+
+                    // Захват блока с id 'caaard' с помощью html2canvas
+                    html2canvas(document.getElementById('caaard')).then(function(canvas) {
+                        // Преобразование canvas в URL изображения в формате JPG
+                        canvas.toBlob(function(blob) {
+                            const formData = new FormData();
+                            formData.append('calendarImage', blob, 'calendar.jpg');
+                            formData.append('calendarId', calendarId);
+
+                            fetch('{{ route("downloadCalendar", ["id" => ":id"]) }}'.replace(':id', calendarId), {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                },
+                            })
+                                .then(response => {
+                                    if (response.ok) {
+                                        return response.blob();
+                                    }
+                                    throw new Error('Network response was not ok.');
+                                })
+                                .then(blob => {
+                                    const url = window.URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.style.display = 'none';
+                                    a.href = url;
+                                    a.download = 'calendar.docx'; // Имя файла для скачивания
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    window.URL.revokeObjectURL(url);
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                });
+                        }, 'image/jpeg'); // Указание формата изображения
+                    });
+                });
+            });
         </script>
 @endsection
