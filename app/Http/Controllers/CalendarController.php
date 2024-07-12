@@ -10,6 +10,7 @@ use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use App\Models\CardCalendar;
 use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\Exception\CopyFileException;
 use PhpOffice\PhpWord\Exception\CreateTemporaryFileException;
 use PhpOffice\PhpWord\Exception\Exception;
@@ -455,25 +456,50 @@ class CalendarController extends Controller
 
 
 // -------------- выгрузка графика в WORD ---------------
-    public function downloadCalendar($id)
+//    public function downloadCalendar($id)
+//    {
+//        // Создаем Word документ
+//        $docxFilePath = $this->downloadCalendar_create($id);
+//
+//        // Получаем данные для имени файла
+//        $data_CardCalendar = CardCalendar::with('objects.services')->find($id);
+//        $cardObjectMain = CardObjectMain::find($data_CardCalendar->card_id);
+//
+//        $name = $cardObjectMain->name;
+//        // Определяем имя файла для скачивания
+//        $fileName = 'Карточка_календаря_' . $name . '.docx';
+//
+//        // Возвращаем Word-файл как ответ на запрос с заголовком для скачивания
+//        return response()->download($docxFilePath, $fileName);
+//    }
+    public function downloadCalendar(Request $request, $id)
     {
-        // Создаем Word документ
-        $docxFilePath = $this->downloadCalendar_create($id);
+        // Проверка наличия календаря и основного объекта
+        $cardCalendar = CardCalendar::with('objects.services')->find($id);
+        $cardObjectMain = CardObjectMain::find($cardCalendar->card_id);
 
-        // Получаем данные для имени файла
-        $data_CardCalendar = CardCalendar::with('objects.services')->find($id);
-        $cardObjectMain = CardObjectMain::find($data_CardCalendar->card_id);
+        if (!$cardCalendar || !$cardObjectMain) {
+            abort(404, 'CardCalendar or CardObjectMain not found');
+        }
 
-        $name = $cardObjectMain->name;
-        // Определяем имя файла для скачивания
-        $fileName = 'Карточка_календаря_' . $name . '.docx';
+        // Обработка загруженного изображения календаря
+        if ($request->hasFile('calendarImage')) {
+            $image = $request->file('calendarImage');
+            $imagePath = 'public/images/temp_image_' . $id . '.jpg';
+            Storage::put($imagePath, file_get_contents($image->getRealPath()));
+            $imageFullPath = storage_path('app/' . $imagePath);
+        }
+
+        // Создание и заполнение Word документа с использованием старой функции
+        $docxFilePath = $this->downloadCalendar_create($id, isset($imageFullPath) ? $imageFullPath : null);
 
         // Возвращаем Word-файл как ответ на запрос с заголовком для скачивания
+        $fileName = 'Карточка_календаря_' . $cardObjectMain->name . '.docx';
         return response()->download($docxFilePath, $fileName);
     }
 
 // -------------- выгрузка графика в WORD ---------------
-    public function downloadCalendar_create($id)
+    public function downloadCalendar_create($id, $imagePath = null)
     {
         // Находим заказ-наряд по его ID
         $cardCalendar = CardCalendar::with('objects.services.services_types')->find($id);
@@ -528,7 +554,14 @@ class CalendarController extends Controller
                 abort(404, 'Image file not found');
             }
         }
-
+// Добавляем изображение календаря, если оно передано
+        if ($imagePath && file_exists($imagePath)) {
+            $templateProcessor->setImageValue('calendar', [
+                'path' => $imagePath,
+                'width' => 1000, // Установите нужные размеры
+                'height' => 1000,
+            ]);
+        }
         // Конструируем массив замен для клонирования блока обслуживания
         $serviceReplacements = [];
         foreach ($cardObjectMain->services as $serviceIndex => $service) {
@@ -580,6 +613,11 @@ class CalendarController extends Controller
 
         $docxFilePath = storage_path('app/generated/calendarProcessed.docx');
         $templateProcessor->saveAs($docxFilePath);
+
+        // Удаление временного файла изображения
+        if ($imagePath && file_exists($imagePath)) {
+            unlink($imagePath);
+        }
 
         return $docxFilePath;
     }
