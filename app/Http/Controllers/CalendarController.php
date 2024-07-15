@@ -563,46 +563,71 @@ class CalendarController extends Controller
                 'ratio' => false
             ]);
         }
-        // Конструируем массив замен для клонирования блока обслуживания
-        $serviceReplacements = [];
-        foreach ($cardObjectMain->services as $serviceIndex => $service) {
-            $serviceBlock = [
-                'service_type' => $service->service_type,
-                'frequency' => $service->frequency,
-                'performer' => $service->performer,
-                'responsible' => $service->responsible,
-            ];
 
-            // Конструируем массив замен для вложенного блока типов работ
-            $typeWorkReplacements = [];
+        // Генерируем блок легенды
+        $legend = '';
+        foreach ($cardObjectMain->services as $service) {
+            // Создаем XML для квадрата нужного цвета и текста short_name
+            $legend .= '<w:p>';
+            $legend .= '<w:r>';
+            $legend .= '<w:rPr>';
+            $legend .= '<w:sz w:val="18"/>'; // Устанавливаем размер шрифта 10 (20 для размера 10)
+            $legend .= '</w:rPr>';
+            $legend .= '<w:pict><v:rect style="width:8pt;height:8pt">';
+            $legend .= '<v:fill color="' . $service->calendar_color . '" />';
+            $legend .= '<v:stroke dashstyle="solid" />';
+            $legend .= '</v:rect></w:pict>';
+            $legend .= '<w:r><w:t>' . $service->short_name . '</w:t></w:r>';
+            $legend .= '</w:r>';
+            $legend .= '</w:p>';
+        }
+        $data['legend'] = $legend;
+        // Вставляем сгенерированную легенду в шаблон
+        $templateProcessor->setValue('legend', $legend);
+
+// Инициализируем массивы для блоков
+        $serviceBlocks = ['', '', '', ''];
+        $typeWorksBlocks = ['', '', '', ''];
+        $fioBlocks = ['', '', '', ''];
+
+// Распределяем данные по блокам
+        $i = 0;
+        foreach ($cardObjectMain->services as $service) {
+            $color = $service->calendar_color;
+
+            // Вид обслуживания и периодичность с выделением цветом
+            $serviceData = '<w:p>';
+            $serviceData .= '<w:pPr><w:shd w:fill="' . $color . '"/><w:rPr><w:sz w:val="20"/><w:spacing w:before="0" w:after="0"/></w:rPr></w:pPr>';
+            $serviceData .= '<w:r><w:rPr><w:shd w:fill="' . $color . '"/><w:sz w:val="20"/><w:spacing w:before="0" w:after="0"/></w:rPr>';
+            $serviceData .= '<w:t>' . $service->service_type . '</w:t><w:br/>';
+            $serviceData .= '<w:t>' . $service->frequency . '</w:t>';
+            $serviceData .= '</w:r></w:p>';
+            $serviceBlocks[$i % 4] .= $serviceData;
+
+            // Тип работы
+            $typeWorks = [];
             foreach ($service->services_types as $typeWork) {
-                $typeWorkReplacements[] = [
-                    'type_work' => $typeWork->type_work,
-                ];
+                $typeWorks[] = $typeWork->type_work;
             }
+            $typeWorksString = implode(', ', $typeWorks);
+            $typeWorksData = '<w:p><w:r><w:rPr><w:sz w:val="18"/><w:spacing w:before="0" w:after="0"/></w:rPr><w:t>Тип работы: ' . $typeWorksString . '</w:t></w:r></w:p>';
+            $typeWorksBlocks[$i % 4] .= $typeWorksData;
 
-            // Добавляем данные для клонирования вложенного блока типов работ
-            $serviceBlock['type_work_block'] = $typeWorkReplacements;
+            // Исполнитель и ответственный на разных строках
+            $fioData = '<w:p><w:r><w:rPr><w:sz w:val="14"/><w:spacing w:before="0" w:after="0"/></w:rPr><w:t>Исполнитель: ' . $service->performer . '</w:t></w:r></w:p>';
+            $fioData .= '<w:p><w:r><w:rPr><w:sz w:val="14"/><w:spacing w:before="0" w:after="0"/></w:rPr><w:t>Ответственный: ' . $service->responsible . '</w:t></w:r></w:p>';
+            $fioBlocks[$i % 4] .= $fioData;
 
-            // Добавляем данные для клонирования блока обслуживания
-            $serviceReplacements[] = $serviceBlock;
+            $i++;
         }
 
-        // Клонируем блок обслуживания
-        $templateProcessor->cloneBlock('service_block', count($serviceReplacements), true, false);
-        foreach ($serviceReplacements as $index => $serviceReplacement) {
-            $templateProcessor->setValue('service_type#' . ($index + 1), $serviceReplacement['service_type']);
-            $templateProcessor->setValue('frequency#' . ($index + 1), $serviceReplacement['frequency']);
-            $templateProcessor->setValue('performer#' . ($index + 1), $serviceReplacement['performer']);
-            $templateProcessor->setValue('responsible#' . ($index + 1), $serviceReplacement['responsible']);
-
-            // Клонируем и заполняем вложенные блоки типов работ
-            $typeWorkReplacements = $serviceReplacement['type_work_block'];
-            $templateProcessor->cloneBlock('type_work_block#' . ($index + 1), count($typeWorkReplacements), true, true);
-            foreach ($typeWorkReplacements as $typeWorkIndex => $typeWorkReplacement) {
-                $templateProcessor->setValue('type_work#' . ($index + 1) . '#' . ($typeWorkIndex + 1), $typeWorkReplacement['type_work']);
-            }
+// Вставляем блоки в шаблон
+        for ($j = 1; $j <= 4; $j++) {
+            $templateProcessor->setValue("serviceData_$j", !empty($serviceBlocks[$j - 1]) ? $serviceBlocks[$j - 1] : '');
+            $templateProcessor->setValue("typeWorksData_$j", !empty($typeWorksBlocks[$j - 1]) ? $typeWorksBlocks[$j - 1] : '');
+            $templateProcessor->setValue("fioData_$j", !empty($fioBlocks[$j - 1]) ? $fioBlocks[$j - 1] : '');
         }
+
 
         // Устанавливаем остальные значения в шаблоне
         foreach ($data as $key => $value) {
