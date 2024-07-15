@@ -564,25 +564,41 @@ class CalendarController extends Controller
             ]);
         }
 
-        // Генерируем блок легенды
+// Генерируем блок легенды
         $legend = '';
+        $legendRowCount = 0;
+
         foreach ($cardObjectMain->services as $service) {
-            // Создаем XML для квадрата нужного цвета и текста short_name
-            $legend .= '<w:p>';
+            if ($legendRowCount % 2 == 0) {
+                $legend .= '<w:p>';
+            }
+
             $legend .= '<w:r>';
             $legend .= '<w:rPr>';
-            $legend .= '<w:sz w:val="18"/>'; // Устанавливаем размер шрифта 10 (20 для размера 10)
+            $legend .= '<w:sz w:val="18"/>'; // Устанавливаем размер шрифта 10 (18 для размера 9)
             $legend .= '</w:rPr>';
             $legend .= '<w:pict><v:rect style="width:8pt;height:8pt">';
             $legend .= '<v:fill color="' . $service->calendar_color . '" />';
             $legend .= '<v:stroke dashstyle="solid" />';
             $legend .= '</v:rect></w:pict>';
-            $legend .= '<w:r><w:t>' . $service->short_name . '</w:t></w:r>';
+            $legend .= '<w:t>' . $service->short_name . '</w:t>';
             $legend .= '</w:r>';
+            $legend .= '<w:r><w:t xml:space="preserve"> </w:t></w:r>'; // Добавляем пробел после каждого элемента легенды
+
+            if ($legendRowCount % 2 == 1) {
+                $legend .= '</w:p>';
+            }
+
+            $legendRowCount++;
+        }
+
+// Если количество элементов нечетное, закрываем последний тег <w:p>
+        if ($legendRowCount % 2 != 0) {
             $legend .= '</w:p>';
         }
+
         $data['legend'] = $legend;
-        // Вставляем сгенерированную легенду в шаблон
+// Вставляем сгенерированную легенду в шаблон
         $templateProcessor->setValue('legend', $legend);
 
 // Инициализируем массивы для блоков
@@ -604,13 +620,19 @@ class CalendarController extends Controller
             $serviceData .= '</w:r></w:p>';
             $serviceBlocks[$i % 4] .= $serviceData;
 
-            // Тип работы
-            $typeWorks = [];
+            // Тип работы с цветным квадратом для каждого типа работы
+            $typeWorksData = '';
             foreach ($service->services_types as $typeWork) {
-                $typeWorks[] = $typeWork->type_work;
+                $typeWorksData .= '<w:p>';
+                $typeWorksData .= '<w:r>';
+                $typeWorksData .= '<w:rPr><w:sz w:val="18"/><w:spacing w:before="0" w:after="0"/></w:rPr>';
+                $typeWorksData .= '<w:pict><v:rect style="width:8pt;height:8pt">';
+                $typeWorksData .= '<v:stroke dashstyle="solid" />';
+                $typeWorksData .= '</v:rect></w:pict>';
+                $typeWorksData .= '<w:t>' . $typeWork->type_work . '</w:t>';
+                $typeWorksData .= '</w:r>';
+                $typeWorksData .= '</w:p>';
             }
-            $typeWorksString = implode(', ', $typeWorks);
-            $typeWorksData = '<w:p><w:r><w:rPr><w:sz w:val="18"/><w:spacing w:before="0" w:after="0"/></w:rPr><w:t>Тип работы: ' . $typeWorksString . '</w:t></w:r></w:p>';
             $typeWorksBlocks[$i % 4] .= $typeWorksData;
 
             // Исполнитель и ответственный на разных строках
@@ -627,6 +649,7 @@ class CalendarController extends Controller
             $templateProcessor->setValue("typeWorksData_$j", !empty($typeWorksBlocks[$j - 1]) ? $typeWorksBlocks[$j - 1] : '');
             $templateProcessor->setValue("fioData_$j", !empty($fioBlocks[$j - 1]) ? $fioBlocks[$j - 1] : '');
         }
+
 
 
         // Устанавливаем остальные значения в шаблоне
