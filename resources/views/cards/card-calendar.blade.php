@@ -152,21 +152,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        {{--   скрытый календарь для ворда   --}}
-                        <div class="member_card_style services" style="opacity: 0; position: absolute; z-index: -100; pointer-events: none;">
-                            <div class="member-info">
-                                <h4>Календарь ТРМ</h4>
-                                <div class="member-info--inputs" id="caaard">
-                                    {{-- КАЛЕНДАРЬ --}}
-                                    <div id="calendar-container">
-                                        <table class="calendar">
-                                            <tbody></tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 {{-- ВКЛАДКА "КАЛЕНДАРЬ" --}}
@@ -219,6 +204,23 @@
                 </div>
             </div>
         </div>
+
+
+        {{--   скрытый календарь для ворда   --}}
+        <div class="member_card_style services" style="opacity: 0; position: fixed; z-index: -100; pointer-events: none;">
+            <div class="member-info">
+                <h4>Календарь ТРМ</h4>
+                <div class="member-info--inputs" id="caaard">
+                    {{-- КАЛЕНДАРЬ --}}
+                    <div id="calendar-container">
+                        <table class="calendar">
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <!-- Модальное окно подтверждения завершения архивации -->
         <div class="modal fade" id="confirmArchiveModal" tabindex="-1" aria-labelledby="confirmArchiveModalLabel" aria-hidden="true">
