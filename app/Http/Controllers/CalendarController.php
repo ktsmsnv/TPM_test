@@ -10,6 +10,7 @@ use DaveJamesMiller\Breadcrumbs\Facades\Breadcrumbs;
 use App\Models\CardCalendar;
 use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\Exception\CopyFileException;
 use PhpOffice\PhpWord\Exception\CreateTemporaryFileException;
 use PhpOffice\PhpWord\Exception\Exception;
@@ -455,25 +456,50 @@ class CalendarController extends Controller
 
 
 // -------------- выгрузка графика в WORD ---------------
-    public function downloadCalendar($id)
+//    public function downloadCalendar($id)
+//    {
+//        // Создаем Word документ
+//        $docxFilePath = $this->downloadCalendar_create($id);
+//
+//        // Получаем данные для имени файла
+//        $data_CardCalendar = CardCalendar::with('objects.services')->find($id);
+//        $cardObjectMain = CardObjectMain::find($data_CardCalendar->card_id);
+//
+//        $name = $cardObjectMain->name;
+//        // Определяем имя файла для скачивания
+//        $fileName = 'Карточка_календаря_' . $name . '.docx';
+//
+//        // Возвращаем Word-файл как ответ на запрос с заголовком для скачивания
+//        return response()->download($docxFilePath, $fileName);
+//    }
+    public function downloadCalendar(Request $request, $id)
     {
-        // Создаем Word документ
-        $docxFilePath = $this->downloadCalendar_create($id);
+        // Проверка наличия календаря и основного объекта
+        $cardCalendar = CardCalendar::with('objects.services')->find($id);
+        $cardObjectMain = CardObjectMain::find($cardCalendar->card_id);
 
-        // Получаем данные для имени файла
-        $data_CardCalendar = CardCalendar::with('objects.services')->find($id);
-        $cardObjectMain = CardObjectMain::find($data_CardCalendar->card_id);
+        if (!$cardCalendar || !$cardObjectMain) {
+            abort(404, 'CardCalendar or CardObjectMain not found');
+        }
 
-        $name = $cardObjectMain->name;
-        // Определяем имя файла для скачивания
-        $fileName = 'Карточка_календаря_' . $name . '.docx';
+        // Обработка загруженного изображения календаря
+        if ($request->hasFile('calendarImage')) {
+            $image = $request->file('calendarImage');
+            $imagePath = 'public/images/temp_image_' . $id . '.jpg';
+            Storage::put($imagePath, file_get_contents($image->getRealPath()));
+            $imageFullPath = storage_path('app/' . $imagePath);
+        }
+
+        // Создание и заполнение Word документа с использованием старой функции
+        $docxFilePath = $this->downloadCalendar_create($id, isset($imageFullPath) ? $imageFullPath : null);
 
         // Возвращаем Word-файл как ответ на запрос с заголовком для скачивания
+        $fileName = 'Карточка_календаря_' . $cardObjectMain->name . '.docx';
         return response()->download($docxFilePath, $fileName);
     }
 
 // -------------- выгрузка графика в WORD ---------------
-    public function downloadCalendar_create($id)
+    public function downloadCalendar_create($id, $imagePath = null)
     {
         // Находим заказ-наряд по его ID
         $cardCalendar = CardCalendar::with('objects.services.services_types')->find($id);
@@ -520,55 +546,111 @@ class CalendarController extends Controller
             if (file_exists($tempImagePath)) {
                 $templateProcessor->setImageValue('image', [
                     'path' => $tempImagePath,
-                    'width' => 100, // Установите нужные размеры
-                    'height' => 100,
+                    'width' => 165, // Установите нужные размеры
+                    'height' => 165,
                 ]);
             } else {
                 // Выводим сообщение об ошибке, если файл не найден
                 abort(404, 'Image file not found');
             }
         }
+// Добавляем изображение календаря, если оно передано
+        if ($imagePath && file_exists($imagePath)) {
+            $templateProcessor->setImageValue('calendar', [
+                'path' => $imagePath,
+                'width' => 885, // Установите нужные размеры
+                'height' => 400,
+                'ratio' => false
+            ]);
+        }
 
-        // Конструируем массив замен для клонирования блока обслуживания
-        $serviceReplacements = [];
-        foreach ($cardObjectMain->services as $serviceIndex => $service) {
-            $serviceBlock = [
-                'service_type' => $service->service_type,
-                'frequency' => $service->frequency,
-                'performer' => $service->performer,
-                'responsible' => $service->responsible,
-            ];
+// Генерируем блок легенды
+        $legend = '';
+        $legendRowCount = 0;
 
-            // Конструируем массив замен для вложенного блока типов работ
-            $typeWorkReplacements = [];
+        foreach ($cardObjectMain->services as $service) {
+            if ($legendRowCount % 2 == 0) {
+                $legend .= '<w:p>';
+            }
+
+            $legend .= '<w:r>';
+            $legend .= '<w:rPr>';
+            $legend .= '<w:sz w:val="18"/>'; // Устанавливаем размер шрифта 10 (18 для размера 9)
+            $legend .= '</w:rPr>';
+            $legend .= '<w:pict><v:rect style="width:8pt;height:8pt">';
+            $legend .= '<v:fill color="' . $service->calendar_color . '" />';
+            $legend .= '<v:stroke dashstyle="solid" />';
+            $legend .= '</v:rect></w:pict>';
+            $legend .= '<w:t>' . $service->short_name . '</w:t>';
+            $legend .= '</w:r>';
+            $legend .= '<w:r><w:t xml:space="preserve"> </w:t></w:r>'; // Добавляем пробел после каждого элемента легенды
+
+            if ($legendRowCount % 2 == 1) {
+                $legend .= '</w:p>';
+            }
+
+            $legendRowCount++;
+        }
+
+// Если количество элементов нечетное, закрываем последний тег <w:p>
+        if ($legendRowCount % 2 != 0) {
+            $legend .= '</w:p>';
+        }
+
+        $data['legend'] = $legend;
+// Вставляем сгенерированную легенду в шаблон
+        $templateProcessor->setValue('legend', $legend);
+
+// Инициализируем массивы для блоков
+        $serviceBlocks = ['', '', '', ''];
+        $typeWorksBlocks = ['', '', '', ''];
+        $fioBlocks = ['', '', '', ''];
+
+// Распределяем данные по блокам
+        $i = 0;
+        foreach ($cardObjectMain->services as $service) {
+            $color = $service->calendar_color;
+
+            // Вид обслуживания и периодичность с выделением цветом
+            $serviceData = '<w:p>';
+            $serviceData .= '<w:pPr><w:shd w:fill="' . $color . '"/><w:rPr><w:sz w:val="20"/><w:spacing w:before="0" w:after="0"/></w:rPr></w:pPr>';
+            $serviceData .= '<w:r><w:rPr><w:shd w:fill="' . $color . '"/><w:sz w:val="20"/><w:spacing w:before="0" w:after="0"/></w:rPr>';
+            $serviceData .= '<w:t>' . $service->service_type . '</w:t><w:br/>';
+            $serviceData .= '<w:t>' . $service->frequency . '</w:t>';
+            $serviceData .= '</w:r></w:p>';
+            $serviceBlocks[$i % 4] .= $serviceData;
+
+            // Тип работы с цветным квадратом для каждого типа работы
+            $typeWorksData = '';
             foreach ($service->services_types as $typeWork) {
-                $typeWorkReplacements[] = [
-                    'type_work' => $typeWork->type_work,
-                ];
+                $typeWorksData .= '<w:p>';
+                $typeWorksData .= '<w:r>';
+                $typeWorksData .= '<w:rPr><w:sz w:val="18"/><w:spacing w:before="0" w:after="0"/></w:rPr>';
+                $typeWorksData .= '<w:pict><v:rect style="width:8pt;height:8pt">';
+                $typeWorksData .= '<v:stroke dashstyle="solid" />';
+                $typeWorksData .= '</v:rect></w:pict>';
+                $typeWorksData .= '<w:t>' . $typeWork->type_work . '</w:t>';
+                $typeWorksData .= '</w:r>';
+                $typeWorksData .= '</w:p>';
             }
+            $typeWorksBlocks[$i % 4] .= $typeWorksData;
 
-            // Добавляем данные для клонирования вложенного блока типов работ
-            $serviceBlock['type_work_block'] = $typeWorkReplacements;
+            // Исполнитель и ответственный на разных строках
+            $fioData = '<w:p><w:r><w:rPr><w:sz w:val="14"/><w:spacing w:before="0" w:after="0"/></w:rPr><w:t>Исполнитель: ' . $service->performer . '</w:t></w:r></w:p>';
+            $fioData .= '<w:p><w:r><w:rPr><w:sz w:val="14"/><w:spacing w:before="0" w:after="0"/></w:rPr><w:t>Ответственный: ' . $service->responsible . '</w:t></w:r></w:p>';
+            $fioBlocks[$i % 4] .= $fioData;
 
-            // Добавляем данные для клонирования блока обслуживания
-            $serviceReplacements[] = $serviceBlock;
+            $i++;
         }
 
-        // Клонируем блок обслуживания
-        $templateProcessor->cloneBlock('service_block', count($serviceReplacements), true, false);
-        foreach ($serviceReplacements as $index => $serviceReplacement) {
-            $templateProcessor->setValue('service_type#' . ($index + 1), $serviceReplacement['service_type']);
-            $templateProcessor->setValue('frequency#' . ($index + 1), $serviceReplacement['frequency']);
-            $templateProcessor->setValue('performer#' . ($index + 1), $serviceReplacement['performer']);
-            $templateProcessor->setValue('responsible#' . ($index + 1), $serviceReplacement['responsible']);
-
-            // Клонируем и заполняем вложенные блоки типов работ
-            $typeWorkReplacements = $serviceReplacement['type_work_block'];
-            $templateProcessor->cloneBlock('type_work_block#' . ($index + 1), count($typeWorkReplacements), true, true);
-            foreach ($typeWorkReplacements as $typeWorkIndex => $typeWorkReplacement) {
-                $templateProcessor->setValue('type_work#' . ($index + 1) . '#' . ($typeWorkIndex + 1), $typeWorkReplacement['type_work']);
-            }
+// Вставляем блоки в шаблон
+        for ($j = 1; $j <= 4; $j++) {
+            $templateProcessor->setValue("serviceData_$j", !empty($serviceBlocks[$j - 1]) ? $serviceBlocks[$j - 1] : '');
+            $templateProcessor->setValue("typeWorksData_$j", !empty($typeWorksBlocks[$j - 1]) ? $typeWorksBlocks[$j - 1] : '');
+            $templateProcessor->setValue("fioData_$j", !empty($fioBlocks[$j - 1]) ? $fioBlocks[$j - 1] : '');
         }
+
+
 
         // Устанавливаем остальные значения в шаблоне
         foreach ($data as $key => $value) {
@@ -580,6 +662,11 @@ class CalendarController extends Controller
 
         $docxFilePath = storage_path('app/generated/calendarProcessed.docx');
         $templateProcessor->saveAs($docxFilePath);
+
+        // Удаление временного файла изображения
+        if ($imagePath && file_exists($imagePath)) {
+            unlink($imagePath);
+        }
 
         return $docxFilePath;
     }

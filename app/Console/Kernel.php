@@ -2,70 +2,95 @@
 
 namespace App\Console;
 
-use App\Mail\WorkOrderNotification;
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-
 use App\Models\CardObjectMain;
 use App\Models\CardWorkOrder;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-
 
 class Kernel extends ConsoleKernel
 {
-    /**
-     * Define the application's command schedule.
-     */
     protected function schedule(Schedule $schedule): void
     {
         $schedule->call(function () {
-            $now = now();
-            $objects = CardObjectMain::all();
-            foreach ($objects as $object) {
-                foreach ($object->services as $service) {
-                    // Проверяем, имеет ли услуга флаг checked
-//                    if ($service->checked) {
-//                        continue; // Пропускаем эту услугу, если она помечена checked
-//                    }
-                    $plannedMaintenanceDate = Carbon::parse($service->planned_maintenance_date);
-                    $notificationDate = $plannedMaintenanceDate->subDays(14); // Получаем дату уведомления за 14 дней до плановой даты обслуживания
-                    if ($now->isSameDay($notificationDate)) {
-                        // Проверяем, был ли уже создан заказ-наряд для данного объекта и его обслуживания
-                        $existingWorkOrder = CardWorkOrder::where('card_id', $object->id)
-                            ->where('card_object_services_id', $service->id)
-                            ->exists();
-                        if (!$existingWorkOrder) {
-                            // Создаем новый заказ-наряд
-                            $newWorkOrder = new CardWorkOrder();
-                            $newWorkOrder->card_id = $object->id;
-                            $newWorkOrder->card_object_services_id = $service->id;
-                            $newWorkOrder->date_create = $now->format('d-m-Y');
-                            $newWorkOrder->status = 'В работе';
-                            // Также можно добавить другие поля, например, номер заказа
-                            $newWorkOrder->save();
-                            // Отправляем уведомления
-                            $this->sendNotifications($object, $service, $newWorkOrder);
-                        }
+            $this->checkForUpcomingMaintenances();
+        })->everyMinute(); // Измените расписание в зависимости от ваших требований
+
+        $schedule->call(function () {
+            $this->checkForOverdueMaintenances();
+        })->everyMinute(); // Измените расписание в зависимости от ваших требований
+    }
+
+    protected function checkForUpcomingMaintenances()
+    {
+        $now = now();
+        $objects = CardObjectMain::all();
+        Log::info('Проверка плановых обслуживаний. Объекты: ' . $objects);
+
+        foreach ($objects as $object) {
+            foreach ($object->services as $service) {
+                $plannedMaintenanceDate = Carbon::parse($service->planned_maintenance_date);
+                $notificationDate = $plannedMaintenanceDate->subDays(14);
+
+                if ($now->isSameDay($notificationDate)) {
+                    $existingWorkOrder = CardWorkOrder::where('card_id', $object->id)
+                        ->where('card_object_services_id', $service->id)
+                        ->exists();
+
+                    if (!$existingWorkOrder) {
+                        $newWorkOrder = new CardWorkOrder();
+                        $newWorkOrder->card_id = $object->id;
+                        $newWorkOrder->card_object_services_id = $service->id;
+                        $newWorkOrder->date_create = $now->format('d-m-Y');
+                        $newWorkOrder->status = 'В работе';
+                        $newWorkOrder->save();
+                        $this->sendNotifications($object, $service, $newWorkOrder);
                     }
                 }
             }
-           // Log::info('Планировщик Laravel выполняется каждую секунду');
-            Log::info('Планировщик выполнен');
-        })->everySecond();
+        }
 
+        Log::info('Проверка плановых обслуживаний завершена');
     }
-    /**
-     * Send notifications.
-     *
-     * @param  mixed  $object
-     * @param  mixed  $service
-     * @param  mixed  $newWorkOrder
-     * @return void
-     */
+
+    protected function checkForOverdueMaintenances()
+    {
+        $now = now();
+        $workOrders = CardWorkOrder::where('status', '!=', 'Завершено')->get();
+
+        foreach ($workOrders as $workOrder) {
+            $service = $workOrder->cardObjectServices;
+
+            if (!$service) {
+                Log::error('Связь с CardObjectServices не установлена для заказ-наряда ID: ' . $workOrder->id);
+                continue;
+            }
+
+            $plannedMaintenanceDate = Carbon::parse($service->planned_maintenance_date);
+            Log::info('Плановая дата: ' . $plannedMaintenanceDate);
+            $overdueDays = $now->diffInDays($plannedMaintenanceDate, false);
+
+            if ($overdueDays < -7) {
+                $object = $workOrder->cardObject;
+
+                if (!$object) {
+                    Log::error('Связь с CardObjectMain не установлена для заказ-наряда ID: ' . $workOrder->id);
+                    continue;
+                }
+
+                $this->sendOverdueNotifications($object, $service, $workOrder);
+                Log::info('Просроченные: ' . $service->short_name);
+            }
+        }
+
+        Log::info('Проверка просроченных обслуживаний завершена');
+    }
+
+
+
     protected function sendNotifications($object, $service, $newWorkOrder)
     {
         $performer = User::where('name', $service->performer)->first();
@@ -76,44 +101,111 @@ class Kernel extends ConsoleKernel
 
         foreach ($recipients as $recipient) {
             if ($recipient && $recipient->email) {
-                try {
-                    Mail::to($recipient->email)->send(new WorkOrderNotification($newWorkOrder, $object, $service));
-                    Log::info("Уведомление отправлено на {$recipient->email} для объекта {$object->name}");
-                } catch (\Exception $e) {
-                    Log::error("Ошибка при отправке почты на {$recipient->email}: " . $e->getMessage());
-                }
+                $this->sendEmail($recipient->email, $newWorkOrder, $object, $service);
             }
         }
     }
-//    protected function sendNotifications($object, $service, $workOrder)
-//    {
-//        $performer = User::where('name', $service->performer)->first();
-//        $responsible = User::where('name', $service->responsible)->first();
-//        $curator = User::where('name', $object->curator)->first();
-//
-//        $recipients = collect([$performer, $responsible, $curator])->filter();
-//
-//        foreach ($recipients as $recipient) {
-//            if ($recipient) {
-//                Notification::create([
-//                    'user_id' => $recipient->id,
-//                    'title' => 'Новый заказ-наряд',
-//                    'message' => "Создан новый заказ-наряд для объекта {$object->name} ({$object->location}). Тип работы: {$service->service_type}. Дата обслуживания: {$service->planned_maintenance_date}. Номер заказа-наряда: {$workOrder->number}.",
-//                ]);
-//            }
-//        }
-//    }
+
+    protected function sendOverdueNotifications($object, $service, $workOrder)
+    {
+        $performer = User::where('name', $service->performer)->first();
+        $responsible = User::where('name', $service->responsible)->first();
+        $curator = User::where('name', $object->curator)->first();
+
+        $recipients = collect([$performer, $responsible, $curator])->filter();
+
+        foreach ($recipients as $recipient) {
+            if ($recipient && $recipient->email) {
+                $this->sendOverdueEmail($recipient->email, $workOrder, $object, $service);
+            }
+        }
+    }
 
 
-    /**
-     * Register the commands for the application.
-     *
-     * @return void
-     */
+    private function sendEmail($recipientEmail, $workOrder, $object, $service)
+    {
+        $subject = 'Уведомление о заказ-наряде';
+        $message = $this->buildMessage($workOrder, $object, $service);
+        $headers = $this->buildHeaders();
+
+        if (mail($recipientEmail, $subject, $message, $headers)) {
+            Log::info("Уведомление отправлено на {$recipientEmail} для объекта {$object->name}");
+        } else {
+            Log::error("Ошибка при отправке почты на {$recipientEmail}");
+        }
+    }
+
+    private function sendOverdueEmail($recipientEmail, $workOrder, $object, $service)
+    {
+        $subject = 'Уведомление о просроченном заказ-наряде';
+        $message = $this->buildOverdueMessage($workOrder, $object, $service);
+        $headers = $this->buildHeaders();
+
+        if (mail($recipientEmail, $subject, $message, $headers)) {
+            Log::info("Уведомление о просрочке отправлено на {$recipientEmail} для объекта {$object->name}");
+        } else {
+            Log::error("Ошибка при отправке почты на {$recipientEmail}");
+        }
+    }
+
+    private function buildMessage($workOrder, $object, $service)
+    {
+        return "
+            <html>
+            <head>
+                <title>Уведомление о заказ-наряде</title>
+            </head>
+            <body>
+                <h1>Уведомление о заказ-наряде</h1>
+                <p><strong>ID заказ-наряда:</strong> {$workOrder->id}</p>
+                <p><strong>Дата создания:</strong> {$workOrder->date_create}</p>
+                <p><strong>Статус:</strong> {$workOrder->status}</p>
+                <p><strong>Название объекта:</strong> {$object->name}</p>
+                <p><strong>Куратор объекта:</strong> {$object->curator}</p>
+                <p><strong>Исполнитель:</strong> {$service->performer}</p>
+                <p><strong>Ответственный:</strong> {$service->responsible}</p>
+                <p><strong>Плановая дата обслуживания:</strong> {$service->planned_maintenance_date}</p>
+            </body>
+            </html>
+        ";
+    }
+
+    private function buildOverdueMessage($workOrder, $object, $service)
+    {
+        return "
+            <html>
+            <head>
+                <title>Уведомление о просроченном заказ-наряде</title>
+            </head>
+            <body>
+                <h1>Уведомление о просроченном заказ-наряде</h1>
+                <p><strong>ID заказ-наряда:</strong> {$workOrder->id}</p>
+                <p><strong>Дата создания:</strong> {$workOrder->date_create}</p>
+                <p><strong>Статус:</strong> {$workOrder->status}</p>
+                <p><strong>Название объекта:</strong> {$object->name}</p>
+                <p><strong>Куратор объекта:</strong> {$object->curator}</p>
+                <p><strong>Исполнитель:</strong> {$service->performer}</p>
+                <p><strong>Ответственный:</strong> {$service->responsible}</p>
+                <p><strong>Плановая дата обслуживания:</strong> {$service->planned_maintenance_date}</p>
+                <p><strong>Просрочка:</strong> на более чем 7 дней</p>
+            </body>
+            </html>
+        ";
+    }
+
+    private function buildHeaders()
+    {
+        $headers = "MIME-Version: 1.0" . "\r\n";
+        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+        $headers .= 'From: webmaster@example.com' . "\r\n";
+        $headers .= 'Reply-To: webmaster@example.com' . "\r\n";
+
+        return $headers;
+    }
+
     protected function commands(): void
     {
         $this->load(__DIR__.'/Commands');
-
         require base_path('routes/console.php');
     }
 }

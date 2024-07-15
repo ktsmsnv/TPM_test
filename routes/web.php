@@ -133,7 +133,9 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('/archiveCalendarDateButt',  [App\Http\Controllers\CalendarController::class, 'archiveCalendarDateButt'])->name('archiveCalendarDateButt');
 
-    Route::get('/download-calendar/{id}', [App\Http\Controllers\CalendarController::class, 'downloadCalendar'])->name('downloadCalendar');
+   // Route::get('/download-calendar/{id}', [App\Http\Controllers\CalendarController::class, 'downloadCalendar'])->name('downloadCalendar');
+    Route::post('/download-calendar/{id}', [App\Http\Controllers\CalendarController::class, 'downloadCalendar'])->name('downloadCalendar');
+
     // ----------------------------------------------------------------------------------------------------------------
 
 
@@ -157,5 +159,8 @@ Route::middleware(['auth'])->group(function () {
 
 
     Route::get('/send-test-mail',  [App\Http\Controllers\MailTestController::class, 'sendTestEmail']);
+
+    Route::get('/sendmail',  [App\Http\Controllers\MailTestController::class, 'sendEmail']);
+
 });
 
