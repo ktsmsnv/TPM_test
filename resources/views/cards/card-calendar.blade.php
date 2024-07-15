@@ -468,6 +468,11 @@
                 downloadLink.addEventListener('click', function(event) {
                     event.preventDefault();
 
+                    // Показываем сообщение "Пожалуйста подождите"
+                    var popup = $('<div class="popup">Пожалуйста подождите, загрузка началась.</div>');
+                    $('body').append(popup);
+                    popup.fadeIn();
+
                     // Захват блока с id 'caaard' с помощью html2canvas
                     html2canvas(document.getElementById('caaard')).then(function(canvas) {
                         // Преобразование canvas в URL изображения в формате JPG
@@ -490,6 +495,11 @@
                                     throw new Error('Network response was not ok.');
                                 })
                                 .then(blob => {
+                                    // Скрыть сообщение "Пожалуйста подождите"
+                                    popup.fadeOut(function() {
+                                        $(this).remove();
+                                    });
+
                                     const url = window.URL.createObjectURL(blob);
                                     const a = document.createElement('a');
                                     a.style.display = 'none';
@@ -501,10 +511,15 @@
                                 })
                                 .catch(error => {
                                     console.error('Error:', error);
+                                    // Обработка ошибки
+                                    popup.fadeOut(function() {
+                                        $(this).remove();
+                                    });
                                 });
                         }, 'image/jpeg'); // Указание формата изображения
                     });
                 });
             });
+
         </script>
 @endsection
