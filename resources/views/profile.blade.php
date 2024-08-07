@@ -66,25 +66,25 @@
                         @endif
 
                         {{-- active directory data  --}}
-                        <div class="profile container mt-5">
-                            <h2>Пользователи из Active Directory</h2>
-                            <table class="table table-bordered">
-                                <thead>
-                                <tr>
-                                    <th>Имя</th>
-                                    <th>Email</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @foreach($users as $user)
-                                    <tr>
-                                        <td>{{ $user->getFirstAttribute('cn') }}</td>
-                                        <td>{{ $user->getFirstAttribute('mail') }}</td>
-                                    </tr>
-                                @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+{{--                        <div class="profile container mt-5">--}}
+{{--                            <h2>Пользователи из Active Directory</h2>--}}
+{{--                            <table class="table table-bordered">--}}
+{{--                                <thead>--}}
+{{--                                <tr>--}}
+{{--                                    <th>Имя</th>--}}
+{{--                                    <th>Email</th>--}}
+{{--                                </tr>--}}
+{{--                                </thead>--}}
+{{--                                <tbody>--}}
+{{--                                @foreach($users as $user)--}}
+{{--                                    <tr>--}}
+{{--                                        <td>{{ $user->getFirstAttribute('cn') }}</td>--}}
+{{--                                        <td>{{ $user->getFirstAttribute('mail') }}</td>--}}
+{{--                                    </tr>--}}
+{{--                                @endforeach--}}
+{{--                                </tbody>--}}
+{{--                            </table>--}}
+{{--                        </div>--}}
 
                     </div>
                 </div>
