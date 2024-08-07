@@ -28,6 +28,9 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['can:register-users'])->group(function () {
         Route::get('/register', [App\Http\Controllers\RegisterController::class, 'showRegistrationForm'])->name('register');
         Route::post('/register', [App\Http\Controllers\RegisterController::class, 'register']);
+
+        // Добавляем маршрут для получения списка пользователей LDAP
+        Route::get('/ldap-users', [App\Http\Controllers\RegisterController::class, 'getLdapUsers']);
     });
 
         // обновление данных профиля
