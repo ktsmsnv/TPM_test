@@ -55,7 +55,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://tpm.kst-energo.ru/'),
+    'url' => env('APP_URL', 'https://tpmtest.kst-energo.ru/'),
 
     'asset_url' => env('ASSET_URL'),
 
