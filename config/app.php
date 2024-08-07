@@ -169,6 +169,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         MongoDB\Laravel\MongoDBServiceProvider::class,
         DaveJamesMiller\Breadcrumbs\BreadcrumbsServiceProvider::class,
+        Adldap\Laravel\AdldapServiceProvider::class,
     ])->toArray(),
 
     /*
@@ -183,6 +184,7 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
+        'Adldap' => Adldap\Laravel\Facades\Adldap::class,
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 

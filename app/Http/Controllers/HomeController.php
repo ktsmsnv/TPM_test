@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use Adldap\Laravel\Facades\Adldap;
 use App\Models\CardWorkOrder;
 use App\Models\Notification;
 use Illuminate\Http\Request;
@@ -195,11 +196,12 @@ class HomeController extends Controller
     {
         // Генерация хлебных крошек
         $breadcrumbs = Breadcrumbs::generate('profile');
+        // Получение данных пользователей из Active Directory
+        $users = Adldap::search()->users()->select(['cn', 'mail'])->get();
+       // dd($users);
 
-        // Возвращение представления с передачей хлебных крошек
-        return view('profile', compact('breadcrumbs'));
+        return view('profile', compact('breadcrumbs', 'users'));
     }
-
     // ------------------ ОБНОВЛЕНИЕ ДАННЫХ ПРОФИЛЯ ------------------
     public function updateProfile(Request $request)
     {
