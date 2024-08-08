@@ -25,14 +25,9 @@
             </div>
             <div class="collapse" id="periodSelection">
                 <div class="card card-body position-absolute" style="top: 50px;left: 1350px;z-index: 99;">
-                    <!-- диапазон дат -->
                     <div class="form-group mb-3">
-                        <label for="startDate">Начальная дата:</label>
-                        <input type="date" class="form-control" id="startDate">
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="endDate">Конечная дата:</label>
-                        <input type="date" class="form-control" id="endDate">
+                        <label for="yearAction">Год действия:</label>
+                        <input type="number" id="yearAction" min="1900" max="300099" step="1" value="" />
                     </div>
                     <button type="button" class="btn btn-primary" id="applyButton">Применить</button>
                 </div>
@@ -334,19 +329,16 @@
             });
             // Обработка нажатия на кнопку "Применить"
             applyButton.addEventListener('click', function () {
-                const startDate = document.getElementById('startDate').value;
-                const endDate = document.getElementById('endDate').value;
+                const yearAction = document.getElementById('yearAction').value;
 
-                // Преобразуем даты в объекты Date
-                const start = new Date(startDate);
-                const end = new Date(endDate);
+                const yearAct = yearAction;
                 // Фильтруем записи по выбранному периоду
                 let data = $table.bootstrapTable('getData');
                 let filteredData = data.filter(function (row) {
                     // Преобразуем плановую дату обслуживания в объект Date
-                    const plannedDate = new Date(row.planned_maintenance_date);
+                    const plannedYear = row.year;
                     // Проверяем, попадает ли плановая дата в выбранный период
-                    return plannedDate >= start && plannedDate <= end;
+                    return plannedYear === yearAct;
                 });
                 // Обновляем таблицу, отображая только записи из отфильтрованных данных
                 $table.bootstrapTable('load', filteredData);
@@ -354,7 +346,7 @@
                 // Отобразить выбранный период под блоком с кнопками
                 selectedPeriod.innerHTML = `
                 <div class="alert alert-info" role="alert">
-                    Выбранный период: с ${endDate.split('-').reverse().join('-')} по ${startDate.split('-').reverse().join('-')}
+                    Выбранный период: ${yearAction}
                     <button type="button" class="btn btn-danger ms-3" id="resetPeriodButton">Сбросить период</button>
                 </div>`;
                 // Добавляем обработчик клика на кнопку "Сбросить период"
@@ -370,10 +362,10 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Получаем блок header на странице home
-            var header = document.querySelector('header');
-            var restartTutorialBtn = document.querySelector('#restartTutorialBtn');
-            var navbarNavElements = document.querySelectorAll('header ul.navbar-nav');
-            var navElements = document.querySelectorAll('header ul.nav');
+            let header = document.querySelector('header');
+            let restartTutorialBtn = document.querySelector('#restartTutorialBtn');
+            let navbarNavElements = document.querySelectorAll('header ul.navbar-nav');
+            let navElements = document.querySelectorAll('header ul.nav');
             // Устанавливаем атрибут data-step равным null для header на странице home
             if (header) {
                 header.setAttribute('data-step', null);

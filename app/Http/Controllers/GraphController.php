@@ -249,7 +249,7 @@ class GraphController extends Controller
     public function addCardObjectsToGraph(Request $request)
     {
         $selectedCardObjects = $request->input('card_objects', []);
-//        dd($selectedCardObjects);
+        dd($selectedCardObjects);
         $graphId = $request->input('graph_id');
 
         // Найдите карточку графика по идентификатору
@@ -352,11 +352,11 @@ class GraphController extends Controller
         $infrastructureName = $selectedObjectMain->first()->infrastructure;
 
 // Получаем соответствующее склонение для данного типа инфраструктуры
-        $infrastructureNameDeclension = $infrastructureCases[$infrastructureName] ?? $infrastructureName;
-        $infrastructureNameUpper = mb_strtoupper($infrastructureNameDeclension);
+        $infrastructureNameDeclension = $infrastructureName ?? $infrastructureName;
+        $infrastructureNameUpper = mb_strtoupper($infrastructureCases[$infrastructureNameDeclension]);
+
 // Получаем количество уже существующих карточек графика для данного типа инфраструктуры
         $count = CardGraph::where('infrastructure_type', $infrastructureNameDeclension)->count();
-
 // Формируем название карточки графика
         $nameGraph = "ГОДОВОЙ ГРАФИК TPM ОБЪЕКТОВ $infrastructureNameUpper ИНФРАСТРУКТУРЫ #" . ($count + 1);
 

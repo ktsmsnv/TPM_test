@@ -353,7 +353,7 @@
                 // Отобразить выбранный период под блоком с кнопками
                 selectedPeriod.innerHTML = `
                 <div class="alert alert-info" role="alert">
-                    Выбранный период: с ${endDate.split('-').reverse().join('-')} по ${startDate.split('-').reverse().join('-')}
+                    Выбранный период: с ${startDate.split('-').reverse().join('-')} по ${endDate.split('-').reverse().join('-')}
                     <button type="button" class="btn btn-danger ms-3" id="resetPeriodButton">Сбросить период</button>
                 </div>`;
                 // Добавляем обработчик клика на кнопку "Сбросить период"

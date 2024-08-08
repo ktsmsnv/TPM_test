@@ -97,7 +97,7 @@
             fetch('/ldap-users')
                 .then(response => response.json())
                 .then(data => {
-                    clusterUsers(data);
+                    populateSelect(data);
                 });
 
             document.getElementById('ldap-user').addEventListener('change', function () {
@@ -105,18 +105,19 @@
                 const email = selectedUser.value;
                 const username = selectedUser.dataset.username;
                 const fio = selectedUser.dataset.fio;
+
                 // Устанавливаем значения полей формы
                 document.getElementById('hidden_name').value = username;
-
                 document.getElementById('name').value = fio;
                 document.getElementById('email').value = email;
+
                 // Оставляем поля пароля пустыми для ввода вручную
                 document.getElementById('password').value = '';
                 document.getElementById('password-confirm').value = '';
             });
         });
 
-        function clusterUsers(data) {
+        function populateSelect(data) {
             const ldapUserSelect = document.getElementById('ldap-user');
             data.forEach(user => {
                 let option = document.createElement('option');
