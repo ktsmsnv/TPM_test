@@ -249,12 +249,12 @@ class GraphController extends Controller
     public function addCardObjectsToGraph(Request $request)
     {
         $selectedCardObjects = $request->input('card_objects', []);
-        dd($selectedCardObjects);
-        $graphId = $request->input('graph_id');
 
+        $graphId = $request->input('graph_id');
+//        dd($graphId);
         // Найдите карточку графика по идентификатору
         $cardGraph = CardGraph::findOrFail($graphId);
-
+//dd($selectedCardObjects);
         // Преобразуйте cards_ids из строки в массив, если это необходимо
         $existingCardIds = explode(', ', $cardGraph->cards_ids);
 

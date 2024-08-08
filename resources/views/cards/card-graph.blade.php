@@ -22,7 +22,7 @@
                     <a href="{{ route('cardGraph-edit', ['id' => $data_CardGraph->_id]) }}"
                        type="button" class="btn btn-outline-danger">Редактировать</a>
                     <button id="getCardObject" class="btn btn-outline-primary addCardObject"
-                            data-graph-id="{{ $data_CardGraph->id }}">
+                            data-graphid="{{ $data_CardGraph->_id }}">
                         <i class="fa fa-trash"></i> Добавить карточку объекта
                     </button>
                     {{-- ПОЛУЧЕНИЕ ВСЕХ ID CardObjects, связанных с текущей карточкой графика --}}
@@ -234,7 +234,7 @@
                         </select>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Добавить</button>
+                        <button type="button" class="btn btn-success" data-graphid="{{ $data_CardGraph->_id }}" data-bs-dismiss="modal">Добавить</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
                     </div>
                 </div>
@@ -366,7 +366,7 @@
                             if (response.length > 0) {
                                 $.each(response, function (index, cardObject) {
                                     var optionText = (index + 1) + ') ' + cardObject.name;
-                                    $('#cardObjectsSelect').append('<option value="' + cardObject.id + '">' + optionText + '</option>');
+                                    $('#cardObjectsSelect').append('<option value="' + cardObject._id + '">' + optionText + '</option>');
                                 });
                             } else {
                                 $('#cardObjectsSelect').append('<option value="нет объектов">Нет объектов</option>');
@@ -383,7 +383,7 @@
                     var selectedCardObjects = $('#cardObjectsSelect').val();
 
                     // Получаем id карточки графика из data-атрибута кнопки "Добавить"
-                    var graphId = $(this).data('graph-id');
+                    var graphId = $(this).data('graphid');
 
                     console.log('Selected Card Objects:', selectedCardObjects);
                     console.log('Graph ID:', graphId);
